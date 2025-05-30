@@ -1,5 +1,5 @@
-import { EventDashboard } from "~/components/event-dashboard"
+import { EventDashboard } from "~/components/event-dashboard";
 
 export default function EventPage() {
-  return <EventDashboard />
-} 
+	return <EventDashboard />;
+}

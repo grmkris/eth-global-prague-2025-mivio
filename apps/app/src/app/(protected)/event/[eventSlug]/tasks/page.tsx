@@ -1,5 +1,5 @@
-import { MicrotaskDashboard } from "~/components/microtask-dashboard"
+import { MicrotaskDashboard } from "~/components/microtask-dashboard";
 
 export default function EventTasksPage() {
-  return <MicrotaskDashboard />
-} 
+	return <MicrotaskDashboard />;
+}

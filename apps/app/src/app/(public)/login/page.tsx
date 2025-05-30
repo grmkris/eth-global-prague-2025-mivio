@@ -1,44 +1,50 @@
-"use client"
+"use client";
 
-import { useAccount } from "wagmi"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-import ConnectButton from "~/components/connect-button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
-import { Wallet } from "lucide-react"
+import { Wallet } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useAccount } from "wagmi";
+import ConnectButton from "~/components/connect-button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "~/components/ui/card";
 
 export default function LoginPage() {
-  const { address } = useAccount()
-  const router = useRouter()
+	const { address } = useAccount();
+	const router = useRouter();
 
-  useEffect(() => {
-    if (address) {
-      router.push("/events")
-    }
-  }, [address, router])
+	useEffect(() => {
+		if (address) {
+			router.push("/events");
+		}
+	}, [address, router]);
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background relative">
-      <div className="texture" />
-      <Card className="w-full max-w-md relative z-10">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
-              <Wallet className="h-8 w-8 text-primary-foreground" />
-            </div>
-          </div>
-          <CardTitle className="text-2xl font-bold">Welcome to Mivio</CardTitle>
-          <CardDescription>
-            Connect your wallet to access events and start earning rewards
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center space-y-4">
-          <ConnectButton />
-          <p className="text-xs text-muted-foreground text-center">
-            By connecting, you agree to our Terms of Service and Privacy Policy
-          </p>
-        </CardContent>
-      </Card>
-    </div>
-  )
-} 
+	return (
+		<div className="relative flex min-h-screen items-center justify-center bg-background">
+			<div className="texture" />
+			<Card className="relative z-10 w-full max-w-md">
+				<CardHeader className="space-y-1 text-center">
+					<div className="mb-4 flex justify-center">
+						<div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary">
+							<Wallet className="h-8 w-8 text-primary-foreground" />
+						</div>
+					</div>
+					<CardTitle className="font-bold text-2xl">Welcome to Mivio</CardTitle>
+					<CardDescription>
+						Connect your wallet to access events and start earning rewards
+					</CardDescription>
+				</CardHeader>
+				<CardContent className="flex flex-col items-center space-y-4">
+					<ConnectButton />
+					<p className="text-center text-muted-foreground text-xs">
+						By connecting, you agree to our Terms of Service and Privacy Policy
+					</p>
+				</CardContent>
+			</Card>
+		</div>
+	);
+}

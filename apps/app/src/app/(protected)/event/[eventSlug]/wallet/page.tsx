@@ -1,5 +1,5 @@
-import { WalletDashboard } from "~/components/wallet-dashboard"
+import { WalletDashboard } from "~/components/wallet-dashboard";
 
 export default function EventWalletPage() {
-  return <WalletDashboard />
-} 
+	return <WalletDashboard />;
+}

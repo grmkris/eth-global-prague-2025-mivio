@@ -116,6 +116,9 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4.1.8
         version: 4.1.8
+      '@types/canvas-confetti':
+        specifier: ^1.9.0
+        version: 1.9.0
       '@types/node':
         specifier: ^22.15.29
         version: 22.15.29
@@ -1487,6 +1490,9 @@ packages:
     resolution: {integrity: sha512-X3TSLwQQh5+zi+yY7BnnmUUwVNdeBj3BAt580sAJ+Qd5PvDhz1gSNHGOAlOLulCFn6g/JHf8n+DbnPF/Gb63SA==}
     peerDependencies:
       typescript: '>=5.7.2'
+
+  '@types/canvas-confetti@1.9.0':
+    resolution: {integrity: sha512-aBGj/dULrimR1XDZLtG9JwxX1b4HPRF6CX9Yfwh3NvstZEm1ZL7RBnel4keCPSqs1ANRu1u2Aoz9R+VmtjYuTg==}
 
   '@types/debug@4.1.12':
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
@@ -4668,6 +4674,8 @@ snapshots:
   '@trpc/server@11.1.4(typescript@5.8.3)':
     dependencies:
       typescript: 5.8.3
+
+  '@types/canvas-confetti@1.9.0': {}
 
   '@types/debug@4.1.12':
     dependencies:

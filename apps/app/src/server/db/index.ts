@@ -1,5 +1,5 @@
-import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
 
 import { env } from "~/env";
 import * as schema from "./schema";
@@ -9,7 +9,7 @@ import * as schema from "./schema";
  * update.
  */
 const globalForDb = globalThis as unknown as {
-  conn: ReturnType<typeof neon> | undefined;
+	conn: ReturnType<typeof neon> | undefined;
 };
 
 const conn = globalForDb.conn ?? neon(env.DATABASE_URL);
