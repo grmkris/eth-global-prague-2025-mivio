@@ -1,177 +1,170 @@
-'use client';
+"use client";
 
-import { Shield, AlertCircle, Loader2, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
-import { Card, CardContent } from '~/components/ui/card';
-import { Button } from '~/components/ui/button';
-import { Badge } from '~/components/ui/badge';
-import { Alert, AlertDescription } from '~/components/ui/alert';
-import { useEventChannel } from '~/hooks/nitrolite/useEventChannel';
-import type { WalletClient } from 'viem';
-import type { NitroliteClient } from '@erc7824/nitrolite';
+import type { NitroliteClient } from "@erc7824/nitrolite";
+import {
+	AlertCircle,
+	CheckCircle2,
+	Loader2,
+	RefreshCw,
+	Shield,
+	XCircle,
+} from "lucide-react";
+import type { WalletClient } from "viem";
+import { Alert, AlertDescription } from "~/components/ui/alert";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import { useEventChannelSimple } from "~/hooks/nitrolite/useEventChannelSimple";
 
 interface ChannelStatusProps {
-  walletAddress: `0x${string}` | undefined;
-  walletClient: WalletClient | undefined;
-  nitroliteClient: NitroliteClient | undefined;
+	walletAddress: `0x${string}` | undefined;
+	walletClient: WalletClient | undefined;
+	nitroliteClient: NitroliteClient | undefined;
 }
 
-export function ChannelStatus({ walletAddress, walletClient, nitroliteClient }: ChannelStatusProps) {
-  const {
-    channelStatus,
-    offchainBalance,
-    isInitializing,
-    error,
-    hasChannel,
-    needsChannel,
-    initializeChannel,
-    updateBalance,
-  } = useEventChannel({ walletAddress, walletClient, nitroliteClient });
+export function ChannelStatus({
+	walletAddress,
+	walletClient,
+	nitroliteClient,
+}: ChannelStatusProps) {
+	const {
+		channelId,
+		isChannelOpen,
+		offchainBalance,
+		isLoading,
+		error,
+		createChannel,
+		updateBalance,
+	} = useEventChannelSimple({ walletAddress, walletClient, nitroliteClient });
 
-  // Status icon and color
-  const getStatusIcon = () => {
-    switch (channelStatus) {
-      case 'none':
-        return <Shield className="h-5 w-5 text-gray-400" />;
-      case 'pending':
-      case 'connecting':
-        return <Loader2 className="h-5 w-5 animate-spin text-blue-500" />;
-      case 'open':
-        return <CheckCircle2 className="h-5 w-5 text-green-500" />;
-      case 'failed':
-        return <XCircle className="h-5 w-5 text-red-500" />;
-      default:
-        return <AlertCircle className="h-5 w-5 text-yellow-500" />;
-    }
-  };
+	// Status icon and color
+	const getStatusIcon = () => {
+		if (isLoading) {
+			return <Loader2 className="h-5 w-5 animate-spin text-blue-500" />;
+		}
+		if (error) {
+			return <XCircle className="h-5 w-5 text-red-500" />;
+		}
+		if (isChannelOpen) {
+			return <CheckCircle2 className="h-5 w-5 text-green-500" />;
+		}
+		return <Shield className="h-5 w-5 text-gray-400" />;
+	};
 
-  const getStatusText = () => {
-    switch (channelStatus) {
-      case 'none':
-        return 'No Channel';
-      case 'pending':
-        return 'Initializing...';
-      case 'connecting':
-        return 'Connecting...';
-      case 'open':
-        return 'Connected';
-      case 'failed':
-        return 'Connection Failed';
-      default:
-        return 'Unknown';
-    }
-  };
+	const getStatusText = () => {
+		if (isLoading) return "Initializing...";
+		if (error) return "Connection Failed";
+		if (isChannelOpen) return "Connected";
+		return "No Channel";
+	};
 
-  const getStatusColor = () => {
-    switch (channelStatus) {
-      case 'none':
-        return 'secondary';
-      case 'pending':
-      case 'connecting':
-        return 'default';
-      case 'open':
-        return 'success';
-      case 'failed':
-        return 'destructive';
-      default:
-        return 'outline';
-    }
-  };
+	const getStatusColor = () => {
+		if (error) return "destructive";
+		if (isChannelOpen) return "default";
+		return "secondary";
+	};
 
-  return (
-    <Card className="mb-6">
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            {getStatusIcon()}
-            <div>
-              <h3 className="font-semibold">Payment Channel</h3>
-              <p className="text-sm text-muted-foreground">
-                Off-chain payment status
-              </p>
-            </div>
-          </div>
-          <Badge variant={getStatusColor() as any}>
-            {getStatusText()}
-          </Badge>
-        </div>
+	return (
+		<Card className="mb-6">
+			<CardContent className="pt-6">
+				<div className="mb-4 flex items-center justify-between">
+					<div className="flex items-center gap-3">
+						{getStatusIcon()}
+						<div>
+							<h3 className="font-semibold">Payment Channel</h3>
+							<p className="text-muted-foreground text-sm">
+								Off-chain payment status
+							</p>
+						</div>
+					</div>
+					<Badge variant={getStatusColor()}>{getStatusText()}</Badge>
+				</div>
 
-        {/* Balance Display */}
-        {channelStatus === 'open' && (
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Off-chain Balance</span>
-              <span className="text-2xl font-bold">${offchainBalance}</span>
-            </div>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={updateBalance}
-              className="mt-2 w-full"
-            >
-              Refresh Balance
-            </Button>
-          </div>
-        )}
+				{/* Balance Display */}
+				{isChannelOpen && (
+					<div className="mb-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-900">
+						<div className="flex items-center justify-between">
+							<span className="text-muted-foreground text-sm">
+								Off-chain Balance
+							</span>
+							<span className="font-bold text-2xl">${offchainBalance}</span>
+						</div>
+						<Button
+							size="sm"
+							variant="ghost"
+							onClick={updateBalance}
+							className="mt-2 w-full"
+						>
+							Refresh Balance
+						</Button>
+					</div>
+				)}
 
-        {/* Error Display */}
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+				{/* Error Display */}
+				{error && (
+					<Alert variant="destructive" className="mb-4">
+						<AlertCircle className="h-4 w-4" />
+						<AlertDescription>{error}</AlertDescription>
+					</Alert>
+				)}
 
-        {/* Action Buttons */}
-        {needsChannel && !hasChannel && channelStatus === 'none' && (
-          <div className="space-y-3">
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                A payment channel is required for off-chain transactions. This enables instant, gas-free payments within the event.
-              </AlertDescription>
-            </Alert>
-            <Button
-              onClick={initializeChannel}
-              disabled={isInitializing || !walletAddress || !walletClient || !nitroliteClient}
-              className="w-full"
-            >
-              {isInitializing ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Setting up channel...
-                </>
-              ) : (
-                <>
-                  <Shield className="mr-2 h-4 w-4" />
-                  Create Payment Channel
-                </>
-              )}
-            </Button>
-          </div>
-        )}
+				{/* Action Buttons */}
+				{!channelId && !isLoading && (
+					<div className="space-y-3">
+						<Alert>
+							<AlertCircle className="h-4 w-4" />
+							<AlertDescription>
+								A payment channel is required for off-chain transactions. This
+								enables instant, gas-free payments within the event.
+							</AlertDescription>
+						</Alert>
+						<Button
+							onClick={createChannel}
+							disabled={
+								isLoading ||
+								!walletAddress ||
+								!walletClient ||
+								!nitroliteClient
+							}
+							className="w-full"
+						>
+							{isLoading ? (
+								<>
+									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									Setting up channel...
+								</>
+							) : (
+								<>
+									<Shield className="mr-2 h-4 w-4" />
+									Create Payment Channel
+								</>
+							)}
+						</Button>
+					</div>
+				)}
 
-        {/* Connection Info */}
-        {channelStatus === 'open' && (
-          <div className="text-xs text-muted-foreground mt-4">
-            <p>• Instant transactions enabled</p>
-            <p>• No gas fees for payments</p>
-            <p>• Funds are secure and withdrawable</p>
-          </div>
-        )}
+				{/* Connection Info */}
+				{isChannelOpen && (
+					<div className="mt-4 text-muted-foreground text-xs">
+						<p>• Instant transactions enabled</p>
+						<p>• No gas fees for payments</p>
+						<p>• Funds are secure and withdrawable</p>
+					</div>
+				)}
 
-        {/* Retry Button for Failed State */}
-        {channelStatus === 'failed' && (
-          <Button
-            onClick={initializeChannel}
-            disabled={isInitializing}
-            variant="outline"
-            className="w-full mt-4"
-          >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Retry Connection
-          </Button>
-        )}
-      </CardContent>
-    </Card>
-  );
-} 
+				{/* Retry Button for Failed State */}
+				{error && (
+					<Button
+						onClick={createChannel}
+						disabled={isLoading}
+						variant="outline"
+						className="mt-4 w-full"
+					>
+						<RefreshCw className="mr-2 h-4 w-4" />
+						Retry Connection
+					</Button>
+				)}
+			</CardContent>
+		</Card>
+	);
+}

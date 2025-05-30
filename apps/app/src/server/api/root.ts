@@ -1,11 +1,10 @@
-import { postRouter } from "~/server/api/routers/post";
-import { userRouter } from "~/server/api/routers/user";
 import { eventRouter } from "~/server/api/routers/event";
-import { walletRouter } from "~/server/api/routers/wallet";
-import { taskRouter } from "~/server/api/routers/task";
+import { postRouter } from "~/server/api/routers/post";
 import { productRouter } from "~/server/api/routers/product";
 import { rewardRouter } from "~/server/api/routers/reward";
-import { channelRouter } from "~/server/api/routers/channel";
+import { taskRouter } from "~/server/api/routers/task";
+import { userRouter } from "~/server/api/routers/user";
+import { walletRouter } from "~/server/api/routers/wallet";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -21,7 +20,6 @@ export const appRouter = createTRPCRouter({
 	task: taskRouter,
 	product: productRouter,
 	reward: rewardRouter,
-	channel: channelRouter,
 });
 
 // export type definition of API

@@ -8,9 +8,9 @@ import {
 	Wallet,
 } from "lucide-react";
 import { useState } from "react";
+import { ChannelStatus } from "~/components/channel-status";
 import { PaymentModal } from "~/components/payment-modal";
 import { TopUpModal } from "~/components/top-up-modal";
-import { ChannelStatus } from "~/components/channel-status";
 import { Button } from "~/components/ui/button";
 import {
 	Card,
@@ -124,7 +124,7 @@ export function WalletDashboard() {
 				</CardFooter>
 			</Card>
 
-			<ChannelStatus 
+			<ChannelStatus
 				walletAddress={mockWalletAddress}
 				walletClient={mockWalletClient}
 				nitroliteClient={mockNitroliteClient}
