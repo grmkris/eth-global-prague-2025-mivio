@@ -7,61 +7,61 @@ import { Button } from "~/components/ui/button"
 import { CheckSquare, CreditCard, HelpCircle, Home, ShoppingBag, User, LogOut, Calendar, ArrowLeft } from "lucide-react"
 import { useAccount, useDisconnect } from "wagmi"
 import ConnectButton from "~/components/connect-button"
-import { useEvent } from "~/components/event-provider"
 
 export function DesktopNav() {
   const pathname = usePathname()
   const { address } = useAccount()
   const { disconnect } = useDisconnect()
   
-  // Try to get event context - will be undefined if not in an event route
-  let eventContext = null
-  try {
-    eventContext = useEvent()
-  } catch {
-    // Not in event context
-  }
-
+  // Check if we're in an event-specific route
   const isEventRoute = pathname.includes('/event/')
   const eventSlug = isEventRoute ? pathname.split('/event/')[1]?.split('/')[0] : null
+  
+  // Try to get event info from the path for now (in a real app, this would come from context or API)
+  const eventInfo = eventSlug ? {
+    slug: eventSlug,
+    name: eventSlug.split('-').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ')
+  } : null
 
-  const navItems = eventContext?.event ? [
+  const navItems = isEventRoute && eventInfo ? [
     {
       name: "Overview",
-      href: `/event/${eventContext.event.slug}`,
+      href: `/event/${eventInfo.slug}`,
       icon: Home,
-      active: pathname === `/event/${eventContext.event.slug}`,
+      active: pathname === `/event/${eventInfo.slug}`,
     },
     {
       name: "Tasks",
-      href: `/event/${eventContext.event.slug}/tasks`,
+      href: `/event/${eventInfo.slug}/tasks`,
       icon: CheckSquare,
-      active: pathname === `/event/${eventContext.event.slug}/tasks`,
+      active: pathname === `/event/${eventInfo.slug}/tasks`,
     },
     {
       name: "Wallet",
-      href: `/event/${eventContext.event.slug}/wallet`,
+      href: `/event/${eventInfo.slug}/wallet`,
       icon: CreditCard,
-      active: pathname === `/event/${eventContext.event.slug}/wallet`,
+      active: pathname === `/event/${eventInfo.slug}/wallet`,
     },
     {
       name: "Shop",
-      href: `/event/${eventContext.event.slug}/shop`,
+      href: `/event/${eventInfo.slug}/shop`,
       icon: ShoppingBag,
-      active: pathname === `/event/${eventContext.event.slug}/shop`,
+      active: pathname === `/event/${eventInfo.slug}/shop`,
     },
     {
       name: "Profile",
-      href: `/event/${eventContext.event.slug}/profile`,
+      href: `/event/${eventInfo.slug}/profile`,
       icon: User,
-      active: pathname === `/event/${eventContext.event.slug}/profile`,
+      active: pathname === `/event/${eventInfo.slug}/profile`,
     },
   ] : [
     {
       name: "Events",
       href: "/events",
       icon: Calendar,
-      active: pathname === "/events",
+      active: pathname === "/events" || pathname.startsWith("/events/"),
     },
   ]
 
@@ -74,7 +74,7 @@ export function DesktopNav() {
         <h1 className="text-xl font-bold">Mivio</h1>
       </div>
 
-      {eventContext?.event && (
+      {isEventRoute && eventInfo && (
         <div className="mb-6 px-2 pb-4 border-b">
           <Link 
             href="/events" 
@@ -84,8 +84,7 @@ export function DesktopNav() {
             Change Event
           </Link>
           <div className="space-y-1">
-            <h2 className="font-semibold text-sm line-clamp-1">{eventContext.event.name}</h2>
-            <p className="text-xs text-muted-foreground line-clamp-1">{eventContext.event.location}</p>
+            <h2 className="font-semibold text-sm line-clamp-1">{eventInfo.name}</h2>
           </div>
         </div>
       )}
