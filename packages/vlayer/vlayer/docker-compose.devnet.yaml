@@ -1,0 +1,11 @@
+include:
+  # chain
+  - anvil/service.yaml
+  # vlayer
+  - vdns_server/service.yaml
+  - call_server/service.yaml
+  # webproofs 
+  - websockify/service.yaml
+  - websockify-test-client/service.yaml
+  - notary-server/service.yaml
+
