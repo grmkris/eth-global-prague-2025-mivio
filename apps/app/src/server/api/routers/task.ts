@@ -301,7 +301,15 @@ export const taskRouter = createTRPCRouter({
 							type: "badge",
 						})
 						.returning();
-					rewardId = newReward[0]!.id;
+
+					if (!newReward[0]) {
+						throw new TRPCError({
+							code: "INTERNAL_SERVER_ERROR",
+							message: "Failed to create reward",
+						});
+					}
+
+					rewardId = newReward[0].id;
 				}
 
 				// Grant badge to user

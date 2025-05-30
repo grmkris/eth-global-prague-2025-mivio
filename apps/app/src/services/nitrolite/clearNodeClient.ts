@@ -176,20 +176,27 @@ export class ClearNodeClient {
 			}, this.options.requestTimeout);
 
 			const handleAuthResponse = async (event: MessageEvent) => {
-				let response: unknown;
-
-				try {
-					response = JSON.parse(event.data);
-				} catch {
-					return; // Skip invalid messages
-				}
+				const response = JSON.parse(event.data) as {
+					res?: [number, string, unknown[]];
+					err?: [number, string, unknown[]];
+				};
 
 				try {
 					if (response.res && response.res[1] === "auth_challenge") {
 						// Create EIP-712 signer
-						const eip712Signer = async (data: unknown): Promise<`0x${string}`> => {
+						const eip712Signer = async (
+							data: unknown,
+						): Promise<`0x${string}`> => {
 							// Extract challenge from response
-							const challenge = response.res[2]?.[0]?.challenge_message || "";
+							const challenge = (
+								response.res?.[2]?.[0] as {
+									challenge_message: string;
+								}
+							)?.challenge_message;
+
+							if (!challenge) {
+								throw new Error("Challenge message not found");
+							}
 
 							const message = {
 								challenge,
@@ -199,7 +206,7 @@ export class ClearNodeClient {
 								participant: signerAddress,
 								expire: Math.floor(Date.now() / 1000) + 3600,
 								allowances: [],
-							};  
+							};
 
 							if (!walletClient.account) {
 								throw new Error("Wallet account not found");
@@ -225,12 +232,12 @@ export class ClearNodeClient {
 					} else if (response.res && response.res[1] === "auth_success") {
 						// Store JWT if provided
 						if (
-							response.res[2]?.[0]?.jwt_token &&
+							(response.res[2]?.[0] as { jwt_token: string })?.jwt_token &&
 							typeof window !== "undefined"
 						) {
 							window.localStorage?.setItem(
 								"clearnode_jwt",
-								response.res[2][0].jwt_token,
+								(response.res[2]?.[0] as { jwt_token: string })?.jwt_token,
 							);
 						}
 
@@ -265,14 +272,10 @@ export class ClearNodeClient {
 	 * Handle incoming messages
 	 */
 	private handleMessage(event: MessageEvent): void {
-		let message: unknown;
-
-		try {
-			message = JSON.parse(event.data);
-		} catch (error) {
-			console.error("Failed to parse message:", event.data);
-			return;
-		}
+		const message = JSON.parse(event.data) as {
+			res?: [number, string, unknown[]];
+			err?: [number, string, unknown[]];
+		};
 
 		// Notify message handlers
 		for (const handler of this.messageHandlers) {
@@ -280,6 +283,7 @@ export class ClearNodeClient {
 		}
 
 		// Handle RPC responses
+
 		if (message.res && Array.isArray(message.res) && message.res.length >= 3) {
 			const requestId = message.res[0];
 			if (this.pendingRequests.has(requestId)) {

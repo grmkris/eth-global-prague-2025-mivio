@@ -263,7 +263,9 @@ export const rewardRouter = createTRPCRouter({
 							earned = totalEarned >= (achievement.criteria.amount ?? 0);
 							progress = Math.min(
 								100,
-								Math.round((totalEarned / (achievement.criteria.amount ?? 0)) * 100),
+								Math.round(
+									(totalEarned / (achievement.criteria.amount ?? 0)) * 100,
+								),
 							);
 							break;
 						}

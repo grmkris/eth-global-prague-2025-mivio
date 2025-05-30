@@ -121,10 +121,7 @@ export function ChannelStatus({
 						<Button
 							onClick={createChannel}
 							disabled={
-								isLoading ||
-								!walletAddress ||
-								!walletClient ||
-								!nitroliteClient
+								isLoading || !walletAddress || !walletClient || !nitroliteClient
 							}
 							className="w-full"
 						>

@@ -12,6 +12,7 @@ import {
 	primaryKey,
 	text,
 	timestamp,
+	unique,
 	uniqueIndex,
 	varchar,
 } from "drizzle-orm/pg-core";
@@ -170,9 +171,7 @@ export const eventWallets = createTable(
 			.timestamp({ withTimezone: true })
 			.default(sql`CURRENT_TIMESTAMP`)
 			.notNull(),
-		updatedAt: t
-			.timestamp({ withTimezone: true })
-			.$onUpdate(() => new Date()),
+		updatedAt: t.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
 	}),
 	(table) => ({
 		eventUserUnique: unique().on(table.eventId, table.userId),

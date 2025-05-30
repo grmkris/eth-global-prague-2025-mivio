@@ -3,6 +3,7 @@
 import {
 	Calendar,
 	CheckSquare,
+	FlaskConical,
 	MapPin,
 	ShoppingBag,
 	Trophy,
@@ -90,6 +91,14 @@ export function EventDashboard() {
 			color: "text-orange-500",
 			stats: "Level 3",
 		},
+		{
+			title: "Nitrolite Test",
+			description: "Test off-chain payments",
+			icon: FlaskConical,
+			href: `/event/${event.slug}/test-nitrolite`,
+			color: "text-pink-500",
+			stats: "Developer",
+		},
 	];
 
 	return (
@@ -173,7 +182,7 @@ export function EventDashboard() {
 			</div>
 
 			{/* Navigation Cards */}
-			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
 				{navigationCards.map((card) => (
 					<Card
 						key={card.title}
