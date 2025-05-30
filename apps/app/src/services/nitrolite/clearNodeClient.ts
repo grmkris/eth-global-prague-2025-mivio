@@ -1,5 +1,4 @@
 import { createAuthRequestMessage, createAuthVerifyMessage, createAuthVerifyMessageWithJWT } from '@erc7824/nitrolite';
-import { ethers } from 'ethers';
 import type { WalletClient } from 'viem';
 
 export type WSStatus = 'disconnected' | 'connecting' | 'authenticating' | 'connected' | 'reconnecting' | 'auth_failed';
@@ -138,7 +137,7 @@ export class ClearNodeClient {
       authRequest = await createAuthVerifyMessageWithJWT(jwtToken);
     } else {
       // Create initial auth request
-      const expire = Math.floor(Date.now() / 1000) + 3600; // 1 hour
+      const expire = (Math.floor(Date.now() / 1000) + 3600).toString(); // 1 hour
       
       authRequest = await createAuthRequestMessage({
         wallet: walletAddress,

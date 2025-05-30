@@ -1,5 +1,5 @@
 import { NitroliteClient, createAppSessionMessage, createGetChannelsMessage, createGetLedgerBalancesMessage } from '@erc7824/nitrolite';
-import type { Channel } from '@erc7824/nitrolite';
+import type { Channel, State } from '@erc7824/nitrolite';
 import { getClearNodeClient } from './clearNodeClient';
 import type { WalletClient } from 'viem';
 
@@ -12,7 +12,7 @@ interface CreateChannelParams {
 
 interface ChannelInfo {
   channelId: string;
-  channel: Channel;
+  channelState: State;
   eventWalletId: number;
   userAddress: `0x${string}`;
   status: 'pending' | 'open' | 'failed';
@@ -55,7 +55,7 @@ export class ChannelManager {
 
       const channelInfo: ChannelInfo = {
         channelId: channelResult.channelId,
-        channel: channelResult.channel,
+        channelState: channelResult.initialState,
         eventWalletId,
         userAddress,
         status: 'open',
@@ -80,7 +80,7 @@ export class ChannelManager {
       
       const failedInfo: ChannelInfo = {
         channelId: '',
-        channel: {} as Channel,
+        channelState: {} as State,
         eventWalletId,
         userAddress,
         status: 'failed',
@@ -223,7 +223,7 @@ export class ChannelManager {
       // For now, just marking it as pending recovery
       const channelInfo: ChannelInfo = {
         channelId: data.channelId,
-        channel: {} as Channel, // Would need to reconstruct
+        channelState: {} as State, // Would need to reconstruct
         eventWalletId: data.eventWalletId,
         userAddress: data.userAddress,
         status: 'pending',

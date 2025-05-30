@@ -20,7 +20,7 @@ export function useEventChannel(options: UseEventChannelOptions) {
   const eventSlug = params?.eventSlug as string;
 
   const [isInitializing, setIsInitializing] = useState(false);
-  const [channelStatus, setChannelStatus] = useState<'none' | 'pending' | 'connecting' | 'open' | 'failed'>('none');
+  const [channelStatus, setChannelStatus] = useState<'none' | 'pending' | 'connecting' | 'open' | 'failed' | 'closing' | 'closed'>('none');
   const [error, setError] = useState<string | null>(null);
   const [offchainBalance, setOffchainBalance] = useState<string>('0.00');
 
@@ -32,8 +32,8 @@ export function useEventChannel(options: UseEventChannelOptions) {
 
   // Update local state when channel data changes
   useEffect(() => {
-    if (channelData?.hasChannel) {
-      setChannelStatus(channelData.status as any);
+    if (channelData?.hasChannel && 'channelId' in channelData) {
+      setChannelStatus(channelData.status);
       setOffchainBalance(channelData.offchainBalance);
     } else if (channelData?.needsChannel) {
       setChannelStatus('none');
@@ -96,7 +96,7 @@ export function useEventChannel(options: UseEventChannelOptions) {
       // Step 3: Create actual Nitrolite channel
       const channelManager = getChannelManager();
       const channelInfo = await channelManager.createChannel({
-        eventWalletId,
+        eventWalletId: eventWalletId!,
         userAddress: walletAddress,
         walletClient,
         nitroliteClient,
@@ -118,7 +118,7 @@ export function useEventChannel(options: UseEventChannelOptions) {
       setChannelStatus('failed');
 
       // Update database with failure status
-      if (channelData?.channelId) {
+      if (channelData && 'channelId' in channelData) {
         await updateStatusMutation.mutateAsync({
           channelId: channelData.channelId,
           status: 'failed',
@@ -144,7 +144,7 @@ export function useEventChannel(options: UseEventChannelOptions) {
    * Check and update balance
    */
   const updateBalance = useCallback(async () => {
-    if (!channelData?.channelId || !channelData.hasChannel || channelStatus !== 'open') {
+    if (!channelData || !channelData.hasChannel || channelStatus !== 'open' || !('channelId' in channelData)) {
       return;
     }
 
@@ -158,11 +158,13 @@ export function useEventChannel(options: UseEventChannelOptions) {
         setOffchainBalance(usdcBalance.amount);
         
         // Update in database
+        if (channelData && 'channelId' in channelData) {
         await updateBalanceMutation.mutateAsync({
-          channelId: channelData.channelId,
+          channelId: channelData.channelId!,
           offchainBalance: usdcBalance.amount,
           walletAddress: walletAddress!,
-        });
+          });
+        }
       }
     } catch (err) {
       console.error('Failed to update balance:', err);

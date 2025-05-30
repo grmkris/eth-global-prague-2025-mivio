@@ -79,7 +79,7 @@ export const channelRouter = createTRPCRouter({
       const channel = await ctx.db
         .insert(eventChannels)
         .values({
-          eventWalletId: wallet[0].id,
+          eventWalletId: wallet[0]!.id,
           status: "pending",
         })
         .returning();
@@ -87,7 +87,7 @@ export const channelRouter = createTRPCRouter({
       return {
         success: true,
         channelId: channel[0]!.id,
-        eventWalletId: wallet[0].id,
+        eventWalletId: wallet[0]!.id,
         status: "pending",
         message: "Channel initialization started",
       };
@@ -212,7 +212,7 @@ export const channelRouter = createTRPCRouter({
         )
         .limit(1);
 
-      if (!channelData[0]) {
+      if (!channelData[0]?.channelId) {
         return {
           hasChannel: false,
           needsChannel: true,
@@ -221,7 +221,7 @@ export const channelRouter = createTRPCRouter({
 
       return {
         hasChannel: true,
-        ...channelData[0],
+        ...channelData[0]!,
       };
     }),
 
