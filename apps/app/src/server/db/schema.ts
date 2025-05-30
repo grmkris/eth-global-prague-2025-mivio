@@ -175,6 +175,50 @@ export const eventWallets = createTable(
 	(table) => [uniqueIndex("event_wallet_idx").on(table.eventId, table.userId)],
 );
 
+// Nitrolite channels for event wallets
+export const channelStatusEnum = pgEnum("channel_status", [
+	"pending",
+	"connecting",
+	"open",
+	"closing",
+	"closed",
+	"failed",
+]);
+
+export const eventChannels = createTable(
+	"event_channel",
+	(t) => ({
+		id: t.integer().primaryKey().generatedByDefaultAsIdentity(),
+		eventWalletId: t
+			.integer()
+			.references(() => eventWallets.id)
+			.unique()
+			.notNull(),
+		channelId: t.varchar({ length: 66 }).unique(), // Nitrolite channel ID (0x...)
+		channelAddress: t.varchar({ length: 42 }), // Channel contract address
+		clearnodeUrl: t.text().default("wss://clearnet.yellow.com/ws"),
+		status: channelStatusEnum().default("pending").notNull(),
+		offchainBalance: t.numeric({ precision: 10, scale: 2 }).default("0.00").notNull(),
+		lockedBalance: t.numeric({ precision: 10, scale: 2 }).default("0.00").notNull(), // Funds locked in pending transactions
+		channelState: t.text(), // Serialized channel state
+		appSessionId: t.varchar({ length: 66 }), // Current app session ID
+		lastSyncedAt: t.timestamp({ withTimezone: true }),
+		lastActivityAt: t.timestamp({ withTimezone: true }),
+		errorMessage: t.text(), // Last error if status is failed
+		metadata: t.text(), // JSON for additional channel data
+		createdAt: t
+			.timestamp({ withTimezone: true })
+			.default(sql`CURRENT_TIMESTAMP`)
+			.notNull(),
+		updatedAt: t.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
+	}),
+	(table) => [
+		index("channel_wallet_idx").on(table.eventWalletId),
+		index("channel_status_idx").on(table.status),
+		uniqueIndex("channel_id_idx").on(table.channelId),
+	],
+);
+
 // Tasks/Microtasks
 export const tasks = createTable(
 	"task",

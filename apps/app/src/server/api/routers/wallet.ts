@@ -118,22 +118,28 @@ export const walletRouter = createTRPCRouter({
       }
 
       // Get transactions with proper filtering
-      let conditions = eq(transactions.eventWalletId, wallet[0].id);
-      
-      if (input.type && input.type !== "all") {
-        conditions = and(
-          conditions,
-          eq(transactions.type, input.type)
-        )!;
-      }
-
-      const transactionList = await ctx.db
+      const baseQuery = ctx.db
         .select()
         .from(transactions)
-        .where(conditions)
+        .where(eq(transactions.eventWalletId, wallet[0].id))
         .orderBy(desc(transactions.createdAt))
         .limit(input.limit)
         .offset(input.offset);
+
+      const transactionList = input.type && input.type !== "all" 
+        ? await ctx.db
+            .select()
+            .from(transactions)
+            .where(
+              and(
+                eq(transactions.eventWalletId, wallet[0].id),
+                eq(transactions.type, input.type)
+              )
+            )
+            .orderBy(desc(transactions.createdAt))
+            .limit(input.limit)
+            .offset(input.offset)
+        : await baseQuery;
 
       // Get total count for pagination
       const countResult = await ctx.db

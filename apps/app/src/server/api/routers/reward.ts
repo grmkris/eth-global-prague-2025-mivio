@@ -5,6 +5,39 @@ import { eq, and, desc, sql, isNull } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const rewardRouter = createTRPCRouter({
+  // Get all rewards for an event
+  getByEvent: publicProcedure
+    .input(z.object({
+      eventSlug: z.string(),
+    }))
+    .query(async ({ ctx, input }) => {
+      // Get event
+      const event = await ctx.db
+        .select()
+        .from(events)
+        .where(eq(events.slug, input.eventSlug))
+        .limit(1);
+
+      if (!event[0]) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Event not found",
+        });
+      }
+
+      // Get all active rewards for the event
+      return await ctx.db
+        .select()
+        .from(rewards)
+        .where(
+          and(
+            eq(rewards.eventId, event[0].id),
+            eq(rewards.isActive, true)
+          )
+        )
+        .orderBy(desc(rewards.createdAt));
+    }),
+
   // Get user's earned rewards
   getUserRewards: publicProcedure
     .input(z.object({
@@ -26,7 +59,7 @@ export const rewardRouter = createTRPCRouter({
         });
       }
 
-      // Build conditions
+      // Build query
       let conditions = eq(userRewards.userId, user[0].id);
 
       if (input.eventSlug) {
@@ -36,18 +69,17 @@ export const rewardRouter = createTRPCRouter({
           .where(eq(events.slug, input.eventSlug))
           .limit(1);
 
-        if (event[0]?.id) {
+        if (event[0]) {
           conditions = conditions.append(eq(userRewards.eventId, event[0].id));
         }
       }
 
-      // Get user rewards with details
+      // Get user rewards with reward details
       return await ctx.db
         .select({
           id: userRewards.id,
           earnedAt: userRewards.earnedAt,
           expiresAt: userRewards.expiresAt,
-          metadata: userRewards.metadata,
           reward: {
             id: rewards.id,
             name: rewards.name,
@@ -56,15 +88,9 @@ export const rewardRouter = createTRPCRouter({
             imageUrl: rewards.imageUrl,
             value: rewards.value,
           },
-          event: {
-            id: events.id,
-            name: events.name,
-            slug: events.slug,
-          },
         })
         .from(userRewards)
         .innerJoin(rewards, eq(userRewards.rewardId, rewards.id))
-        .leftJoin(events, eq(userRewards.eventId, events.id))
         .where(conditions)
         .orderBy(desc(userRewards.earnedAt));
     }),

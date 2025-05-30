@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import { PaymentModal } from "~/components/payment-modal";
 import { TopUpModal } from "~/components/top-up-modal";
+import { ChannelStatus } from "~/components/channel-status";
 import { Button } from "~/components/ui/button";
 import {
 	Card,
@@ -20,6 +21,12 @@ import {
 	CardTitle,
 } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+
+// TODO: Replace with actual wallet client and Nitrolite client from context/props
+// These would typically come from your wallet connection provider
+const mockWalletAddress = undefined as `0x${string}` | undefined;
+const mockWalletClient = undefined;
+const mockNitroliteClient = undefined;
 
 type Transaction = {
 	id: string;
@@ -116,6 +123,12 @@ export function WalletDashboard() {
 					</Button>
 				</CardFooter>
 			</Card>
+
+			<ChannelStatus 
+				walletAddress={mockWalletAddress}
+				walletClient={mockWalletClient}
+				nitroliteClient={mockNitroliteClient}
+			/>
 
 			<Tabs defaultValue="all" className="w-full">
 				<TabsList className="grid w-full grid-cols-3">

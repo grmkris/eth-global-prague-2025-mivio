@@ -162,7 +162,26 @@ export const eventRouter = createTRPCRouter({
         .limit(1);
 
       if (existing[0]) {
-        return { success: true, message: "Already joined this event" };
+        // Get the existing wallet
+        const existingWallet = await ctx.db
+          .select()
+          .from(eventWallets)
+          .where(
+            and(
+              eq(eventWallets.eventId, event[0].id),
+              eq(eventWallets.userId, user[0].id)
+            )
+          )
+          .limit(1);
+
+        return { 
+          success: true, 
+          message: "Already joined this event",
+          eventWalletId: existingWallet[0]?.id,
+          needsChannel: true,
+          eventId: event[0].id,
+          userId: user[0].id,
+        };
       }
 
       // Join event
@@ -172,15 +191,22 @@ export const eventRouter = createTRPCRouter({
       });
 
       // Create event wallet
-      await ctx.db.insert(eventWallets).values({
+      const wallet = await ctx.db.insert(eventWallets).values({
         eventId: event[0].id,
         userId: user[0].id,
         balance: "0.00",
         totalEarned: "0.00",
         totalSpent: "0.00",
-      });
+      }).returning();
 
-      return { success: true, message: "Successfully joined event" };
+      return { 
+        success: true, 
+        message: "Successfully joined event",
+        eventWalletId: wallet[0]!.id,
+        needsChannel: true,
+        eventId: event[0].id,
+        userId: user[0].id,
+      };
     }),
 
   // Get participant stats for event dashboard
