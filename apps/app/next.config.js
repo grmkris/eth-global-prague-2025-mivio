@@ -5,22 +5,6 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {
-	// Don't use standalone output for Vercel
-	output: undefined,
-
-	// This can help with build issues
-	transpilePackages: ["shared"],
-
-	// Disable type checking during build (if it's causing issues)
-	typescript: {
-		ignoreBuildErrors: false,
-	},
-
-	// Ensure ESLint doesn't block the build
-	eslint: {
-		ignoreDuringBuilds: true,
-	},
-};
+const config = {};
 
 export default config;

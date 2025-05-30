@@ -5,6 +5,7 @@ import type React from "react";
 import "~/styles/globals.css";
 import { ContextProvider } from "~/WalletContext";
 import { ThemeProvider } from "~/components/theme-provider";
+import { TRPCReactProvider } from "~/trpc/react";
 
 const inter = Inter({ subsets: ["latin"] });
 const nunito = Inter({ subsets: ["latin"], variable: "--font-nunito" });
@@ -28,6 +29,7 @@ export default async function RootLayout({
 				className={`${nunito.variable} ${ptSans.variable} relative antialiased`}
 			>
 				<div className="texture" />
+				<TRPCReactProvider>	
 				<ThemeProvider
 					attribute="class"
 					defaultTheme="system"
@@ -36,6 +38,7 @@ export default async function RootLayout({
 				>
 					<ContextProvider cookies={cookies}>{children}</ContextProvider>
 				</ThemeProvider>
+				</TRPCReactProvider>
 			</body>
 		</html>
 	);

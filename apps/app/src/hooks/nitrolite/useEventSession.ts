@@ -13,6 +13,7 @@ import { api } from "~/trpc/react";
 interface UseEventSessionOptions {
 	walletAddress: `0x${string}` | undefined;
 	walletClient: WalletClient | undefined;
+	eventSlug: string;
 }
 
 interface SessionInfo {
@@ -49,9 +50,7 @@ const createSignedRequest = async (
 };
 
 export function useEventSession(options: UseEventSessionOptions) {
-	const { walletAddress, walletClient } = options;
-	const params = useParams();
-	const eventSlug = params?.eventSlug as string;
+	const { walletAddress, walletClient, eventSlug } = options;
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);

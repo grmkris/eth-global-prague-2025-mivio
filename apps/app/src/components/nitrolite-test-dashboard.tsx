@@ -26,13 +26,15 @@ import { Label } from "~/components/ui/label";
 import { useEventSession } from "~/hooks/nitrolite/useEventSession";
 
 interface NitroliteTestDashboardProps {
-	walletAddress: `0x${string}` | undefined;
-	walletClient: WalletClient | undefined;
+	walletAddress: `0x${string}`;
+	walletClient: WalletClient;
+	eventSlug: string;
 }
 
 export function NitroliteTestDashboard({
 	walletAddress,
 	walletClient,
+	eventSlug,
 }: NitroliteTestDashboardProps) {
 	const [recipientAddress, setRecipientAddress] = useState("");
 	const [paymentAmount, setPaymentAmount] = useState("10");
@@ -48,6 +50,22 @@ export function NitroliteTestDashboard({
 	const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
 	const [paymentError, setPaymentError] = useState<string | null>(null);
 
+		// Use the event session hook
+		const {
+			sessionInfo,
+			isSessionOpen,
+			offchainBalance,
+			isLoading,
+			error,
+			connectionStatus,
+			isConnected,
+			createSession,
+			updateBalance,
+			sendPayment,
+			connectToClearNode,
+		} = useEventSession({ walletAddress, walletClient, eventSlug });
+
+		
 	// Check if wallet is connected
 	if (!walletAddress || !walletClient) {
 		return (
@@ -73,22 +91,6 @@ export function NitroliteTestDashboard({
 			</div>
 		);
 	}
-
-	// Use the event session hook
-	const {
-		sessionInfo,
-		isSessionOpen,
-		offchainBalance,
-		isLoading,
-		error,
-		connectionStatus,
-		isConnected,
-		createSession,
-		updateBalance,
-		sendPayment,
-		connectToClearNode,
-	} = useEventSession({ walletAddress, walletClient });
-
 	// Handle payment
 	const handlePayment = async () => {
 		if (!recipientAddress || !paymentAmount) {
