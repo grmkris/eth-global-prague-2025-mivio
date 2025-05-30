@@ -3,10 +3,12 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "~/lib/utils"
-import { CheckSquare, CreditCard, ShoppingBag, User } from "lucide-react"
+import { CheckSquare, CreditCard, Home, ShoppingBag, User } from "lucide-react"
+import { useAccount } from "wagmi"
 
 export function MobileNav() {
   const pathname = usePathname()
+  const { address } = useAccount()
 
   const navItems = [
     {
@@ -36,22 +38,27 @@ export function MobileNav() {
   ]
 
   return (
-    <div className="md:hidden border-t bg-card fixed bottom-0 left-0 right-0 z-10">
-      <nav className="flex justify-around">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t">
+      <div className="flex items-center justify-around py-2">
         {navItems.map((item) => (
           <Link
             key={item.name}
             href={item.href}
             className={cn(
-              "flex flex-col items-center py-3 px-5 text-xs",
-              item.active ? "text-primary" : "text-muted-foreground",
+              "flex flex-col items-center gap-1 p-2 rounded-md text-xs transition-colors",
+              item.active ? "text-primary" : "text-muted-foreground hover:text-foreground",
             )}
           >
-            <item.icon className={cn("h-6 w-6 mb-1", item.active ? "text-primary" : "text-muted-foreground")} />
+            <item.icon className="h-5 w-5" />
             {item.name}
           </Link>
         ))}
-      </nav>
+      </div>
+      {address && (
+        <div className="text-center text-xs text-muted-foreground pb-1">
+          {address.slice(0, 6)}...{address.slice(-4)}
+        </div>
+      )}
     </div>
   )
 }

@@ -4,10 +4,14 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "~/lib/utils"
 import { Button } from "~/components/ui/button"
-import { CheckSquare, CreditCard, HelpCircle, Home, ShoppingBag, User } from "lucide-react"
+import { CheckSquare, CreditCard, HelpCircle, Home, ShoppingBag, User, LogOut } from "lucide-react"
+import { useAccount, useDisconnect } from "wagmi"
+import ConnectButton from "~/components/connect-button"
 
 export function DesktopNav() {
   const pathname = usePathname()
+  const { address } = useAccount()
+  const { disconnect } = useDisconnect()
 
   const navItems = [
     {
@@ -42,7 +46,7 @@ export function DesktopNav() {
         <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
           <Home className="h-4 w-4 text-primary-foreground" />
         </div>
-        <h1 className="text-xl font-bold">EventBuddy</h1>
+        <h1 className="text-xl font-bold">Mivio</h1>
       </div>
 
       <nav className="space-y-2">
@@ -61,7 +65,29 @@ export function DesktopNav() {
         ))}
       </nav>
 
-      <div className="mt-auto">
+      <div className="mt-auto space-y-4">
+        {address ? (
+          <div className="px-3 py-2 space-y-2">
+            <div className="text-xs text-muted-foreground">Connected Wallet</div>
+            <div className="text-sm font-mono">
+              {address.slice(0, 6)}...{address.slice(-4)}
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full" 
+              onClick={() => disconnect()}
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Disconnect
+            </Button>
+          </div>
+        ) : (
+          <div className="px-3">
+            <ConnectButton />
+          </div>
+        )}
+        
         <Button variant="ghost" className="w-full justify-start gap-3">
           <HelpCircle className="h-5 w-5" />
           Help & Support
