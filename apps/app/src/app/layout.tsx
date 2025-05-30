@@ -1,20 +1,14 @@
-import type { Metadata } from "next";
-import { Nunito } from "next/font/google";
-import { PT_Sans } from "next/font/google";
-import "~/styles/globals.css";
-import { headers } from "next/headers";
-import { ContextProvider } from "~/WalletContext";
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import { headers } from "next/headers"
+import "./globals.css"
+import { ThemeProvider } from "~/components/theme-provider"
+import { ContextProvider } from "~/WalletContext"
 
-const nunito = Nunito({
-  variable: "--font-nunito",
-  subsets: ["latin"],
-});
-
-const ptSans = PT_Sans({
-  variable: "--font-pt-sans",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-});
+const inter = Inter({ subsets: ["latin"] })
+const nunito = Inter({ subsets: ["latin"], variable: "--font-nunito" })
+const ptSans = Inter({ subsets: ["latin"], variable: "--font-pt-sans" })
 
 export const metadata: Metadata = {
   title: "Mivio",
@@ -24,18 +18,20 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   const headersList = await headers();
   const cookies = headersList.get("cookie");
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${nunito.variable} ${ptSans.variable} antialiased relative`}
       >
         <div className="texture" />
-        <ContextProvider cookies={cookies}>{children}</ContextProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <ContextProvider cookies={cookies}>{children}</ContextProvider>
+        </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }
