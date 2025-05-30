@@ -5,6 +5,7 @@ import {
 	Calendar,
 	CheckSquare,
 	Lock,
+	type LucideIcon,
 	MapPin,
 	ShoppingBag,
 	Star,
@@ -40,7 +41,7 @@ type Event = {
 	highlights: {
 		title: string;
 		value: string;
-		icon: any;
+		icon: LucideIcon;
 	}[];
 };
 
@@ -123,7 +124,7 @@ export function PublicEventDetail({ eventSlug }: { eventSlug: string }) {
 		return (
 			<div className="flex min-h-screen items-center justify-center">
 				<div className="space-y-4 text-center">
-					<div className="mx-auto h-12 w-12 animate-spin rounded-full border-primary border-b-2"></div>
+					<div className="mx-auto h-12 w-12 animate-spin rounded-full border-primary border-b-2" />
 					<p className="text-muted-foreground">Loading event details...</p>
 				</div>
 			</div>
@@ -257,7 +258,7 @@ export function PublicEventDetail({ eventSlug }: { eventSlug: string }) {
 							<CardContent>
 								<ul className="space-y-3">
 									{event.features.map((feature, index) => (
-										<li key={index} className="flex items-start gap-3">
+										<li key={feature} className="flex items-start gap-3">
 											<CheckSquare className="mt-0.5 h-5 w-5 text-primary" />
 											<span>{feature}</span>
 										</li>
