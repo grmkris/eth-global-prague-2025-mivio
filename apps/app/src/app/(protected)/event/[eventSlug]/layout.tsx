@@ -1,14 +1,16 @@
 import { EventProvider } from "~/components/event-provider"
 
-export default function EventLayout({
+export default async function EventLayout({
   children,
   params,
 }: {
   children: React.ReactNode
-  params: { eventSlug: string }
+  params: Promise<{ eventSlug: string }>
 }) {
+  const { eventSlug } = await params
+  
   return (
-    <EventProvider eventSlug={params.eventSlug}>
+    <EventProvider eventSlug={eventSlug}>
       {children}
     </EventProvider>
   )

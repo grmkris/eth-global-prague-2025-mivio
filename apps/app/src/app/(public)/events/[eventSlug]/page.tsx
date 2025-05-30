@@ -1,9 +1,10 @@
 import { PublicEventDetail } from "~/components/public-event-detail"
 
-export default function PublicEventPage({
+export default async function PublicEventPage({
   params,
 }: {
-  params: { eventSlug: string }
+  params: Promise<{ eventSlug: string }>
 }) {
-  return <PublicEventDetail eventSlug={params.eventSlug} />
+  const { eventSlug } = await params
+  return <PublicEventDetail eventSlug={eventSlug} />
 } 

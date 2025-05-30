@@ -7,6 +7,7 @@ import { Button } from "~/components/ui/button"
 import { CheckSquare, CreditCard, HelpCircle, Home, ShoppingBag, User, LogOut, Calendar, ArrowLeft } from "lucide-react"
 import { useAccount, useDisconnect } from "wagmi"
 import ConnectButton from "~/components/connect-button"
+import { ThemeSwitcher } from "~/components/theme-switcher"
 
 export function DesktopNav() {
   const pathname = usePathname()
@@ -132,6 +133,10 @@ export function DesktopNav() {
           <HelpCircle className="h-5 w-5" />
           Help & Support
         </Button>
+        
+        <div className="px-3 flex justify-center">
+          <ThemeSwitcher />
+        </div>
       </div>
     </div>
   )
