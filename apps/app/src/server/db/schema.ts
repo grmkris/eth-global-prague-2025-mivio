@@ -394,9 +394,9 @@ export const announcements = createTable(
 		content: t.text(),
 		priority: t.varchar({ length: 20 }).default("normal").notNull(), // low, normal, high, urgent
 		publishedAt: t
-			.timestamp({ withTimezone: true })
-			.default(sql`CURRENT_TIMESTAMP`)
-			.notNull(),
+      .timestamp({ withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
 		expiresAt: t.timestamp({ withTimezone: true }),
 		createdBy: t
 			.integer()
