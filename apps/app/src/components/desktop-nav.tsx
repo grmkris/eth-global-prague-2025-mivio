@@ -4,39 +4,64 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "~/lib/utils"
 import { Button } from "~/components/ui/button"
-import { CheckSquare, CreditCard, HelpCircle, Home, ShoppingBag, User, LogOut } from "lucide-react"
+import { CheckSquare, CreditCard, HelpCircle, Home, ShoppingBag, User, LogOut, Calendar, ArrowLeft } from "lucide-react"
 import { useAccount, useDisconnect } from "wagmi"
 import ConnectButton from "~/components/connect-button"
+import { useEvent } from "~/components/event-provider"
 
 export function DesktopNav() {
   const pathname = usePathname()
   const { address } = useAccount()
   const { disconnect } = useDisconnect()
+  
+  // Try to get event context - will be undefined if not in an event route
+  let eventContext = null
+  try {
+    eventContext = useEvent()
+  } catch {
+    // Not in event context
+  }
 
-  const navItems = [
+  const isEventRoute = pathname.includes('/event/')
+  const eventSlug = isEventRoute ? pathname.split('/event/')[1]?.split('/')[0] : null
+
+  const navItems = eventContext?.event ? [
+    {
+      name: "Overview",
+      href: `/event/${eventContext.event.slug}`,
+      icon: Home,
+      active: pathname === `/event/${eventContext.event.slug}`,
+    },
     {
       name: "Tasks",
-      href: "/",
+      href: `/event/${eventContext.event.slug}/tasks`,
       icon: CheckSquare,
-      active: pathname === "/",
+      active: pathname === `/event/${eventContext.event.slug}/tasks`,
     },
     {
       name: "Wallet",
-      href: "/wallet",
+      href: `/event/${eventContext.event.slug}/wallet`,
       icon: CreditCard,
-      active: pathname === "/wallet",
+      active: pathname === `/event/${eventContext.event.slug}/wallet`,
     },
     {
       name: "Shop",
-      href: "/shop",
+      href: `/event/${eventContext.event.slug}/shop`,
       icon: ShoppingBag,
-      active: pathname === "/shop",
+      active: pathname === `/event/${eventContext.event.slug}/shop`,
     },
     {
       name: "Profile",
-      href: "/profile",
+      href: `/event/${eventContext.event.slug}/profile`,
       icon: User,
-      active: pathname === "/profile",
+      active: pathname === `/event/${eventContext.event.slug}/profile`,
+    },
+  ] : [
+    {
+      name: "Events",
+      href: "/events",
+      icon: Calendar,
+      active: pathname === "/events",
     },
   ]
 
@@ -48,6 +73,22 @@ export function DesktopNav() {
         </div>
         <h1 className="text-xl font-bold">Mivio</h1>
       </div>
+
+      {eventContext?.event && (
+        <div className="mb-6 px-2 pb-4 border-b">
+          <Link 
+            href="/events" 
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-2"
+          >
+            <ArrowLeft className="h-3 w-3" />
+            Change Event
+          </Link>
+          <div className="space-y-1">
+            <h2 className="font-semibold text-sm line-clamp-1">{eventContext.event.name}</h2>
+            <p className="text-xs text-muted-foreground line-clamp-1">{eventContext.event.location}</p>
+          </div>
+        </div>
+      )}
 
       <nav className="space-y-2">
         {navItems.map((item) => (

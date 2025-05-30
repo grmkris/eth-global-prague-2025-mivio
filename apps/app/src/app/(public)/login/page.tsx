@@ -13,7 +13,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (address) {
-      router.push("/")
+      router.push("/events")
     }
   }, [address, router])
 
@@ -29,7 +29,7 @@ export default function LoginPage() {
           </div>
           <CardTitle className="text-2xl font-bold">Welcome to Mivio</CardTitle>
           <CardDescription>
-            Connect your wallet to access your tasks and rewards
+            Connect your wallet to access events and start earning rewards
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center space-y-4">

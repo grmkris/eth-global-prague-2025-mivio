@@ -1,5 +1,5 @@
 import { ProfileDashboard } from "~/components/profile-dashboard"
 
-export default function ProfilePage() {
+export default function EventProfilePage() {
   return <ProfileDashboard />
-}
+} 

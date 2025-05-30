@@ -1,5 +1,5 @@
 import { ShopDashboard } from "~/components/shop-dashboard"
 
-export default function ShopPage() {
+export default function EventShopPage() {
   return <ShopDashboard />
-}
+} 

@@ -3,42 +3,79 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "~/lib/utils"
-import { CheckSquare, CreditCard, Home, ShoppingBag, User } from "lucide-react"
+import { CheckSquare, CreditCard, Home, ShoppingBag, User, Calendar } from "lucide-react"
 import { useAccount } from "wagmi"
+import { useEvent } from "~/components/event-provider"
 
 export function MobileNav() {
   const pathname = usePathname()
   const { address } = useAccount()
+  
+  // Try to get event context - will be undefined if not in an event route
+  let eventContext = null
+  try {
+    eventContext = useEvent()
+  } catch {
+    // Not in event context
+  }
 
-  const navItems = [
+  const navItems = eventContext?.event ? [
+    {
+      name: "Overview",
+      href: `/event/${eventContext.event.slug}`,
+      icon: Home,
+      active: pathname === `/event/${eventContext.event.slug}`,
+    },
     {
       name: "Tasks",
-      href: "/",
+      href: `/event/${eventContext.event.slug}/tasks`,
       icon: CheckSquare,
-      active: pathname === "/",
+      active: pathname === `/event/${eventContext.event.slug}/tasks`,
     },
     {
       name: "Wallet",
-      href: "/wallet",
+      href: `/event/${eventContext.event.slug}/wallet`,
       icon: CreditCard,
-      active: pathname === "/wallet",
+      active: pathname === `/event/${eventContext.event.slug}/wallet`,
     },
     {
       name: "Shop",
-      href: "/shop",
+      href: `/event/${eventContext.event.slug}/shop`,
       icon: ShoppingBag,
-      active: pathname === "/shop",
+      active: pathname === `/event/${eventContext.event.slug}/shop`,
     },
     {
       name: "Profile",
-      href: "/profile",
+      href: `/event/${eventContext.event.slug}/profile`,
       icon: User,
-      active: pathname === "/profile",
+      active: pathname === `/event/${eventContext.event.slug}/profile`,
+    },
+  ] : [
+    {
+      name: "Events",
+      href: "/events",
+      icon: Calendar,
+      active: pathname === "/events",
     },
   ]
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t">
+      {eventContext?.event && (
+        <div className="px-4 py-2 border-b bg-muted/50">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium truncate">{eventContext.event.name}</p>
+            </div>
+            <Link
+              href="/events"
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              Change
+            </Link>
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-around py-2">
         {navItems.map((item) => (
           <Link
