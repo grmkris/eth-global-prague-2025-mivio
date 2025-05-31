@@ -122,18 +122,18 @@ async function getFallbackUserData(nftId: string): Promise<UserData> {
 			avatar: getCharacterImage(nftId),
 		},
 		achievements: [
-			{ id: 1, name: "Festival Starter", icon: "🎵", earned: true },
-			{ id: 2, name: "Music Maven", icon: "🎧", earned: false, progress: 0.5 },
+			{ id: 1, name: "Coffee Connoisseur", icon: "☕", earned: true },
+			{ id: 2, name: "Art Explorer", icon: "🎨", earned: false, progress: 0.5 },
 		],
 		recentEvents: [
-			{ id: 1, name: "Sample Festival", status: "active", points: 1000 },
+			{ id: 1, name: "Coffee Festival", status: "active", points: 1000 },
 		],
 		stats: {
 			tasksCompleted: 10,
 			eventsAttended: 3,
 			totalSpent: 2500,
-			favoriteCategory: "Music",
-			favoriteGenre: "General",
+			favoriteCategory: "Coffee",
+			favoriteGenre: "Specialty",
 		},
 	};
 }
@@ -275,7 +275,7 @@ export async function GET(request: NextRequest) {
 								margin: "8px 0 0 0",
 							}}
 						>
-							Level {userData.user.level} • {userData.user.totalEvents} Festivals
+							Level {userData.user.level} • {userData.user.totalEvents} Events
 						</p>
 					</div>
 				</div>
@@ -294,10 +294,10 @@ export async function GET(request: NextRequest) {
 					}}
 				>
 					<div style={{ color: "#1e1b4b", fontSize: "12px", fontWeight: "bold", display: "flex" }}>
-						Music Pass #{nftId}
+						Event Pass #{nftId}
 					</div>
 					<div style={{ color: "#6b7280", fontSize: "10px", display: "flex" }}>
-						Mivio Festival
+						Mivio Events
 					</div>
 				</div>
 			</div>
@@ -337,7 +337,7 @@ export async function GET(request: NextRequest) {
 								margin: "0 0 10px 0",
 							}}
 						>
-							Festival Points
+							Event Points
 						</h3>
 						<div
 							style={{ color: "white", fontSize: "36px", fontWeight: "bold" }}
@@ -365,7 +365,7 @@ export async function GET(request: NextRequest) {
 								margin: "0 0 20px 0",
 							}}
 						>
-							Recent Festivals
+							Recent Events
 						</h3>
 						<div
 							style={{ display: "flex", flexDirection: "column", gap: "12px" }}

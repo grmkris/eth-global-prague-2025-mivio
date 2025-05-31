@@ -37,7 +37,7 @@ type Transaction = {
 export default function AdminPOSPage() {
 	const [amount, setAmount] = useState("");
 	const [description, setDescription] = useState("");
-	const [vendor, setVendor] = useState("Festival Vendor");
+	const [vendor, setVendor] = useState("Coffee Vendor");
 	const [showQRModal, setShowQRModal] = useState(false);
 	const [currentTransaction, setCurrentTransaction] =
 		useState<Transaction | null>(null);
@@ -45,24 +45,24 @@ export default function AdminPOSPage() {
 		{
 			id: "txn-1",
 			amount: 200,
-			description: "Artisan meal combo",
-			vendor: "Gourmet Food Truck",
+			description: "Specialty coffee flight",
+			vendor: "Tasting Bar",
 			timestamp: new Date(Date.now() - 30 * 60000),
 			status: "paid",
 		},
 		{
 			id: "txn-2",
 			amount: 150,
-			description: "Craft festival drinks",
-			vendor: "Brew Station",
+			description: "Coffee brewing kit",
+			vendor: "Equipment Shop",
 			timestamp: new Date(Date.now() - 45 * 60000),
 			status: "paid",
 		},
 		{
 			id: "txn-3",
 			amount: 350,
-			description: "VIP area upgrade",
-			vendor: "Premium Services",
+			description: "Barista masterclass ticket",
+			vendor: "Workshop Center",
 			timestamp: new Date(Date.now() - 60 * 60000),
 			status: "pending",
 		},
@@ -94,7 +94,7 @@ export default function AdminPOSPage() {
 			transactionId: transaction.id,
 			amount: transaction.amount,
 			vendor: transaction.vendor,
-			eventSlug: "summer-music-fest-2025",
+			eventSlug: "coffee-festival-2025",
 			description: transaction.description,
 		});
 	};

@@ -60,52 +60,77 @@ export function PublicEventDetail({ eventSlug }: { eventSlug: string }) {
 			const events: Event[] = [
 				{
 					id: "1",
-					slug: "summer-music-fest-2025",
-					name: "Summer Music Festival 2025",
+					slug: "coffee-festival-2025",
+					name: "International Coffee Festival 2025",
 					description:
-						"The ultimate 3-day music experience featuring top artists across multiple genres. Dance, sing, and create memories with music lovers from around the world. Enjoy multiple stages, food trucks, and exclusive artist meet & greets.",
-					location: "Central Park, New York",
-					startDate: "2025-07-18",
-					endDate: "2025-07-20",
-					bannerImage: "/placeholder.svg?height=400&width=800",
+						"Immerse yourself in the world of specialty coffee. Taste exotic blends from around the globe, learn brewing techniques from master baristas, participate in cupping sessions, and discover the latest innovations in coffee culture.",
+					location: "Convention Center, Seattle",
+					startDate: "2025-09-12",
+					endDate: "2025-09-14",
+					bannerImage: "/coffee_festival.png",
 					status: "active",
 					features: [
-						"Complete challenges to earn EventCoins",
-						"Exchange coins for food, drinks, and exclusive merchandise",
-						"Track your progress and unlock special achievements",
-						"Connect with 25,000+ music fans and artists",
-						"Access exclusive artist meet & greets and VIP areas",
+						"Complete tasting challenges to earn EventCoins",
+						"Exchange coins for premium coffee samples and merchandise",
+						"Track your coffee journey and unlock barista achievements",
+						"Connect with 15,000+ coffee enthusiasts and roasters",
+						"Access exclusive masterclasses and latte art workshops",
 					],
 					highlights: [
-						{ title: "Artists", value: "100+", icon: Trophy },
-						{ title: "Attendees", value: "25,000+", icon: Users },
-						{ title: "Food Vendors", value: "30+", icon: Star },
-						{ title: "Stages", value: "5", icon: CheckSquare },
+						{ title: "Roasters", value: "200+", icon: Trophy },
+						{ title: "Attendees", value: "15,000+", icon: Users },
+						{ title: "Coffee Origins", value: "50+", icon: Star },
+						{ title: "Workshops", value: "30+", icon: CheckSquare },
 					],
 				},
 				{
 					id: "2",
-					slug: "indie-rock-weekend",
-					name: "Indie Rock Weekend",
+					slug: "digital-art-exhibition",
+					name: "Digital Art Exhibition",
 					description:
-						"Discover emerging indie artists and enjoy craft food & drinks in an intimate outdoor setting. Experience the best of indie rock with curated performances and artisanal vendors.",
-					location: "Golden Gate Park, San Francisco",
-					startDate: "2025-08-15",
-					endDate: "2025-08-17",
-					bannerImage: "/placeholder.svg?height=400&width=800",
+						"Experience the cutting edge of digital creativity. Explore immersive installations, interactive NFT galleries, AI-generated art, and virtual reality experiences that push the boundaries of artistic expression.",
+					location: "Modern Art Museum, San Francisco",
+					startDate: "2025-10-05",
+					endDate: "2025-10-20",
+					bannerImage: "/digital_art_exhibition.png",
 					status: "upcoming",
 					features: [
-						"Discover new artists on intimate stages",
-						"Earn rewards for exploring different venues",
-						"Access craft beer and artisanal food vendors",
-						"Collect limited edition band merchandise",
-						"Join acoustic sessions and songwriter circles",
+						"Scan QR codes at installations to collect digital tokens",
+						"Redeem tokens for exclusive digital artworks and prints",
+						"Participate in interactive art creation experiences",
+						"Meet digital artists and tech innovators",
+						"Access VR art galleries and AR exhibitions",
 					],
 					highlights: [
-						{ title: "Bands", value: "50+", icon: Users },
-						{ title: "Craft Vendors", value: "20+", icon: MapPin },
-						{ title: "Sessions", value: "15+", icon: CheckSquare },
-						{ title: "Local Artists", value: "25+", icon: Star },
+						{ title: "Artists", value: "80+", icon: Users },
+						{ title: "Installations", value: "40+", icon: MapPin },
+						{ title: "VR Experiences", value: "15+", icon: CheckSquare },
+						{ title: "Daily Visitors", value: "500+", icon: Star },
+					],
+				},
+				{
+					id: "3",
+					slug: "synthwave-fest",
+					name: "Synthwave Festival",
+					description:
+						"Step into a neon-lit retro-futuristic paradise. Dance to pulsating electronic beats, enjoy stunning laser shows, embrace 80s aesthetics, and lose yourself in the nostalgic world of synthwave culture.",
+					location: "Warehouse District, Los Angeles",
+					startDate: "2025-08-23",
+					endDate: "2025-08-24",
+					bannerImage: "/synthwave_festival.png",
+					status: "upcoming",
+					features: [
+						"Complete dance floor challenges for EventCoins",
+						"Exchange coins for retro merchandise and neon accessories",
+						"Unlock exclusive DJ sets and VIP areas",
+						"Connect with 20,000+ synthwave enthusiasts",
+						"Participate in retro arcade tournaments",
+					],
+					highlights: [
+						{ title: "DJs & Artists", value: "50+", icon: Trophy },
+						{ title: "Attendees", value: "20,000+", icon: Users },
+						{ title: "Light Shows", value: "10+", icon: Star },
+						{ title: "Arcade Games", value: "25+", icon: CheckSquare },
 					],
 				},
 			];
@@ -355,7 +380,11 @@ export function PublicEventDetail({ eventSlug }: { eventSlug: string }) {
 								</div>
 								<div className="flex items-center justify-between text-sm">
 									<span className="text-muted-foreground">Type</span>
-									<span className="font-medium">Music Festival</span>
+									<span className="font-medium capitalize">
+										{event.slug.includes("coffee") ? "Festival" : 
+										 event.slug.includes("art") ? "Exhibition" : 
+										 event.slug.includes("synthwave") ? "Music Festival" : "Event"}
+									</span>
 								</div>
 							</CardContent>
 						</Card>
