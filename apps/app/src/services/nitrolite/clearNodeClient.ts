@@ -2,6 +2,8 @@ import {
 	createAuthRequestMessage,
 	createAuthVerifyMessage,
 	createAuthVerifyMessageWithJWT,
+	type ResponsePayload,
+	type RequestData,
 } from "@erc7824/nitrolite";
 import type { WalletClient } from "viem";
 
@@ -56,7 +58,7 @@ export class ClearNodeClient {
 	private reconnectAttempts = 0;
 	private reconnectTimeout: NodeJS.Timeout | null = null;
 	private statusHandlers: ((status: WSStatus) => void)[] = [];
-	private messageHandlers: ((message: unknown) => void)[] = [];
+	private messageHandlers: ((message: ResponsePayload) => void)[] = [];
 	private pendingRequests = new Map<
 		number,
 		{ resolve: (value: unknown) => void; reject: (reason: Error) => void }
@@ -176,30 +178,49 @@ export class ClearNodeClient {
 			}, this.options.requestTimeout);
 
 			const handleAuthResponse = async (event: MessageEvent) => {
-				const response = JSON.parse(event.data) as {
-					res?: [number, string, unknown[]];
-					err?: [number, string, unknown[]];
-				};
+				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+				let response: any;
+				
+				try {
+					response = JSON.parse(event.data);
+				} catch (error) {
+					// Skip invalid messages
+					return;
+				}
+
+				console.log("Auth response received:", response);
 
 				try {
 					if (response.res && response.res[1] === "auth_challenge") {
-						// Create EIP-712 signer
+						// Create EIP-712 signer function that properly extracts the challenge
 						const eip712Signer = async (
 							data: unknown,
 						): Promise<`0x${string}`> => {
-							// Extract challenge from response
-							const challenge = (
-								response.res?.[2]?.[0] as {
-									challenge_message: string;
-								}
-							)?.challenge_message;
+							console.log("Creating EIP-712 signature for data:", data);
+							
+							let challengeUUID = "";
 
-							if (!challenge) {
-								throw new Error("Challenge message not found");
+							// The data passed to this function is the raw event.data string
+							// We need to extract the challenge from the parsed response
+							if (response.res?.[2]?.challenge_message) {
+								challengeUUID = response.res[2].challenge_message;
+							} else if (response.res?.[2]?.challenge) {
+								challengeUUID = response.res[2].challenge;
+							} else if (response.res?.[2]?.[0]?.challenge_message) {
+								challengeUUID = response.res[2][0].challenge_message;
+							} else if (response.res?.[2]?.[0]?.challenge) {
+								challengeUUID = response.res[2][0].challenge;
 							}
 
+							if (!challengeUUID) {
+								console.error("Could not extract challenge from response:", response);
+								throw new Error("Challenge not found in response");
+							}
+
+							console.log("Extracted challenge UUID:", challengeUUID);
+
 							const message = {
-								challenge,
+								challenge: challengeUUID,
 								scope: "events",
 								wallet: walletAddress,
 								application: walletAddress,
@@ -208,37 +229,50 @@ export class ClearNodeClient {
 								allowances: [],
 							};
 
+							console.log("EIP-712 message to sign:", message);
+
 							if (!walletClient.account) {
 								throw new Error("Wallet account not found");
 							}
 
-							const signature = await walletClient.signTypedData({
-								account: walletClient.account,
-								domain: AUTH_DOMAIN,
-								types: AUTH_TYPES,
-								primaryType: "Policy",
-								message,
-							});
+							try {
+								const signature = await walletClient.signTypedData({
+									account: walletClient.account,
+									domain: AUTH_DOMAIN,
+									types: AUTH_TYPES,
+									primaryType: "Policy",
+									message,
+								});
 
-							return signature;
+								console.log("EIP-712 signature generated:", signature);
+								return signature;
+							} catch (eip712Error) {
+								console.error("EIP-712 signing failed:", eip712Error);
+								// Fallback to regular message signing
+								const fallbackMessage = `Authentication challenge for ${walletAddress}: ${challengeUUID}`;
+								const fallbackSignature = await walletClient.signMessage({
+									message: fallbackMessage,
+									account: walletClient.account,
+								});
+								console.log("Fallback signature generated");
+								return fallbackSignature as `0x${string}`;
+							}
 						};
 
-						// Send auth verify
+						// Send auth verify with the raw event data
 						const authVerify = await createAuthVerifyMessage(
 							eip712Signer,
 							event.data,
 						);
+						console.log("Sending auth_verify message");
 						this.ws?.send(authVerify);
-					} else if (response.res && response.res[1] === "auth_success") {
+					} else if (response.res && (response.res[1] === "auth_verify" || response.res[1] === "auth_success")) {
+						console.log("Authentication successful");
 						// Store JWT if provided
-						if (
-							(response.res[2]?.[0] as { jwt_token: string })?.jwt_token &&
-							typeof window !== "undefined"
-						) {
-							window.localStorage?.setItem(
-								"clearnode_jwt",
-								(response.res[2]?.[0] as { jwt_token: string })?.jwt_token,
-							);
+						const jwtToken = response.res[2]?.[0]?.jwt_token || response.res[2]?.[0]?.jwt_token;
+						if (jwtToken && typeof window !== "undefined") {
+							console.log("Storing JWT token");
+							window.localStorage?.setItem("clearnode_jwt", jwtToken);
 						}
 
 						clearTimeout(authTimeout);
@@ -246,10 +280,15 @@ export class ClearNodeClient {
 						resolve();
 					} else if (
 						response.err ||
-						(response.res && response.res[1] === "auth_failure")
+						(response.res && response.res[1] === "auth_failure") ||
+						(response.res && response.res[1] === "error")
 					) {
 						const errorMsg =
-							response.err?.[2] || response.res?.[2] || "Authentication failed";
+							response.err?.[2] || 
+							response.res?.[2]?.[0]?.error || 
+							response.res?.[2] || 
+							"Authentication failed";
+						console.error("Authentication failed:", errorMsg);
 						if (typeof window !== "undefined") {
 							window.localStorage?.removeItem("clearnode_jwt");
 						}
@@ -258,6 +297,7 @@ export class ClearNodeClient {
 						reject(new Error(String(errorMsg)));
 					}
 				} catch (error) {
+					console.error("Error in auth response handler:", error);
 					clearTimeout(authTimeout);
 					this.ws?.removeEventListener("message", handleAuthResponse);
 					reject(error);
@@ -273,23 +313,30 @@ export class ClearNodeClient {
 	 */
 	private handleMessage(event: MessageEvent): void {
 		const message = JSON.parse(event.data) as {
-			res?: [number, string, unknown[]];
-			err?: [number, string, unknown[]];
+			res?: ResponsePayload;
+			err?: [number, string, unknown];
 		};
+
+		console.log("Received message:", message);
 
 		// Notify message handlers
 		for (const handler of this.messageHandlers) {
+			console.log("Handling message:", message);
 			handler(message);
 		}
 
 		// Handle RPC responses
-
 		if (message.res && Array.isArray(message.res) && message.res.length >= 3) {
 			const requestId = message.res[0];
+			const method = message.res[1];
+			const data = message.res[2];
+
+			console.log(`Response for ${method} (ID: ${requestId})`);
+
 			if (this.pendingRequests.has(requestId)) {
 				const request = this.pendingRequests.get(requestId);
 				if (request) {
-					request.resolve(message.res[2]);
+					request.resolve(data);
 				}
 				this.pendingRequests.delete(requestId);
 			}
@@ -298,7 +345,11 @@ export class ClearNodeClient {
 		// Handle errors
 		if (message.err && Array.isArray(message.err) && message.err.length >= 3) {
 			const requestId = message.err[0];
-			const errorMessage = `Error ${message.err[1]}: ${message.err[2]}`;
+			const errorCode = message.err[1];
+			const errorDetails = message.err[2];
+			const errorMessage = `Error ${errorCode}: ${JSON.stringify(errorDetails)}`;
+
+			console.error(`Error response (ID: ${requestId}):`, errorMessage);
 
 			if (this.pendingRequests.has(requestId)) {
 				const request = this.pendingRequests.get(requestId);
@@ -417,7 +468,7 @@ export class ClearNodeClient {
 	/**
 	 * Register message handler
 	 */
-	onMessage(handler: (message: unknown) => void): () => void {
+	onMessage(handler: (message: RequestData | ResponsePayload) => void): () => void {
 		this.messageHandlers.push(handler);
 		return () => {
 			this.messageHandlers = this.messageHandlers.filter((h) => h !== handler);

@@ -1,9 +1,9 @@
 "use client";
 
-import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { WalletClient } from "viem";
 import { keccak256, toBytes, toHex } from "viem";
+import { createAppSessionMessage, type RequestData, type ResponsePayload } from "@erc7824/nitrolite";
 import {
 	type WSStatus,
 	getClearNodeClient,
@@ -12,12 +12,13 @@ import { api } from "~/trpc/react";
 
 interface UseEventSessionOptions {
 	walletAddress: `0x${string}` | undefined;
-	walletClient: WalletClient | undefined;
+	walletClient: WalletClient;
 	eventSlug: string;
 }
 
 interface SessionInfo {
 	sessionId: string;
+	appSessionId?: string;
 	status: "open" | "closed" | "settling";
 	participant: string;
 	eventSlug: string;
@@ -31,22 +32,52 @@ const getStorageKey = (eventSlug: string, key: string) =>
 	`nitrolite_session_${eventSlug}_${key}`;
 
 // Helper to create signed requests
-const createSignedRequest = async (
-	signer: (payload: unknown) => Promise<string>,
-	method: string,
-	params: unknown[] = [],
-): Promise<string> => {
+const createSignedRequest = async (props: {
+	signer: (props: {
+		payload: unknown;
+		walletClient: WalletClient;
+	}) => Promise<string>;
+	method: string;
+	params: unknown[];
+	walletClient: WalletClient;
+}): Promise<string> => {
+	const { signer, method, params, walletClient } = props;
 	const requestId = Date.now();
-	const timestamp = Math.floor(Date.now() / 1000);
+	const timestamp = Date.now();
 	const requestData = [requestId, method, params, timestamp];
 	const request: { req: unknown[]; sig?: string[] } = { req: requestData };
 
 	// Sign the request
-	const signature = await signer(request);
+	const signature = await signer({
+		payload: request,
+		walletClient: walletClient,
+	});
 
 	request.sig = [signature];
 
 	return JSON.stringify(request);
+};
+
+// Message signer for ClearNode requests
+const messageSigner = async (props: {
+	payload: unknown;
+	walletClient: WalletClient;
+}) => {
+	const { payload, walletClient } = props;
+	if (!walletClient || !walletClient.account) {
+		throw new Error("Wallet not connected");
+	}
+
+	const message = JSON.stringify(payload);
+	const digestHex = keccak256(toHex(message));
+	const messageBytes = toBytes(digestHex);
+
+	const signature = await walletClient.signMessage({
+		account: walletClient.account,
+		message: { raw: messageBytes },
+	});
+
+	return signature;
 };
 
 export function useEventSession(options: UseEventSessionOptions) {
@@ -63,32 +94,12 @@ export function useEventSession(options: UseEventSessionOptions) {
 	const clearNodeClient = useRef(getClearNodeClient());
 	const unsubscribeStatusRef = useRef<(() => void) | null>(null);
 	const unsubscribeMessageRef = useRef<(() => void) | null>(null);
+	const hasManuallyConnectedRef = useRef(false);
 
 	// Check if user has joined the event
 	const { data: participantStats } = api.event.getParticipantStats.useQuery(
 		{ eventSlug, walletAddress: walletAddress ?? ("" as `0x${string}`) },
 		{ enabled: !!eventSlug && !!walletAddress },
-	);
-
-	// Message signer for ClearNode requests
-	const messageSigner = useCallback(
-		async (payload: unknown) => {
-			if (!walletClient || !walletClient.account) {
-				throw new Error("Wallet not connected");
-			}
-
-			const message = JSON.stringify(payload);
-			const digestHex = keccak256(toHex(message));
-			const messageBytes = toBytes(digestHex);
-
-			const signature = await walletClient.signMessage({
-				account: walletClient.account,
-				message: { raw: messageBytes },
-			});
-
-			return signature;
-		},
-		[walletClient],
 	);
 
 	// Load saved session on mount
@@ -141,6 +152,9 @@ export function useEventSession(options: UseEventSessionOptions) {
 				walletClient,
 			});
 
+			// Mark that user has manually connected
+			hasManuallyConnectedRef.current = true;
+
 			// Request session info after connection
 			await requestSessionInfo();
 		} catch (err) {
@@ -167,7 +181,7 @@ export function useEventSession(options: UseEventSessionOptions) {
 				// Handle session-specific messages
 				if (message.res && message.res[1] === "get_sessions") {
 					handleSessionsResponse(message.res[2]);
-				} else if (message.res && message.res[1] === "create_session") {
+				} else if (message.res && message.res[1] === "create_app_session") {
 					handleCreateSessionResponse(message.res[2]);
 				} else if (message.res && message.res[1] === "get_session_balance") {
 					handleBalanceResponse(message.res[2]);
@@ -175,10 +189,7 @@ export function useEventSession(options: UseEventSessionOptions) {
 			},
 		);
 
-		// Connect if we have the required params
-		if (walletAddress && walletClient && eventSlug) {
-			connectToClearNode();
-		}
+		// Don't connect automatically - let user manually connect via button
 
 		// Cleanup on unmount
 		return () => {
@@ -189,25 +200,30 @@ export function useEventSession(options: UseEventSessionOptions) {
 				unsubscribeMessageRef.current();
 			}
 		};
-	}, [walletAddress, walletClient, eventSlug, connectToClearNode]);
+	}, []);
 
 	// Request session information
 	const requestSessionInfo = useCallback(async () => {
 		if (!walletAddress || !clearNodeClient.current.isConnected) return;
 
 		try {
-			const request = await createSignedRequest(messageSigner, "get_sessions", [
-				{
-					event_slug: eventSlug,
-					participant: walletAddress,
-				},
-			]);
+			const request = await createSignedRequest({
+				signer: messageSigner,
+				method: "get_sessions",
+				params: [
+					{
+						event_slug: eventSlug,
+						participant: walletAddress,
+					},
+				],
+				walletClient,
+			});
 
 			await clearNodeClient.current.sendRequest(request);
 		} catch (err) {
 			console.error("Failed to request session info:", err);
 		}
-	}, [walletAddress, eventSlug, messageSigner]);
+	}, [walletAddress, eventSlug, walletClient]);
 
 	// Handle sessions response
 	const handleSessionsResponse = useCallback(
@@ -228,7 +244,8 @@ export function useEventSession(options: UseEventSessionOptions) {
 			);
 			if (eventSession) {
 				const sessionData: SessionInfo = {
-					sessionId: eventSession.session_id,
+					sessionId: eventSession.session_id || eventSession.app_session_id,
+					appSessionId: eventSession.app_session_id,
 					status: eventSession.status,
 					participant: eventSession.participant,
 					eventSlug: eventSession.event_slug,
@@ -263,7 +280,7 @@ export function useEventSession(options: UseEventSessionOptions) {
 
 			const sessionData = data[0];
 			if (!sessionData) {
-				setError("Failed to create session");
+				setError("Failed to create application session");
 				return;
 			}
 
@@ -272,9 +289,17 @@ export function useEventSession(options: UseEventSessionOptions) {
 				return;
 			}
 
+			// Extract app_session_id from response
+			const appSessionId = sessionData.app_session_id || sessionData.appSessionId;
+			if (!appSessionId) {
+				setError("No app session ID in response");
+				return;
+			}
+
 			const newSession: SessionInfo = {
-				sessionId: sessionData.session_id,
-				status: "open",
+				sessionId: appSessionId, // Use app_session_id as the main identifier
+				appSessionId: appSessionId,
+				status: sessionData.status || "open",
 				participant: walletAddress,
 				eventSlug: eventSlug,
 				balance: "0.00",
@@ -356,36 +381,96 @@ export function useEventSession(options: UseEventSessionOptions) {
 		}
 
 		try {
-			const request = await createSignedRequest(
-				messageSigner,
-				"create_session",
+			// Define the application parameters (matching tictactoe example)
+			const eventOrganizerAddress = "0x81d786b35f3EA2F39Aa17cb18d9772E4EcD97206" as `0x${string}`;
+			
+			const appDefinition = {
+				protocol: "app_aura_nitrolite_v0", // Use the same protocol as tictactoe
+				participants: [walletAddress, eventOrganizerAddress], // User and event organizer
+				weights: [100, 0], // User has full control for their transactions
+				quorum: 100, // Required consensus percentage
+				challenge: 0, // No challenge period
+				nonce: Date.now(), // Unique identifier
+			};
+
+			// Define allocations
+			const allocations = [
+				{
+					participant: walletAddress,
+					asset: "usdc", // Using 'usdc' as asset identifier
+					amount: "0", // Start with 0 balance
+				},
+				{
+					participant: eventOrganizerAddress,
+					asset: "usdc",
+					amount: "0", // Organizer starts with 0
+				},
+			];
+
+			// Create signer compatible with createAppSessionMessage
+			const signer = {
+				sign: async (payload: RequestData | ResponsePayload) => {
+					return messageSigner({ payload, walletClient });
+				},
+			};
+
+			// Create a signed message using the createAppSessionMessage helper
+			const signedMessage = await createAppSessionMessage(
+				signer.sign,
 				[
 					{
-						event_slug: eventSlug,
-						participant: walletAddress,
-						initial_balance: "0",
-						metadata: {
-							created_by: "mivio_event_app",
-							event_slug: eventSlug,
-						},
+						definition: appDefinition,
+						allocations: allocations,
 					},
 				],
 			);
 
-			await clearNodeClient.current.sendRequest(request);
+			// Send the message and wait for response
+			const response = await new Promise<unknown[]>((resolve, reject) => {
+				const handleResponse = (message: { res?: unknown[]; err?: unknown[] }) => {
+					try {
+						// Check if this is an app session response
+						if (message.res && (message.res[1] === 'create_app_session' || 
+						                   message.res[1] === 'app_session_created')) {
+							resolve(message.res[2] as unknown[]); // The app session data should be in the 3rd position
+						}
+						
+						// Also check for error responses
+						if (message.err) {
+							reject(new Error(`Error ${message.err[1]}: ${JSON.stringify(message.err[2])}`));
+						}
+					} catch (error) {
+						console.error('Error handling app session response:', error);
+					}
+				};
+				
+				// Add message handler
+				const unsubscribe = clearNodeClient.current.onMessage(handleResponse as (message: unknown) => void);
+				
+				// Send the request
+				clearNodeClient.current.sendRequest(signedMessage).catch(reject);
+				
+				// Set timeout to prevent hanging
+				setTimeout(() => {
+					unsubscribe();
+					reject(new Error('App session creation timeout'));
+				}, 10000);
+			});
+
+			// Handle the response
+			if (response && Array.isArray(response) && response[0]) {
+				handleCreateSessionResponse(response);
+			} else {
+				throw new Error("Invalid response format");
+			}
 		} catch (err) {
-			console.error("Failed to create session:", err);
-			setError(err instanceof Error ? err.message : "Failed to create session");
+			console.error("Failed to create application session:", err);
+			setError(
+				err instanceof Error ? err.message : "Failed to create application session",
+			);
 			setIsLoading(false);
 		}
-	}, [
-		walletAddress,
-		walletClient,
-		eventSlug,
-		sessionInfo,
-		messageSigner,
-		connectToClearNode,
-	]);
+	}, [walletAddress, walletClient, eventSlug, sessionInfo, connectToClearNode, handleCreateSessionResponse]);
 
 	// Update balance
 	const updateBalance = useCallback(async () => {
@@ -397,22 +482,23 @@ export function useEventSession(options: UseEventSessionOptions) {
 			return;
 
 		try {
-			const request = await createSignedRequest(
-				messageSigner,
-				"get_session_balance",
-				[
+			const request = await createSignedRequest({
+				signer: messageSigner,
+				method: "get_session_balance",
+				params: [
 					{
 						session_id: sessionInfo.sessionId,
 						participant: walletAddress,
 					},
 				],
-			);
+				walletClient,
+			});
 
 			await clearNodeClient.current.sendRequest(request);
 		} catch (err) {
 			console.error("Failed to update balance:", err);
 		}
-	}, [sessionInfo, walletAddress, messageSigner]);
+	}, [sessionInfo, walletAddress, walletClient]);
 
 	// Send payment through session
 	const sendPayment = useCallback(
@@ -427,10 +513,10 @@ export function useEventSession(options: UseEventSessionOptions) {
 			}
 
 			try {
-				const request = await createSignedRequest(
-					messageSigner,
-					"session_transfer",
-					[
+				const request = await createSignedRequest({
+					signer: messageSigner,
+					method: "session_transfer",
+					params: [
 						{
 							session_id: sessionInfo.sessionId,
 							from: walletAddress,
@@ -440,7 +526,8 @@ export function useEventSession(options: UseEventSessionOptions) {
 							timestamp: Date.now(),
 						},
 					],
-				);
+					walletClient,
+				});
 
 				const result = await clearNodeClient.current.sendRequest(request);
 
@@ -454,7 +541,7 @@ export function useEventSession(options: UseEventSessionOptions) {
 				return null;
 			}
 		},
-		[sessionInfo, walletAddress, messageSigner, updateBalance],
+		[sessionInfo, walletAddress, walletClient, updateBalance],
 	);
 
 	// Auto-create session if user has joined event but no session
@@ -465,7 +552,8 @@ export function useEventSession(options: UseEventSessionOptions) {
 			!isLoading &&
 			walletAddress &&
 			walletClient &&
-			connectionStatus === "connected"
+			connectionStatus === "connected" &&
+			hasManuallyConnectedRef.current // Only auto-create after manual connection
 		) {
 			createSession();
 		}

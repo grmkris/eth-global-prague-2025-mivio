@@ -50,22 +50,21 @@ export function NitroliteTestDashboard({
 	const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
 	const [paymentError, setPaymentError] = useState<string | null>(null);
 
-		// Use the event session hook
-		const {
-			sessionInfo,
-			isSessionOpen,
-			offchainBalance,
-			isLoading,
-			error,
-			connectionStatus,
-			isConnected,
-			createSession,
-			updateBalance,
-			sendPayment,
-			connectToClearNode,
-		} = useEventSession({ walletAddress, walletClient, eventSlug });
+	// Use the event session hook
+	const {
+		sessionInfo,
+		isSessionOpen,
+		offchainBalance,
+		isLoading,
+		error,
+		connectionStatus,
+		isConnected,
+		createSession,
+		updateBalance,
+		sendPayment,
+		connectToClearNode,
+	} = useEventSession({ walletAddress, walletClient, eventSlug });
 
-		
 	// Check if wallet is connected
 	if (!walletAddress || !walletClient) {
 		return (
@@ -165,7 +164,9 @@ export function NitroliteTestDashboard({
 				<CardHeader>
 					<CardTitle>Connection Status</CardTitle>
 					<CardDescription>
-						ClearNode WebSocket connection and session information
+						{!isConnected
+							? "Connect to ClearNode to enable off-chain payments"
+							: "ClearNode WebSocket connection and session information"}
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
@@ -182,6 +183,16 @@ export function NitroliteTestDashboard({
 							</Badge>
 						</div>
 					</div>
+
+					{!isConnected && (
+						<Alert>
+							<Wifi className="h-4 w-4" />
+							<AlertDescription>
+								Click the button below to establish a connection to ClearNode and
+								enable off-chain payment capabilities.
+							</AlertDescription>
+						</Alert>
+					)}
 
 					{sessionInfo && (
 						<>
@@ -205,20 +216,22 @@ export function NitroliteTestDashboard({
 						</>
 					)}
 
-					<div className="flex items-center justify-between">
-						<span className="font-medium text-sm">Off-chain Balance:</span>
-						<div className="flex items-center gap-2">
-							<span className="font-bold">${offchainBalance}</span>
-							<Button
-								size="sm"
-								variant="ghost"
-								onClick={updateBalance}
-								disabled={!isSessionOpen}
-							>
-								<RefreshCw className="h-3 w-3" />
-							</Button>
+					{isConnected && (
+						<div className="flex items-center justify-between">
+							<span className="font-medium text-sm">Off-chain Balance:</span>
+							<div className="flex items-center gap-2">
+								<span className="font-bold">${offchainBalance}</span>
+								<Button
+									size="sm"
+									variant="ghost"
+									onClick={updateBalance}
+									disabled={!isSessionOpen}
+								>
+									<RefreshCw className="h-3 w-3" />
+								</Button>
+							</div>
 						</div>
-					</div>
+					)}
 
 					{error && (
 						<Alert variant="destructive">
@@ -233,7 +246,9 @@ export function NitroliteTestDashboard({
 								onClick={connectToClearNode}
 								disabled={!walletAddress || !walletClient}
 								className="flex-1"
+								size="lg"
 							>
+								<Wifi className="mr-2 h-4 w-4" />
 								Connect to ClearNode
 							</Button>
 						)}
@@ -243,6 +258,7 @@ export function NitroliteTestDashboard({
 								onClick={createSession}
 								disabled={isLoading}
 								className="flex-1"
+								size="lg"
 							>
 								{isLoading ? (
 									<>
@@ -250,9 +266,19 @@ export function NitroliteTestDashboard({
 										Creating Session...
 									</>
 								) : (
-									"Create Session"
+									<>
+										<CheckCircle2 className="mr-2 h-4 w-4" />
+										Create Payment Session
+									</>
 								)}
 							</Button>
+						)}
+
+						{isConnected && isSessionOpen && (
+							<div className="flex items-center justify-center gap-2 text-green-600 dark:text-green-500 text-sm">
+								<CheckCircle2 className="h-4 w-4" />
+								Session active - Ready for payments
+							</div>
 						)}
 					</div>
 				</CardContent>

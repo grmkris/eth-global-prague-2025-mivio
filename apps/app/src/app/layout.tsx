@@ -29,15 +29,15 @@ export default async function RootLayout({
 				className={`${nunito.variable} ${ptSans.variable} relative antialiased`}
 			>
 				<div className="texture" />
-				<TRPCReactProvider>	
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-				>
-					<ContextProvider cookies={cookies}>{children}</ContextProvider>
-				</ThemeProvider>
+				<TRPCReactProvider>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						<ContextProvider cookies={cookies}>{children}</ContextProvider>
+					</ThemeProvider>
 				</TRPCReactProvider>
 			</body>
 		</html>
