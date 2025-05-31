@@ -1,8 +1,8 @@
 "use client";
 
-import { CheckCircle2, MapPin, QrCode, Trophy } from "lucide-react";
+import { CheckCircle2, MapPin, QrCode, Trophy, Mail } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RewardModal } from "~/components/reward-modal";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -16,6 +16,14 @@ import {
 } from "~/components/ui/card";
 import { Progress } from "~/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { useEmailProofVerification } from "~/hooks/useEmailProofVerification";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "~/components/ui/dialog";
 
 type Task = {
 	id: string;
@@ -26,7 +34,7 @@ type Task = {
 	rewardType: "token" | "badge" | "perk";
 	progress: number;
 	completed: boolean;
-	type: "visit" | "scan" | "interact";
+	type: "visit" | "scan" | "interact" | "verify";
 };
 
 export function MicrotaskDashboard() {
@@ -34,7 +42,22 @@ export function MicrotaskDashboard() {
 	const params = useParams();
 	const eventSlug = params.eventSlug as string;
 
+	const [showEmailModal, setShowEmailModal] = useState(false);
+	const [emailFile, setEmailFile] = useState<string>("");
+	const { startProving, verificationError, onChainVerificationStatus } = useEmailProofVerification();
+
 	const [tasks, setTasks] = useState<Task[]>([
+		{
+			id: "task-0",
+			title: "Verify Ticket Ownership",
+			description: "Prove you own a valid ticket using zero-knowledge email verification",
+			location: "Digital Verification",
+			reward: "VIP Access Badge",
+			rewardType: "badge",
+			progress: 0,
+			completed: false,
+			type: "verify",
+		},
 		{
 			id: "task-1",
 			title: "Visit Main Stage",
@@ -95,7 +118,33 @@ export function MicrotaskDashboard() {
 	const [showRewardModal, setShowRewardModal] = useState(false);
 	const [currentReward, setCurrentReward] = useState<Task | null>(null);
 
+	const handleEmailUpload = () => {
+		const input = document.createElement("input");
+		input.type = "file";
+		input.accept = ".eml";
+		input.onchange = (e) => {
+			const file = (e.target as HTMLInputElement).files?.[0];
+			if (file) {
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					const content = e.target?.result as string;
+					setEmailFile(content);
+					void startProving(content);
+				};
+				reader.readAsText(file);
+			}
+		};
+		input.click();
+	};
+
 	const completeTask = (taskId: string) => {
+		const task = tasks.find(t => t.id === taskId);
+		
+		if (task?.type === "verify") {
+			setShowEmailModal(true);
+			return;
+		}
+
 		setTasks(
 			tasks.map((task) => {
 				if (task.id === taskId) {
@@ -115,6 +164,24 @@ export function MicrotaskDashboard() {
 
 	const activeTasks = tasks.filter((task) => !task.completed);
 	const completedTasks = tasks.filter((task) => task.completed);
+
+	// Monitor email verification status
+	useEffect(() => {
+		if (onChainVerificationStatus === "success") {
+			setTasks(prevTasks => 
+				prevTasks.map((task) => {
+					if (task.id === "task-0" && task.type === "verify") {
+						const completedTask = { ...task, progress: 100, completed: true };
+						setCurrentReward(completedTask);
+						setShowRewardModal(true);
+						setShowEmailModal(false);
+						return completedTask;
+					}
+					return task;
+				})
+			);
+		}
+	}, [onChainVerificationStatus]);
 
 	return (
 		<div className="space-y-6">
@@ -180,14 +247,18 @@ export function MicrotaskDashboard() {
 													? "default"
 													: task.type === "scan"
 														? "secondary"
-														: "outline"
+														: task.type === "verify"
+															? "outline"
+															: "outline"
 											}
 										>
 											{task.type === "visit"
 												? "Visit"
 												: task.type === "scan"
 													? "Scan QR"
-													: "Interact"}
+													: task.type === "verify"
+														? "Verify"
+														: "Interact"}
 										</Badge>
 									</div>
 									<CardDescription>{task.description}</CardDescription>
@@ -218,6 +289,11 @@ export function MicrotaskDashboard() {
 										<Button size="sm" onClick={() => completeTask(task.id)}>
 											<QrCode className="mr-2 h-4 w-4" />
 											Scan QR
+										</Button>
+									) : task.type === "verify" ? (
+										<Button size="sm" onClick={() => completeTask(task.id)}>
+											<Mail className="mr-2 h-4 w-4" />
+											Verify Email
 										</Button>
 									) : (
 										<Button size="sm" onClick={() => completeTask(task.id)}>
@@ -271,6 +347,43 @@ export function MicrotaskDashboard() {
 					onClose={() => setShowRewardModal(false)}
 				/>
 			)}
+
+			<Dialog open={showEmailModal} onOpenChange={setShowEmailModal}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Verify Ticket Ownership</DialogTitle>
+						<DialogDescription>
+							Upload your ticket confirmation email to prove ownership using zero-knowledge proof
+						</DialogDescription>
+					</DialogHeader>
+					<div className="space-y-4">
+						<div className="flex flex-col items-center justify-center space-y-4 py-6">
+							<Mail className="h-12 w-12 text-muted-foreground" />
+							<p className="text-center text-sm text-muted-foreground">
+								Upload the .eml file of your ticket confirmation email
+							</p>
+							<Button onClick={handleEmailUpload} variant="outline">
+								<Mail className="mr-2 h-4 w-4" />
+								Upload Email File
+							</Button>
+						</div>
+						
+						{verificationError && (
+							<div className="rounded-lg bg-red-50 p-3">
+								<p className="text-sm text-red-600">{verificationError.toString()}</p>
+							</div>
+						)}
+						
+						{emailFile && !verificationError && (
+							<div className="rounded-lg bg-blue-50 p-3">
+								<p className="text-sm text-blue-600">
+									Generating zero-knowledge proof... This may take a moment.
+								</p>
+							</div>
+						)}
+					</div>
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 }
