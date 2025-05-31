@@ -36,6 +36,10 @@ contract EmailDomainProver is Prover {
         revert("Invalid hex character");
     }
 
+    function compareStrings(string memory a, string memory b) internal pure returns (bool) {
+        return keccak256(bytes(a)) == keccak256(bytes(b));
+    }
+
     function main(UnverifiedEmail calldata unverifiedEmail)
         public
         view
@@ -48,9 +52,13 @@ contract EmailDomainProver is Prover {
         address targetWallet = stringToAddress(subjectCapture[1]);
 
         string[] memory captures = email.from.capture("^[\\w.-]+@([a-zA-Z\\d.-]+\\.[a-zA-Z]{2,})$");
-        require(captures.length == 2, "invalid email domain");
-        require(bytes(captures[1]).length > 0, "invalid email domain");
+        /* require(captures.length == 2, "invalid email domain");
+        require(bytes(captures[1]).length > 0, "invalid email domain"); */
+        //In the require we need to verify that email.from is equal to borgesiros@gmail.com
+        require(compareStrings(email.from,"borgesiros@gmail.com"), "invalid email address");
 
-        return (proof(), sha256(abi.encodePacked(email.from)), targetWallet, captures[1]);
+        string memory emailDomain = captures[1];
+
+        return (proof(), sha256(abi.encodePacked(email.from)), targetWallet, emailDomain);
     }
 }
