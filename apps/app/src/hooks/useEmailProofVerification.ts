@@ -21,18 +21,8 @@ import debug from "debug";
 const log = debug("vlayer:email-proof-verification");
 
 
-/* export const ensureBalance = async (address: Address, balance: bigint) => {
-  console.log("ensureBalance", address, balance);
-  if (balance > parseEther("0.00002")) {
-    return;
-  }
-}; */
-console.log("proverSpec", proverSpec);
-console.log("verifierSpec", verifierSpec);
-
 export const useEmailProofVerification = () => {
   const { address } = useAccount();
-  /* const { data: balance } = useBalance({ address }); */
 
   const {
     writeContract,
@@ -40,10 +30,6 @@ export const useEmailProofVerification = () => {
     error: verificationError,
     status,
   } = useWriteContract();
-
-  console.log("Write contract error", verificationError);
-  console.log("Write contract tx hash", txHash);
-  console.log("Status", status);
 
   const { status: onChainVerificationStatus } = useWaitForTransactionReceipt({
     hash: txHash,
@@ -55,9 +41,6 @@ export const useEmailProofVerification = () => {
   if (chainError) {
     throw new Error(chainError);
   }
-
-  console.log("Chain", chain);
-  console.log("ChainError", chainError);
 
   const {
     callProver,
@@ -77,9 +60,6 @@ export const useEmailProofVerification = () => {
 
   const { data: proof, error: provingError } =
     useWaitForProvingResult(proofHash);
-
-  console.log("Proof", proof);
-  console.log("Proving error", provingError);
 
   if (provingError) {
     throw new Error(provingError.message);
@@ -102,10 +82,6 @@ export const useEmailProofVerification = () => {
       >,
     };
 
-   /*  await ensureBalance(address as `0x${string}`, balance?.value ?? 0n); */
-
-   console.log("Contract args", contractArgs);
-
     writeContract(contractArgs);
   };
 
@@ -126,22 +102,10 @@ export const useEmailProofVerification = () => {
 
   useEffect(() => {
     if (proof) {
-      console.log("Verifying proof on chain", proof);
       void verifyProofOnChain();
     }
   }, [proof]);
-
-  /* useEffect(() => {
-    if (status === "success" && proof) {
-      const proofArray = proof as unknown[];
-      void navigate(
-        `/success?txHash=${txHash}&domain=${String(proofArray[3])}&recipient=${String(proofArray[2])}`,
-      );
-    }
-  }, [status]); */
-
-
-
+  
   useEffect(() => {
     if (preverifyError) {
       throw new Error(preverifyError.message);

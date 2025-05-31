@@ -46,19 +46,8 @@ contract EmailDomainProver is Prover {
         returns (Proof memory, bytes32)
     {
         VerifiedEmail memory email = unverifiedEmail.verify();
-        /* string[] memory subjectCapture = email.subject.capture("You have been invited to join the event. Your code is ([0-9]{5})");
-        require(subjectCapture.length > 0, "No verification code in the subject"); */
         require(compareStrings(email.subject,"Mint my domain NFT at address: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"), "invalid subject");
-
-        //address verificationCode = stringToAddress(subjectCapture[1]);
-
-        //string[] memory captures = email.from.capture("^[\\w.-]+@([a-zA-Z\\d.-]+\\.[a-zA-Z]{2,})$");
-        /* require(captures.length == 2, "invalid email domain");
-        require(bytes(captures[1]).length > 0, "invalid email domain"); */
         require(compareStrings(email.from,"artur@vlayer.xyz"), "invalid email address");
-
-        //string memory emailDomain = captures[1];
-
         return (proof(), sha256(abi.encodePacked(email.from)));
     }
 }
