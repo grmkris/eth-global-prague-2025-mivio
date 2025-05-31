@@ -1,7 +1,7 @@
 // config/index.tsx
 
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
-import { rootstockTestnet } from "@reown/appkit/networks";
+import { flowMainnet } from "@reown/appkit/networks";
 import { cookieStorage, createStorage } from "@wagmi/core";
 
 // Get projectId from https://cloud.reown.com
@@ -11,7 +11,7 @@ if (!projectId) {
 	throw new Error("Project ID is not defined");
 }
 
-export const networks = [rootstockTestnet];
+export const networks = [flowMainnet];
 
 export const createWagmiConfig = () => {
 	const wagmiAdapter = new WagmiAdapter({

@@ -4,10 +4,11 @@ import {
 	AlertCircle,
 	CheckCircle2,
 	Loader2,
-	RefreshCw,
 	Send,
 	Wifi,
 	WifiOff,
+	RefreshCw,
+	Wallet,
 } from "lucide-react";
 import { useState } from "react";
 import type { WalletClient } from "viem";
@@ -49,20 +50,22 @@ export function NitroliteTestDashboard({
 	>([]);
 	const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
 	const [paymentError, setPaymentError] = useState<string | null>(null);
+	const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
 
 	// Use the event session hook
 	const {
 		sessionInfo,
 		isSessionOpen,
 		offchainBalance,
+		ledgerBalances,
 		isLoading,
 		error,
 		connectionStatus,
 		isConnected,
 		createSession,
-		updateBalance,
-		sendPayment,
 		connectToClearNode,
+		transferAndCloseSession,
+		requestLedgerBalances,
 	} = useEventSession({ walletAddress, walletClient, eventSlug });
 
 	// Check if wallet is connected
@@ -101,13 +104,13 @@ export function NitroliteTestDashboard({
 		setPaymentError(null);
 
 		try {
-			const result = await sendPayment(
+			const success = await transferAndCloseSession(
 				recipientAddress as `0x${string}`,
 				paymentAmount,
 				"Test payment from Nitrolite integration",
 			);
 
-			if (result) {
+			if (success) {
 				// Add to payment history
 				setPaymentHistory([
 					{
@@ -147,6 +150,19 @@ export function NitroliteTestDashboard({
 				return "text-red-500";
 			default:
 				return "text-gray-500";
+		}
+	};
+
+	// Handle manual balance refresh
+	const handleRefreshBalance = async () => {
+		setIsRefreshingBalance(true);
+		try {
+			await requestLedgerBalances();
+			// Wait a bit to show the loading state
+			setTimeout(() => setIsRefreshingBalance(false), 500);
+		} catch (err) {
+			console.error("Failed to refresh balance:", err);
+			setIsRefreshingBalance(false);
 		}
 	};
 
@@ -213,24 +229,11 @@ export function NitroliteTestDashboard({
 									{sessionInfo.status}
 								</Badge>
 							</div>
-						</>
-					)}
-
-					{isConnected && (
-						<div className="flex items-center justify-between">
-							<span className="font-medium text-sm">Off-chain Balance:</span>
-							<div className="flex items-center gap-2">
-								<span className="font-bold">${offchainBalance}</span>
-								<Button
-									size="sm"
-									variant="ghost"
-									onClick={updateBalance}
-									disabled={!isSessionOpen}
-								>
-									<RefreshCw className="h-3 w-3" />
-								</Button>
+							<div className="flex items-center justify-between">
+								<span className="font-medium text-sm">Session Balance:</span>
+								<span className="font-bold">${sessionInfo.balance}</span>
 							</div>
-						</div>
+						</>
 					)}
 
 					{error && (
@@ -284,13 +287,113 @@ export function NitroliteTestDashboard({
 				</CardContent>
 			</Card>
 
+			{/* Manual Testing Controls */}
+			{isConnected && (
+				<Card>
+					<CardHeader>
+						<CardTitle>Manual Testing Controls</CardTitle>
+						<CardDescription>
+							Manually trigger API calls to test the integration
+						</CardDescription>
+					</CardHeader>
+					<CardContent className="space-y-4">
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+							<Button
+								onClick={handleRefreshBalance}
+								disabled={isRefreshingBalance}
+								variant="outline"
+								className="w-full"
+							>
+								{isRefreshingBalance ? (
+									<>
+										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+										Fetching Balances...
+									</>
+								) : (
+									<>
+										<RefreshCw className="mr-2 h-4 w-4" />
+										Request Ledger Balances
+									</>
+								)}
+							</Button>
+						</div>
+						
+						<Alert>
+							<AlertCircle className="h-4 w-4" />
+							<AlertDescription>
+								Use these buttons to manually test the API calls. Check the browser console for detailed responses.
+							</AlertDescription>
+						</Alert>
+					</CardContent>
+				</Card>
+			)}
+
+			{/* Ledger Balances Card */}
+			{isConnected && (
+				<Card>
+					<CardHeader>
+						<div className="flex items-center justify-between">
+							<div>
+								<CardTitle>Ledger Balances</CardTitle>
+								<CardDescription>
+									Your off-chain balances across all assets (auto-refreshes every 30s)
+								</CardDescription>
+							</div>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={handleRefreshBalance}
+								disabled={isRefreshingBalance}
+							>
+								{isRefreshingBalance ? (
+									<Loader2 className="h-4 w-4 animate-spin" />
+								) : (
+									<RefreshCw className="h-4 w-4" />
+								)}
+							</Button>
+						</div>
+					</CardHeader>
+					<CardContent>
+						{ledgerBalances.length > 0 ? (
+							<div className="space-y-2">
+								{ledgerBalances.map((balance) => (
+									<div
+										key={balance.asset}
+										className="flex items-center justify-between rounded-lg border p-3"
+									>
+										<div className="flex items-center gap-2">
+											<Wallet className="h-4 w-4 text-muted-foreground" />
+											<span className="font-medium text-sm">
+												{balance.asset.toUpperCase()}
+											</span>
+										</div>
+										<span className="font-bold text-lg">
+											{balance.amount}
+										</span>
+									</div>
+								))}
+							</div>
+						) : (
+							<div className="py-6 text-center text-muted-foreground">
+								<Wallet className="mx-auto h-8 w-8 mb-2" />
+								<p>No balances found</p>
+								<p className="text-sm">
+									Create a session to start with off-chain funds
+								</p>
+							</div>
+						)}
+					</CardContent>
+				</Card>
+			)}
+
 			{/* Payment Form */}
 			{isSessionOpen && (
 				<Card>
 					<CardHeader>
-						<CardTitle>Send Payment</CardTitle>
+						<CardTitle>Transfer & Close Session</CardTitle>
 						<CardDescription>
-							Test off-chain payments through the session
+							Transfer funds and close the session (demonstrates createCloseAppSessionMessage)
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
@@ -334,12 +437,12 @@ export function NitroliteTestDashboard({
 							{isPaymentProcessing ? (
 								<>
 									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-									Processing Payment...
+									Processing Transfer...
 								</>
 							) : (
 								<>
 									<Send className="mr-2 h-4 w-4" />
-									Send Payment
+									Transfer & Close Session
 								</>
 							)}
 						</Button>
@@ -351,8 +454,8 @@ export function NitroliteTestDashboard({
 			{paymentHistory.length > 0 && (
 				<Card>
 					<CardHeader>
-						<CardTitle>Payment History</CardTitle>
-						<CardDescription>Recent off-chain payments</CardDescription>
+						<CardTitle>Transfer History</CardTitle>
+						<CardDescription>Recent session closures with transfers</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<div className="space-y-2">

@@ -3,7 +3,14 @@ import {
 	createAuthVerifyMessage,
 	createAuthVerifyMessageWithJWT,
 } from "@erc7824/nitrolite";
-import type { WalletClient } from "viem";
+import { getAddress, type WalletClient } from "viem";
+import { 
+	loadOrGenerateKeyPair, 
+	createStateWalletClient, 
+	createMessageSigner,
+	type CryptoKeypair,
+	type StateWalletClient 
+} from "./keyManager";
 
 export type WSStatus =
 	| "disconnected"
@@ -63,6 +70,8 @@ export class ClearNodeClient {
 	>();
 	private authParams: AuthParams | null = null;
 	private isAuthenticated = false;
+	private keyPair: CryptoKeypair | null = null;
+	private stateWallet: StateWalletClient | null = null;
 
 	constructor(options: ClearNodeClientOptions) {
 		this.options = {
@@ -75,10 +84,43 @@ export class ClearNodeClient {
 	}
 
 	/**
+	 * Initialize keys and state wallet
+	 */
+	private async initializeKeys(): Promise<void> {
+		try {
+			this.keyPair = await loadOrGenerateKeyPair();
+			this.stateWallet = createStateWalletClient(this.keyPair);
+			console.log("Keys initialized successfully");
+		} catch (error) {
+			console.error("Failed to initialize keys:", error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Get the message signer function
+	 */
+	getMessageSigner() {
+		if (!this.stateWallet) {
+			throw new Error("State wallet not initialized");
+		}
+		return createMessageSigner(this.stateWallet);
+	}
+
+	getStateWallet() {
+		return this.stateWallet;
+	}
+
+	/**
 	 * Connect to ClearNode and authenticate
 	 */
 	async connect(authParams: AuthParams): Promise<void> {
 		this.authParams = authParams;
+
+		// Initialize keys if not already done
+		if (!this.keyPair || !this.stateWallet) {
+			await this.initializeKeys();
+		}
 
 		if (this.reconnectTimeout) {
 			clearTimeout(this.reconnectTimeout);
@@ -137,8 +179,8 @@ export class ClearNodeClient {
 	 * Authenticate with ClearNode
 	 */
 	private async authenticate(): Promise<void> {
-		if (!this.ws || !this.authParams)
-			throw new Error("WebSocket not connected or auth params missing");
+		if (!this.ws || !this.authParams || !this.stateWallet)
+			throw new Error("WebSocket not connected, auth params missing, or state wallet not initialized");
 
 		const { walletAddress, signerAddress, walletClient } = this.authParams;
 
@@ -157,12 +199,12 @@ export class ClearNodeClient {
 			const expire = (Math.floor(Date.now() / 1000) + 3600).toString(); // 1 hour
 
 			authRequest = await createAuthRequestMessage({
-				wallet: walletAddress,
-				participant: signerAddress,
+				wallet: getAddress(walletAddress),
+				participant: getAddress(this.stateWallet?.account.address ?? "0x0"),
 				app_name: "Mivio Events",
 				expire,
 				scope: "events",
-				application: walletAddress,
+				application: getAddress(walletAddress),
 				allowances: [],
 			});
 		}
@@ -190,7 +232,7 @@ export class ClearNodeClient {
 
 				try {
 					if (response.res && response.res[1] === "auth_challenge") {
-						// Create EIP-712 signer function that properly extracts the challenge
+						// Create EIP-712 signer function
 						const eip712Signer = async (
 							data: unknown,
 						): Promise<`0x${string}`> => {
@@ -198,8 +240,7 @@ export class ClearNodeClient {
 							
 							let challengeUUID = "";
 
-							// The data passed to this function is the raw event.data string
-							// We need to extract the challenge from the parsed response
+							// Extract the challenge from the parsed response
 							if (response.res?.[2]?.challenge_message) {
 								challengeUUID = response.res[2].challenge_message;
 							} else if (response.res?.[2]?.challenge) {
@@ -220,9 +261,9 @@ export class ClearNodeClient {
 							const message = {
 								challenge: challengeUUID,
 								scope: "events",
-								wallet: walletAddress,
-								application: walletAddress,
-								participant: signerAddress,
+								wallet: getAddress(walletAddress),
+								application: getAddress(walletAddress),
+								participant: getAddress(this.stateWallet?.account.address ?? "0x0"),
 								expire: Math.floor(Date.now() / 1000) + 3600,
 								allowances: [],
 							};
