@@ -54,6 +54,40 @@ type NFTMetadata = {
 	};
 };
 
+// Get character image based on NFT ID
+function getCharacterImage(nftId: string): string {
+	const id = Number.parseInt(nftId) || 0; // Default to 0 if invalid
+	const characterIndex = id % 3; // Cycle through 0, 1, 2
+	
+	switch (characterIndex) {
+		case 0:
+			return "/nft-1.png"; // Character with pink hair and glasses
+		case 1:
+			return "/nft-2.png"; // Astronaut character
+		case 2:
+			return "/nft-3.png"; // Character with blue hair
+		default:
+			return "/nft-1.png"; // Fallback to character 0
+	}
+}
+
+// Get character name based on NFT ID
+function getCharacterName(nftId: string): string {
+	const id = Number.parseInt(nftId) || 0;
+	const characterIndex = id % 3;
+	
+	switch (characterIndex) {
+		case 0:
+			return "Tech Maverick";
+		case 1:
+			return "Space Explorer";
+		case 2:
+			return "Creative Pioneer";
+		default:
+			return "Tech Maverick";
+	}
+}
+
 // Fetch NFT metadata from our own API
 async function getNftMetadata(nftId: string): Promise<NFTMetadata | null> {
 	try {
@@ -85,7 +119,7 @@ async function getFallbackUserData(nftId: string): Promise<UserData> {
 			totalEvents: 3,
 			totalPoints: 5000,
 			level: 8,
-			avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${nftId}`,
+			avatar: getCharacterImage(nftId),
 		},
 		achievements: [
 			{ id: 1, name: "Festival Starter", icon: "🎵", earned: true },
@@ -106,14 +140,10 @@ async function getFallbackUserData(nftId: string): Promise<UserData> {
 
 export async function GET(request: NextRequest) {
 	const { searchParams } = new URL(request.url);
-	const nftId = searchParams.get("nftId");
+	const nftId = searchParams.get("nftId") || "0"; // Default to 0 if not provided
 	const style = searchParams.get("style") || "modern";
 
 	console.log("NFT ID received:", nftId);
-
-	if (!nftId) {
-		return new Response("NFT ID required", { status: 400 });
-	}
 
 	// Fetch metadata from our NFT endpoint
 	const metadata = await getNftMetadata(nftId);
@@ -127,7 +157,7 @@ export async function GET(request: NextRequest) {
 				totalEvents: metadata.properties.userData.totalEvents,
 				totalPoints: metadata.properties.userData.totalPoints,
 				level: metadata.properties.userData.level,
-				avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${metadata.properties.userData.walletAddress}`,
+				avatar: getCharacterImage(nftId), // Use character image instead
 			},
 			achievements: metadata.properties.userData.achievements,
 			recentEvents: metadata.properties.userData.recentEvents,
@@ -165,6 +195,9 @@ export async function GET(request: NextRequest) {
 		}
 	};
 
+	const characterImage = getCharacterImage(nftId);
+	const characterName = getCharacterName(nftId);
+
 	return new ImageResponseClass(
 		<div
 			style={{
@@ -188,20 +221,31 @@ export async function GET(request: NextRequest) {
 					justifyContent: "space-between",
 				}}
 			>
-				<div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+				<div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
+					{/* Character Image */}
 					<div
 						style={{
-							width: "80px",
-							height: "80px",
+							width: "120px",
+							height: "120px",
 							borderRadius: "50%",
+							overflow: "hidden",
+							border: "4px solid #fbbf24",
 							background: "linear-gradient(45deg, #fbbf24, #f59e0b)",
 							display: "flex",
 							alignItems: "center",
 							justifyContent: "center",
-							fontSize: "40px",
 						}}
 					>
-						{getGenreIcon(userData.stats.favoriteGenre)}
+						<img
+							src={`https://eth-global-prague-2025-mivio-app.vercel.app${characterImage}`}
+							width="112"
+							height="112"
+							style={{
+								borderRadius: "50%",
+								objectFit: "cover",
+							}}
+							alt="Character"
+						/>
 					</div>
 					<div style={{ display: "flex", flexDirection: "column" }}>
 						<h1
@@ -214,6 +258,16 @@ export async function GET(request: NextRequest) {
 						>
 							{userData.user.username}
 						</h1>
+						<p
+							style={{
+								color: "#fbbf24",
+								fontSize: "20px",
+								margin: "4px 0 0 0",
+								fontWeight: "500",
+							}}
+						>
+							{characterName}
+						</p>
 						<p
 							style={{
 								color: "#a5b4fc",
