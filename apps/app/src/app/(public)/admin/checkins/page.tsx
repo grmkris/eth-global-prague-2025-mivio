@@ -45,33 +45,33 @@ export default function AdminCheckinsPage() {
 		{
 			id: "loc-1",
 			name: "Main Entrance",
-			description: "Primary event entrance - welcome check-in",
-			location: "Front Lobby",
+			description: "Primary festival entrance - welcome check-in",
+			location: "Front Gates",
 			points: 10,
 			active: true,
-			checkinCount: 234,
+			checkinCount: 2340,
 			lastCheckin: new Date(Date.now() - 5 * 60000),
 			category: "entrance",
 		},
 		{
 			id: "loc-2",
 			name: "Main Stage Area",
-			description: "Check in when attending main stage presentations",
-			location: "Hall A - Main Stage",
+			description: "Check in when attending main stage performances",
+			location: "Main Stage - Central Lawn",
 			points: 20,
 			active: true,
-			checkinCount: 156,
+			checkinCount: 1560,
 			lastCheckin: new Date(Date.now() - 15 * 60000),
 			category: "stage",
 		},
 		{
 			id: "loc-3",
-			name: "Sponsor Booth #1",
-			description: "Visit our platinum sponsor's interactive booth",
-			location: "Exhibition Hall - Booth A1",
+			name: "Artist Meet & Greet",
+			description: "Visit our exclusive artist meet & greet area",
+			location: "VIP Tent - North Side",
 			points: 50,
 			active: true,
-			checkinCount: 89,
+			checkinCount: 890,
 			lastCheckin: new Date(Date.now() - 30 * 60000),
 			category: "sponsor",
 		},
@@ -79,43 +79,43 @@ export default function AdminCheckinsPage() {
 			id: "loc-4",
 			name: "Food Court Central",
 			description: "Central dining area check-in for social rewards",
-			location: "Food Court - Central Area",
+			location: "Food Truck Plaza",
 			points: 15,
 			active: true,
-			checkinCount: 123,
+			checkinCount: 1230,
 			lastCheckin: new Date(Date.now() - 45 * 60000),
 			category: "food",
 		},
 		{
 			id: "loc-5",
-			name: "Innovation Showcase",
-			description: "Check in at the startup showcase area",
-			location: "Hall B - Innovation Zone",
+			name: "Acoustic Stage",
+			description: "Check in at the intimate acoustic performance area",
+			location: "Garden Stage - East Side",
 			points: 30,
 			active: true,
-			checkinCount: 67,
+			checkinCount: 670,
 			lastCheckin: new Date(Date.now() - 60 * 60000),
 			category: "booth",
 		},
 		{
 			id: "loc-6",
-			name: "Networking Lounge",
-			description: "Premium networking area for speakers and VIPs",
-			location: "VIP Floor - Lounge",
+			name: "VIP Lounge",
+			description: "Premium area for VIP ticket holders and artists",
+			location: "VIP Deck - Upper Level",
 			points: 40,
 			active: true,
-			checkinCount: 34,
+			checkinCount: 340,
 			lastCheckin: new Date(Date.now() - 90 * 60000),
 			category: "booth",
 		},
 		{
 			id: "loc-7",
-			name: "Workshop Room C",
-			description: "Technical workshop and hands-on sessions",
-			location: "Workshop Wing - Room C",
+			name: "Merchandise Tent",
+			description: "Official festival merchandise and artist merch",
+			location: "Merch Row - West Side",
 			points: 25,
 			active: false,
-			checkinCount: 45,
+			checkinCount: 450,
 			lastCheckin: new Date(Date.now() - 180 * 60000),
 			category: "stage",
 		},
@@ -123,10 +123,10 @@ export default function AdminCheckinsPage() {
 			id: "loc-8",
 			name: "Exit Survey Station",
 			description: "Final check-out and feedback collection",
-			location: "Exit Lobby",
+			location: "Exit Gates",
 			points: 20,
 			active: true,
-			checkinCount: 12,
+			checkinCount: 120,
 			lastCheckin: new Date(Date.now() - 120 * 60000),
 			category: "entrance",
 		},
@@ -142,7 +142,7 @@ export default function AdminCheckinsPage() {
 			type: "checkin",
 			locationId: location.id,
 			points: location.points,
-			eventSlug: "eth-global-prague-2025",
+			eventSlug: "summer-music-fest-2025",
 			description: location.name,
 		});
 	};
@@ -169,13 +169,13 @@ export default function AdminCheckinsPage() {
 			case "entrance":
 				return "Entrance/Exit";
 			case "booth":
-				return "Exhibition Booth";
+				return "Activity Area";
 			case "stage":
-				return "Presentation Area";
+				return "Performance Stage";
 			case "food":
 				return "Food & Beverage";
 			case "sponsor":
-				return "Sponsor Zone";
+				return "VIP/Premium";
 			default:
 				return "Other";
 		}

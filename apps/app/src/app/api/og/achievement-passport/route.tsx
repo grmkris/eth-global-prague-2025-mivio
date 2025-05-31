@@ -2,12 +2,27 @@ import type { ImageResponse } from 'next/og';
 import type { NextRequest } from 'next/server';
 import { ImageResponse as ImageResponseClass } from 'next/og';
 
+// Mock function to map NFT ID to wallet address
+async function mapNftIdToWallet(nftId: string): Promise<string | null> {
+  // Mock mapping - replace with actual database/contract queries
+  const nftToWalletMap: Record<string, string> = {
+    '1': '0x1234567890123456789012345678901234567890',
+    '2': '0x2345678901234567890123456789012345678901',
+    '3': '0x3456789012345678901234567890123456789012',
+    '4': '0x4567890123456789012345678901234567890123',
+    '5': '0x5678901234567890123456789012345678901234',
+    // Add more mock mappings as needed
+  };
+  
+  return nftToWalletMap[nftId] || null;
+}
+
 // This would come from your database
 async function getUserData(walletAddress: string) {
   // Mock data - replace with actual database queries
   return {
     user: {
-      username: "CryptoNinja",
+      username: "FestivalFan",
       totalEvents: 7,
       totalPoints: 12450,
       level: 15,
@@ -21,29 +36,38 @@ async function getUserData(walletAddress: string) {
       { id: 5, name: "Event Legend", icon: "👑", earned: false, progress: 0.6 },
     ],
     recentEvents: [
-      { id: 1, name: "ETHGlobal Prague", status: "active", points: 1250 },
-      { id: 2, name: "Web3 Summit Berlin", status: "completed", points: 890 },
-      { id: 3, name: "DeFi London", status: "completed", points: 650 },
+      { id: 1, name: "Summer Music Fest", status: "active", points: 1250 },
+      { id: 2, name: "Indie Rock Weekend", status: "completed", points: 890 },
+      { id: 3, name: "Jazz & Blues Fest", status: "completed", points: 650 },
     ],
     stats: {
       tasksCompleted: 45,
       eventsAttended: 7,
       totalSpent: 8950,
-      favorite_category: "DeFi"
+      favorite_category: "Music"
     }
   };
 }
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const walletAddress = searchParams.get('wallet');
+  const nftId = searchParams.get('nftId');
   const style = searchParams.get('style') || 'modern';
 
-  console.log("adasdaad",walletAddress);
+  console.log("NFT ID received:", nftId);
+  
+  if (!nftId) {
+    return new Response('NFT ID required', { status: 400 });
+  }
+
+  // Map NFT ID to wallet address
+  const walletAddress = await mapNftIdToWallet(nftId);
   
   if (!walletAddress) {
-    return new Response('Wallet address required', { status: 400 });
+    return new Response('NFT not found or invalid NFT ID', { status: 404 });
   }
+
+  console.log("Mapped to wallet address:", walletAddress);
 
   const data = await getUserData(walletAddress);
   const earnedAchievements = data.achievements.filter(a => a.earned);

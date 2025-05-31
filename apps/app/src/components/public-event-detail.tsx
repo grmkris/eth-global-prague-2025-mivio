@@ -60,52 +60,52 @@ export function PublicEventDetail({ eventSlug }: { eventSlug: string }) {
 			const events: Event[] = [
 				{
 					id: "1",
-					slug: "eth-global-prague-2025",
-					name: "ETHGlobal Prague 2025",
+					slug: "summer-music-fest-2025",
+					name: "Summer Music Festival 2025",
 					description:
-						"Join the largest Ethereum hackathon in Central Europe. Build the future of Web3 with developers from around the world. Compete for $250,000 in prizes and connect with leading Web3 companies.",
-					location: "Prague Congress Centre, Czech Republic",
-					startDate: "2025-02-14",
-					endDate: "2025-02-16",
+						"The ultimate 3-day music experience featuring top artists across multiple genres. Dance, sing, and create memories with music lovers from around the world. Enjoy multiple stages, food trucks, and exclusive artist meet & greets.",
+					location: "Central Park, New York",
+					startDate: "2025-07-18",
+					endDate: "2025-07-20",
 					bannerImage: "/placeholder.svg?height=400&width=800",
 					status: "active",
 					features: [
-						"Complete tasks to earn EventCoins",
-						"Exchange coins for food, merch, and exclusive experiences",
-						"Track your progress and unlock achievements",
-						"Network with 1500+ developers and sponsors",
-						"Participate in workshops and talks",
+						"Complete challenges to earn EventCoins",
+						"Exchange coins for food, drinks, and exclusive merchandise",
+						"Track your progress and unlock special achievements",
+						"Connect with 25,000+ music fans and artists",
+						"Access exclusive artist meet & greets and VIP areas",
 					],
 					highlights: [
-						{ title: "Prize Pool", value: "$250,000", icon: Trophy },
-						{ title: "Attendees", value: "1,500+", icon: Users },
-						{ title: "Sponsors", value: "50+", icon: Star },
-						{ title: "Workshops", value: "20+", icon: CheckSquare },
+						{ title: "Artists", value: "100+", icon: Trophy },
+						{ title: "Attendees", value: "25,000+", icon: Users },
+						{ title: "Food Vendors", value: "30+", icon: Star },
+						{ title: "Stages", value: "5", icon: CheckSquare },
 					],
 				},
 				{
 					id: "2",
-					slug: "web3-summit-berlin",
-					name: "Web3 Summit Berlin",
+					slug: "indie-rock-weekend",
+					name: "Indie Rock Weekend",
 					description:
-						"The premier conference for decentralized web infrastructure and protocols. Learn from industry leaders and shape the future of the decentralized web.",
-					location: "Berlin, Germany",
-					startDate: "2025-03-20",
-					endDate: "2025-03-22",
+						"Discover emerging indie artists and enjoy craft food & drinks in an intimate outdoor setting. Experience the best of indie rock with curated performances and artisanal vendors.",
+					location: "Golden Gate Park, San Francisco",
+					startDate: "2025-08-15",
+					endDate: "2025-08-17",
 					bannerImage: "/placeholder.svg?height=400&width=800",
 					status: "upcoming",
 					features: [
-						"Attend keynotes from Web3 pioneers",
-						"Earn rewards for networking",
-						"Access VIP areas with EventCoins",
-						"Collect exclusive NFT badges",
-						"Join hands-on technical workshops",
+						"Discover new artists on intimate stages",
+						"Earn rewards for exploring different venues",
+						"Access craft beer and artisanal food vendors",
+						"Collect limited edition band merchandise",
+						"Join acoustic sessions and songwriter circles",
 					],
 					highlights: [
-						{ title: "Speakers", value: "100+", icon: Users },
-						{ title: "Countries", value: "40+", icon: MapPin },
-						{ title: "Workshops", value: "15+", icon: CheckSquare },
-						{ title: "Partners", value: "30+", icon: Star },
+						{ title: "Bands", value: "50+", icon: Users },
+						{ title: "Craft Vendors", value: "20+", icon: MapPin },
+						{ title: "Sessions", value: "15+", icon: CheckSquare },
+						{ title: "Local Artists", value: "25+", icon: Star },
 					],
 				},
 			];
@@ -355,7 +355,7 @@ export function PublicEventDetail({ eventSlug }: { eventSlug: string }) {
 								</div>
 								<div className="flex items-center justify-between text-sm">
 									<span className="text-muted-foreground">Type</span>
-									<span className="font-medium">Hackathon</span>
+									<span className="font-medium">Music Festival</span>
 								</div>
 							</CardContent>
 						</Card>

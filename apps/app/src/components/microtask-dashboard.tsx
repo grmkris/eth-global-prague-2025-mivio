@@ -60,8 +60,8 @@ export function MicrotaskDashboard() {
 		{
 			id: "task-3",
 			title: "Attend Workshop",
-			description: "Join the interactive workshop on Web3 basics",
-			location: "Workshop Room C",
+			description: "Join the interactive acoustic music session",
+			location: "Garden Stage - East Side",
 			reward: "Free Drink Voucher",
 			rewardType: "perk",
 			progress: 0,

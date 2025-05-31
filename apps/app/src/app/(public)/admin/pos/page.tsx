@@ -37,7 +37,7 @@ type Transaction = {
 export default function AdminPOSPage() {
 	const [amount, setAmount] = useState("");
 	const [description, setDescription] = useState("");
-	const [vendor, setVendor] = useState("Custom Vendor");
+	const [vendor, setVendor] = useState("Festival Vendor");
 	const [showQRModal, setShowQRModal] = useState(false);
 	const [currentTransaction, setCurrentTransaction] =
 		useState<Transaction | null>(null);
@@ -45,24 +45,24 @@ export default function AdminPOSPage() {
 		{
 			id: "txn-1",
 			amount: 200,
-			description: "Custom meal combo",
-			vendor: "Food Truck #3",
+			description: "Artisan meal combo",
+			vendor: "Gourmet Food Truck",
 			timestamp: new Date(Date.now() - 30 * 60000),
 			status: "paid",
 		},
 		{
 			id: "txn-2",
 			amount: 150,
-			description: "Special event drinks",
-			vendor: "Bar Station",
+			description: "Craft festival drinks",
+			vendor: "Brew Station",
 			timestamp: new Date(Date.now() - 45 * 60000),
 			status: "paid",
 		},
 		{
 			id: "txn-3",
 			amount: 350,
-			description: "Premium workshop access",
-			vendor: "Workshop Center",
+			description: "VIP area upgrade",
+			vendor: "Premium Services",
 			timestamp: new Date(Date.now() - 60 * 60000),
 			status: "pending",
 		},
@@ -94,7 +94,7 @@ export default function AdminPOSPage() {
 			transactionId: transaction.id,
 			amount: transaction.amount,
 			vendor: transaction.vendor,
-			eventSlug: "eth-global-prague-2025",
+			eventSlug: "summer-music-fest-2025",
 			description: transaction.description,
 		});
 	};

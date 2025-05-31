@@ -72,7 +72,22 @@ contract MivioNFT is ERC721, Ownable {
             return "";
         }
         
-        return string(abi.encodePacked(baseURI, "/", _toString(tokenId)));
+        // Check if baseURI contains a query parameter (?)
+        // If so, don't add "/" but append the tokenId directly
+        bytes memory baseBytes = bytes(baseURI);
+        bool hasQueryParam = false;
+        for (uint256 i = 0; i < baseBytes.length; i++) {
+            if (baseBytes[i] == "?") {
+                hasQueryParam = true;
+                break;
+            }
+        }
+        
+        if (hasQueryParam) {
+            return string(abi.encodePacked(baseURI, _toString(tokenId)));
+        } else {
+            return string(abi.encodePacked(baseURI, "/", _toString(tokenId)));
+        }
     }
 
     // Utility function to convert uint to string

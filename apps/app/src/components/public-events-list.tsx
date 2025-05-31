@@ -37,41 +37,41 @@ export function PublicEventsList() {
 	const [events] = useState<Event[]>([
 		{
 			id: "1",
-			slug: "eth-global-prague-2025",
-			name: "ETHGlobal Prague 2025",
+			slug: "summer-music-fest-2025",
+			name: "Summer Music Festival 2025",
 			description:
-				"Join the largest Ethereum hackathon in Central Europe. Build the future of Web3 with developers from around the world.",
-			location: "Prague Congress Centre, Czech Republic",
-			startDate: "2025-02-14",
-			endDate: "2025-02-16",
+				"The ultimate 3-day music experience featuring top artists across multiple genres. Dance, sing, and create memories with music lovers from around the world.",
+			location: "Central Park, New York",
+			startDate: "2025-07-18",
+			endDate: "2025-07-20",
 			bannerImage: "/placeholder.svg?height=200&width=400",
-			attendees: 1500,
+			attendees: 25000,
 			status: "active",
 		},
 		{
 			id: "2",
-			slug: "web3-summit-berlin",
-			name: "Web3 Summit Berlin",
+			slug: "indie-rock-weekend",
+			name: "Indie Rock Weekend",
 			description:
-				"The premier conference for decentralized web infrastructure and protocols.",
-			location: "Berlin, Germany",
-			startDate: "2025-03-20",
-			endDate: "2025-03-22",
+				"Discover emerging indie artists and enjoy craft food & drinks in an intimate outdoor setting.",
+			location: "Golden Gate Park, San Francisco",
+			startDate: "2025-08-15",
+			endDate: "2025-08-17",
 			bannerImage: "/placeholder.svg?height=200&width=400",
-			attendees: 800,
+			attendees: 8000,
 			status: "upcoming",
 		},
 		{
 			id: "3",
-			slug: "defi-conf-london",
-			name: "DeFi Conference London",
+			slug: "jazz-blues-fest",
+			name: "Jazz & Blues Festival",
 			description:
-				"Explore the latest innovations in decentralized finance with industry leaders.",
-			location: "London, UK",
-			startDate: "2025-01-10",
-			endDate: "2025-01-11",
+				"Classic and contemporary jazz featuring renowned musicians and up-and-coming talent.",
+			location: "Millennium Park, Chicago",
+			startDate: "2025-06-10",
+			endDate: "2025-06-12",
 			bannerImage: "/placeholder.svg?height=200&width=400",
-			attendees: 600,
+			attendees: 12000,
 			status: "completed",
 		},
 	]);
@@ -112,11 +112,11 @@ export function PublicEventsList() {
 				{/* Hero Section */}
 				<div className="mb-12 space-y-4 text-center">
 					<h1 className="font-bold text-4xl tracking-tight md:text-5xl">
-						Discover Web3 Events
+						Discover Amazing Events
 					</h1>
 					<p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-						Join hackathons, conferences, and workshops. Complete tasks, earn
-						rewards, and connect with the Web3 community.
+						Join festivals, concerts, and live events. Complete challenges, earn
+						rewards, and connect with fellow event-goers.
 					</p>
 					{!isConnected && (
 						<div className="mt-4 flex items-center justify-center gap-2 text-muted-foreground text-sm">
