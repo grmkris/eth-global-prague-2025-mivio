@@ -1,0 +1,5 @@
+{
+  "name": "mivio",
+  "description": "A modern, mobile-first web application for event discovery, gamification, and a simple wallet layer. This is a frontend prototype focusing on the Home screen.",
+  "requestFramePermissions": ["camera"]
+}
