@@ -1,21 +1,20 @@
 "use client";
 
 import {
-	Calendar,
-	CheckSquare,
-	CreditCard,
 	Home,
-	QrCode,
-	ShoppingBag,
-	User,
+	Trophy,
+	CreditCard,
+	Settings,
+	Plus,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { cn } from "~/lib/utils";
 
 export function MobileNav() {
 	const pathname = usePathname();
+	const router = useRouter();
 	const { address } = useAccount();
 
 	// Check if we're in an event-specific route
@@ -35,94 +34,120 @@ export function MobileNav() {
 			}
 		: null;
 
-	const navItems =
-		isEventRoute && eventInfo
-			? [
-					{
-						name: "Overview",
-						href: `/event/${eventInfo.slug}`,
-						icon: Home,
-						active: pathname === `/event/${eventInfo.slug}`,
-					},
-					{
-						name: "Scan",
-						href: `/event/${eventInfo.slug}/scan`,
-						icon: QrCode,
-						active: pathname === `/event/${eventInfo.slug}/scan`,
-					},
-					{
-						name: "Tasks",
-						href: `/event/${eventInfo.slug}/tasks`,
-						icon: CheckSquare,
-						active: pathname === `/event/${eventInfo.slug}/tasks`,
-					},
-					{
-						name: "Wallet",
-						href: `/event/${eventInfo.slug}/wallet`,
-						icon: CreditCard,
-						active: pathname === `/event/${eventInfo.slug}/wallet`,
-					},
-					{
-						name: "Shop",
-						href: `/event/${eventInfo.slug}/shop`,
-						icon: ShoppingBag,
-						active: pathname === `/event/${eventInfo.slug}/shop`,
-					},
-					{
-						name: "Profile",
-						href: `/event/${eventInfo.slug}/profile`,
-						icon: User,
-						active: pathname === `/event/${eventInfo.slug}/profile`,
-					},
-				]
-			: [
-					{
-						name: "Events",
-						href: "/events",
-						icon: Calendar,
-						active: pathname === "/events" || pathname.startsWith("/events/"),
-					},
-				];
+	const navItems = isEventRoute && eventInfo
+		? [
+				{
+					name: "Home",
+					href: `/event/${eventInfo.slug}`,
+					icon: Home,
+					active: pathname === `/event/${eventInfo.slug}`,
+				},
+				{
+					name: "Progress",
+					href: `/event/${eventInfo.slug}/tasks`,
+					icon: Trophy,
+					active: pathname === `/event/${eventInfo.slug}/tasks`,
+				},
+				{
+					name: "Wallet",
+					href: `/event/${eventInfo.slug}/wallet`,
+					icon: CreditCard,
+					active: pathname === `/event/${eventInfo.slug}/wallet`,
+				},
+				{
+					name: "Profile",
+					href: `/event/${eventInfo.slug}/profile`,
+					icon: Settings,
+					active: pathname === `/event/${eventInfo.slug}/profile`,
+				},
+			]
+		: [
+				{
+					name: "Events",
+					href: "/events",
+					icon: Home,
+					active: pathname === "/events" || pathname.startsWith("/events/"),
+				},
+			];
+
+	const handleScanPay = () => {
+		if (isEventRoute && eventInfo) {
+			router.push(`/event/${eventInfo.slug}/scan`);
+		}
+	};
 
 	return (
-		<div className="fixed right-0 bottom-0 left-0 border-t bg-card md:hidden">
-			{isEventRoute && eventInfo && (
-				<div className="border-b bg-muted/50 px-4 py-2">
-					<div className="flex items-center justify-between">
-						<div className="min-w-0 flex-1">
-							<p className="truncate font-medium text-xs">{eventInfo.name}</p>
+		<>
+			{/* Floating ScanPay Button */}
+			{isEventRoute && (
+				<button
+					type="button"
+					onClick={handleScanPay}
+					className="fixed bottom-16 left-1/2 z-50 -translate-x-1/2 transform group"
+					aria-label="Scan & Pay"
+				>
+					<div className="relative">
+						{/* Pulse animation */}
+						<div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-25" />
+						{/* Button shadow */}
+						<div className="absolute inset-0 rounded-full bg-primary/30 blur-xl" />
+						{/* Button */}
+						<div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-200 hover:scale-110 active:scale-95">
+							<Plus className="h-6 w-6" strokeWidth={2.5} />
 						</div>
-						<Link
-							href="/events"
-							className="text-muted-foreground text-xs hover:text-foreground"
-						>
-							Change
-						</Link>
+						{/* Tooltip */}
+						<span className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-foreground/90 px-2 py-1 text-xs text-background opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+							Scan & Pay
+						</span>
 					</div>
-				</div>
+				</button>
 			)}
-			<div className="flex items-center justify-around py-2">
-				{navItems.map((item) => (
-					<Link
-						key={item.name}
-						href={item.href}
-						className={cn(
-							"flex flex-col items-center gap-1 rounded-md p-2 text-xs transition-colors",
-							item.active
-								? "text-primary"
-								: "text-muted-foreground hover:text-foreground",
-						)}
-					>
-						<item.icon className="h-5 w-5" />
-						{item.name}
-					</Link>
-				))}
+
+			{/* Navigation Bar */}
+			<div className="fixed right-0 bottom-0 left-0 border-t bg-card md:hidden">
+				{isEventRoute && eventInfo && (
+					<div className="border-b bg-muted/30 px-4 py-2">
+						<div className="flex items-center justify-between">
+							<div className="min-w-0 flex-1">
+								<p className="truncate font-medium text-xs">{eventInfo.name}</p>
+							</div>
+							<Link
+								href="/events"
+								className="text-muted-foreground text-xs hover:text-foreground transition-colors duration-200"
+							>
+								Change
+							</Link>
+						</div>
+					</div>
+				)}
+				<div className="grid grid-cols-4 py-2">
+					{navItems.map((item, index) => (
+						<Link
+							key={item.name}
+							href={item.href}
+							className={cn(
+								"relative flex flex-col items-center justify-center py-3 text-xs transition-all duration-200 active:scale-95",
+								item.active
+									? "text-primary"
+									: "text-muted-foreground hover:text-foreground",
+								// Add margin for the center floating button
+								index === 1 && "mr-4",
+								index === 2 && "ml-4",
+							)}
+						>
+							{item.active && (
+								<div className="absolute inset-x-2 inset-y-1 rounded-xl bg-primary/10" />
+							)}
+							<item.icon className="relative h-6 w-6" />
+						</Link>
+					))}
+				</div>
+				{address && (
+					<div className="pb-safe pb-1 text-center text-muted-foreground text-xs">
+						{address.slice(0, 6)}...{address.slice(-4)}
+					</div>
+				)}
 			</div>
-			{address && (
-				<div className="pb-1 text-center text-muted-foreground text-xs">
-					{address.slice(0, 6)}...{address.slice(-4)}
-				</div>
-			)}
-		</div>
+		</>
 	);
 }

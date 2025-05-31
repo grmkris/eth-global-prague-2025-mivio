@@ -3,17 +3,12 @@
 import {
 	Calendar,
 	CheckSquare,
-	FlaskConical,
 	MapPin,
-	QrCode,
 	ShoppingBag,
 	Trophy,
-	User,
 	Wallet,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEvent } from "~/components/event-provider";
-import { Button } from "~/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -22,11 +17,10 @@ import {
 	CardTitle,
 } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
-import { Vlayer } from "./vlayer";
+import { Progress } from "~/components/ui/progress";
 
 export function EventDashboard() {
 	const { event, loading, error } = useEvent();
-	const router = useRouter();
 
 	if (loading) {
 		return (
@@ -60,179 +54,140 @@ export function EventDashboard() {
 		});
 	};
 
-	const handleScanQR = () => {
-		router.push(`/event/${event.slug}/scan`);
-	};
-
-	const navigationCards = [
-		{
-			title: "Tasks",
-			description: "Complete tasks to earn rewards",
-			icon: CheckSquare,
-			href: `/event/${event.slug}/tasks`,
-			color: "text-blue-500",
-			stats: "5 available",
-		},
-		{
-			title: "Shop",
-			description: "Spend your EventCoins",
-			icon: ShoppingBag,
-			href: `/event/${event.slug}/shop`,
-			color: "text-green-500",
-			stats: "New items!",
-		},
-		{
-			title: "Wallet",
-			description: "Manage your funds",
-			icon: Wallet,
-			href: `/event/${event.slug}/wallet`,
-			color: "text-purple-500",
-			stats: "1,250 EC",
-		},
-		{
-			title: "Profile",
-			description: "View achievements",
-			icon: User,
-			href: `/event/${event.slug}/profile`,
-			color: "text-orange-500",
-			stats: "Level 3",
-		},
-		{
-			title: "Nitrolite Test",
-			description: "Test off-chain payments",
-			icon: FlaskConical,
-			href: `/event/${event.slug}/test-nitrolite`,
-			color: "text-pink-500",
-			stats: "Developer",
-		},
-	];
-
 	return (
-		<div className="space-y-6">
+		<div className="space-y-4">
 			{/* Event Header */}
-			<div className="relative overflow-hidden rounded-lg bg-muted">
-				<div className="aspect-[4/1] w-full">
+			<div className="relative overflow-hidden rounded-2xl bg-muted">
+				<div className="aspect-[5/1] w-full">
 					<img
 						src={event.bannerImage}
 						alt={event.name}
-						className="h-full w-full object-cover"
+						className="h-full w-full object-cover opacity-90"
 					/>
 				</div>
-				<div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
-				<div className="absolute right-0 bottom-0 left-0 p-6">
-					<h1 className="mb-2 font-bold text-3xl text-white tracking-tight">
+				<div className="absolute inset-0 bg-black/20" />
+				<div className="absolute right-0 bottom-0 left-0 p-4">
+					<h1 className="mb-1 font-bold text-2xl text-white tracking-tight">
 						{event.name}
 					</h1>
-					<p className="max-w-2xl text-white/80">{event.description}</p>
+					<p className="max-w-2xl text-sm text-white/90 line-clamp-1">{event.description}</p>
 				</div>
 			</div>
 
 			{/* Event Info */}
-			<div className="grid gap-4 md:grid-cols-2">
+			<div className="grid gap-4 md:grid-cols-1">
 				<Card>
-					<CardHeader className="pb-3">
-						<CardTitle className="font-medium text-base">
+					<CardHeader className="pb-2">
+						<CardTitle className="font-medium text-sm">
 							Event Details
 						</CardTitle>
 					</CardHeader>
-					<CardContent className="space-y-3">
+					<CardContent className="space-y-2">
 						<div className="flex items-center gap-2 text-sm">
-							<Calendar className="h-4 w-4 text-muted-foreground" />
+							<Calendar className="h-3.5 w-3.5 text-muted-foreground" />
 							<div>
-								<p className="font-medium">Date</p>
-								<p className="text-muted-foreground">
+								<p className="font-medium text-xs">Date</p>
+								<p className="text-muted-foreground text-xs">
 									{formatDate(event.startDate)} - {formatDate(event.endDate)}
 								</p>
 							</div>
 						</div>
 						<div className="flex items-center gap-2 text-sm">
-							<MapPin className="h-4 w-4 text-muted-foreground" />
+							<MapPin className="h-3.5 w-3.5 text-muted-foreground" />
 							<div>
-								<p className="font-medium">Location</p>
-								<p className="text-muted-foreground">{event.location}</p>
+								<p className="font-medium text-xs">Location</p>
+								<p className="text-muted-foreground text-xs">{event.location}</p>
 							</div>
 						</div>
 					</CardContent>
 				</Card>
+			</div>
 
+			{/* Recent Activity & Progress */}
+			<div className="grid gap-4 lg:grid-cols-2">
+				{/* Recent Payments */}
 				<Card>
 					<CardHeader className="pb-3">
-						<CardTitle className="font-medium text-base">
+						<CardTitle className="text-base flex items-center gap-2">
+							<Wallet className="h-5 w-5 text-primary" />
+							Recent Activity
+						</CardTitle>
+						<CardDescription className="text-xs">Your latest transactions</CardDescription>
+					</CardHeader>
+					<CardContent className="space-y-2">
+						<div className="flex items-center justify-between py-1.5 border-b last:border-0">
+							<div className="flex items-center gap-2">
+								<div className="h-7 w-7 rounded-full bg-secondary/20 flex items-center justify-center">
+									<CheckSquare className="h-3.5 w-3.5 text-secondary-foreground" />
+								</div>
+								<div>
+									<p className="font-medium text-sm">Task Completed</p>
+									<p className="text-xs text-muted-foreground">Main Stage Visit</p>
+								</div>
+							</div>
+							<span className="text-sm font-medium text-secondary-foreground">+50 EC</span>
+						</div>
+						<div className="flex items-center justify-between py-1.5 border-b last:border-0">
+							<div className="flex items-center gap-2">
+								<div className="h-7 w-7 rounded-full bg-destructive/10 flex items-center justify-center">
+									<ShoppingBag className="h-3.5 w-3.5 text-destructive" />
+								</div>
+								<div>
+									<p className="font-medium text-sm">Purchase</p>
+									<p className="text-xs text-muted-foreground">Coffee & Pastry</p>
+								</div>
+							</div>
+							<span className="text-sm font-medium text-destructive">-120 EC</span>
+						</div>
+						<div className="flex items-center justify-between py-1.5 border-b last:border-0">
+							<div className="flex items-center gap-2">
+								<div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+									<MapPin className="h-3.5 w-3.5 text-primary" />
+								</div>
+								<div>
+									<p className="font-medium text-sm">Check-in</p>
+									<p className="text-xs text-muted-foreground">Partner Booth #42</p>
+								</div>
+							</div>
+							<span className="text-sm font-medium text-primary">+25 EC</span>
+						</div>
+					</CardContent>
+				</Card>
+
+				{/* Progress Summary */}
+				<Card>
+					<CardHeader className="pb-3">
+						<CardTitle className="text-base flex items-center gap-2">
+							<Trophy className="h-5 w-5 text-primary" />
 							Your Progress
 						</CardTitle>
+						<CardDescription className="text-xs">Keep up the great work!</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-3">
-						<div className="flex items-center justify-between">
-							<div className="flex items-center gap-2">
-								<Trophy className="h-4 w-4 text-amber-500" />
-								<span className="font-medium text-sm">Event Level</span>
+						<div>
+							<div className="flex justify-between text-sm mb-1">
+								<span>Daily Tasks</span>
+								<span className="font-medium">3/5 completed</span>
 							</div>
-							<span className="font-bold text-sm">Level 3</span>
+							<Progress value={60} className="h-2" />
 						</div>
-						<div className="flex items-center justify-between">
-							<div className="flex items-center gap-2">
-								<Wallet className="h-4 w-4 text-purple-500" />
-								<span className="font-medium text-sm">Balance</span>
+						<div>
+							<div className="flex justify-between text-sm mb-1">
+								<span>Event Level Progress</span>
+								<span className="font-medium">Level 3 (65%)</span>
 							</div>
-							<span className="font-bold text-sm">1,250 EC</span>
+							<Progress value={65} className="h-2" />
 						</div>
-						<div className="flex items-center justify-between">
-							<div className="flex items-center gap-2">
-								<CheckSquare className="h-4 w-4 text-green-500" />
-								<span className="font-medium text-sm">Tasks</span>
+						<div>
+							<div className="flex justify-between text-sm mb-1">
+								<span>Venue Exploration</span>
+								<span className="font-medium">7/10 areas</span>
 							</div>
-							<span className="font-bold text-sm">3/10 completed</span>
+							<Progress value={70} className="h-2" />
 						</div>
 					</CardContent>
 				</Card>
 			</div>
-
-			{/* QR Scanner Button */}
-			<Card className="border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5">
-				<CardContent className="p-6">
-					<div className="flex items-center justify-between">
-						<div className="space-y-1">
-							<h3 className="font-semibold text-lg">Quick Scan</h3>
-							<p className="text-muted-foreground">
-								Scan QR codes to complete tasks, make payments, or check in at
-								booths
-							</p>
-						</div>
-						<Button
-							size="lg"
-							onClick={handleScanQR}
-							className="ml-4 min-w-[120px]"
-						>
-							<QrCode className="mr-2 h-5 w-5" />
-							Scan QR
-						</Button>
-					</div>
-				</CardContent>
-			</Card>
-
-			{/* Navigation Cards */}
-			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-				{navigationCards.map((card) => (
-					<Card
-						key={card.title}
-						className="cursor-pointer transition-shadow hover:shadow-lg"
-						onClick={() => router.push(card.href)}
-					>
-						<CardHeader>
-							<div className="flex items-center justify-between">
-								<card.icon className={`h-8 w-8 ${card.color}`} />
-								<span className="text-muted-foreground text-xs">
-									{card.stats}
-								</span>
-							</div>
-							<CardTitle className="text-lg">{card.title}</CardTitle>
-							<CardDescription>{card.description}</CardDescription>
-						</CardHeader>
-					</Card>
-				))}
-			</div>
-
-			<Vlayer />
 		</div>
 	);
 }

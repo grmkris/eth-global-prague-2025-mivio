@@ -105,7 +105,7 @@ export function PublicEventsList() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+		<div className="min-h-screen bg-background">
 			<appkit-button />
 			<div className="container mx-auto px-4 py-12">
 				{/* Hero Section */}

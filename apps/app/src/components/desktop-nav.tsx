@@ -3,13 +3,13 @@
 import {
 	ArrowLeft,
 	Calendar,
-	CheckSquare,
 	CreditCard,
 	HelpCircle,
 	Home,
 	LogOut,
 	QrCode,
-	ShoppingBag,
+	Trophy,
+	Settings,
 	User,
 } from "lucide-react";
 import Link from "next/link";
@@ -17,13 +17,16 @@ import { usePathname } from "next/navigation";
 import { useAccount, useDisconnect } from "wagmi";
 import ConnectButton from "~/components/connect-button";
 import { ThemeSwitcher } from "~/components/theme-switcher";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
+import { useUser } from "~/components/user-provider";
 
 export function DesktopNav() {
 	const pathname = usePathname();
 	const { address } = useAccount();
 	const { disconnect } = useDisconnect();
+	const { user } = useUser();
 
 	// Check if we're in an event-specific route
 	const isEventRoute = pathname.includes("/event/");
@@ -46,22 +49,22 @@ export function DesktopNav() {
 		isEventRoute && eventInfo
 			? [
 					{
-						name: "Overview",
+						name: "Home",
 						href: `/event/${eventInfo.slug}`,
 						icon: Home,
 						active: pathname === `/event/${eventInfo.slug}`,
 					},
 					{
-						name: "Scan QR",
+						name: "Progress",
+						href: `/event/${eventInfo.slug}/tasks`,
+						icon: Trophy,
+						active: pathname === `/event/${eventInfo.slug}/tasks`,
+					},
+					{
+						name: "Scan & Pay",
 						href: `/event/${eventInfo.slug}/scan`,
 						icon: QrCode,
 						active: pathname === `/event/${eventInfo.slug}/scan`,
-					},
-					{
-						name: "Tasks",
-						href: `/event/${eventInfo.slug}/tasks`,
-						icon: CheckSquare,
-						active: pathname === `/event/${eventInfo.slug}/tasks`,
 					},
 					{
 						name: "Wallet",
@@ -70,15 +73,9 @@ export function DesktopNav() {
 						active: pathname === `/event/${eventInfo.slug}/wallet`,
 					},
 					{
-						name: "Shop",
-						href: `/event/${eventInfo.slug}/shop`,
-						icon: ShoppingBag,
-						active: pathname === `/event/${eventInfo.slug}/shop`,
-					},
-					{
 						name: "Profile",
 						href: `/event/${eventInfo.slug}/profile`,
-						icon: User,
+						icon: Settings,
 						active: pathname === `/event/${eventInfo.slug}/profile`,
 					},
 				]
@@ -93,11 +90,35 @@ export function DesktopNav() {
 
 	return (
 		<div className="sticky top-0 hidden h-screen w-64 flex-col border-r bg-card p-4 md:flex">
-			<div className="mb-8 flex items-center gap-2 px-2">
-				<div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-					<Home className="h-4 w-4 text-primary-foreground" />
-				</div>
-				<h1 className="font-bold text-xl">Mivio</h1>
+			<div className="mb-8 px-2">
+				{address ? (
+					<div className="flex items-center gap-3">
+						<Avatar>
+							<AvatarImage 
+								src={user?.avatar || "/placeholder.svg?height=40&width=40"} 
+								alt={user?.name || "User"} 
+							/>
+							<AvatarFallback className="bg-primary/10 text-primary">
+								<User className="h-5 w-5" />
+							</AvatarFallback>
+						</Avatar>
+						<div className="flex flex-col">
+							<h2 className="font-semibold text-base">
+								Hello, {user?.displayName || "there"}!
+							</h2>
+							<p className="text-muted-foreground text-sm font-light">
+								Your Festival Hub
+							</p>
+						</div>
+					</div>
+				) : (
+					<div className="flex items-center gap-2">
+						<div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+							<Calendar className="h-4 w-4 text-primary" />
+						</div>
+						<h1 className="font-bold text-xl">Mivio</h1>
+					</div>
+				)}
 			</div>
 
 			{isEventRoute && eventInfo && (
@@ -123,9 +144,9 @@ export function DesktopNav() {
 						key={item.name}
 						href={item.href}
 						className={cn(
-							"flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+							"flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-200",
 							item.active
-								? "bg-primary text-primary-foreground"
+								? "bg-primary/90 text-primary-foreground"
 								: "hover:bg-accent hover:text-accent-foreground",
 						)}
 					>

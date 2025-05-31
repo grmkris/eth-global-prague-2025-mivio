@@ -110,11 +110,11 @@ export function EventsList() {
 				</p>
 			</div>
 
-			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+			<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 				{events.map((event) => (
 					<Card
 						key={event.id}
-						className="overflow-hidden transition-shadow hover:shadow-lg"
+						className="overflow-hidden transition-all duration-200 hover:shadow-lg hover:scale-[1.02]"
 					>
 						<div className="relative aspect-video bg-muted">
 							<img
@@ -122,7 +122,7 @@ export function EventsList() {
 								alt={event.name}
 								className="h-full w-full object-cover"
 							/>
-							<div className="absolute top-2 right-2">
+							<div className="absolute top-3 right-3">
 								{getStatusBadge(event.status)}
 							</div>
 						</div>

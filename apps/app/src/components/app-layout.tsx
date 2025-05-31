@@ -17,7 +17,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 			{!isMobile && <DesktopNav />}
 			<main className="flex flex-1 flex-col">
 				{isMobile && <MobileHeader />}
-				<div className="container mx-auto max-w-5xl flex-1 p-4 md:p-6">
+				<div className="container mx-auto max-w-5xl flex-1 p-4 pb-32 md:p-8 md:pb-8">
 					{children}
 				</div>
 				{isMobile && <MobileNav />}

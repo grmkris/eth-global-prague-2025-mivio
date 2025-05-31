@@ -88,13 +88,13 @@ export function WalletDashboard() {
 				</p>
 			</div>
 
-			<Card className="bg-gradient-to-br from-primary/80 to-primary text-primary-foreground">
+			<Card className="bg-primary/10 border-primary/20">
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2">
 						<Wallet className="h-5 w-5" />
 						Event Balance
 					</CardTitle>
-					<CardDescription className="text-primary-foreground/80">
+					<CardDescription className="text-foreground/70">
 						Your available funds for the event
 					</CardDescription>
 				</CardHeader>
@@ -102,11 +102,11 @@ export function WalletDashboard() {
 					<div className="font-bold text-4xl">
 						{balance} <span className="text-xl">EC</span>
 					</div>
-					<p className="mt-1 text-primary-foreground/80 text-sm">EventCoins</p>
+					<p className="mt-1 text-foreground/70 text-sm">EventCoins</p>
 				</CardContent>
 				<CardFooter className="gap-2">
 					<Button
-						variant="secondary"
+						variant="default"
 						className="flex-1"
 						onClick={() => setShowPaymentModal(true)}
 					>
@@ -115,7 +115,7 @@ export function WalletDashboard() {
 					</Button>
 					<Button
 						variant="outline"
-						className="flex-1 bg-primary-foreground hover:bg-primary-foreground/90"
+						className="flex-1"
 						onClick={() => setShowTopUpModal(true)}
 					>
 						<Plus className="mr-2 h-4 w-4" />

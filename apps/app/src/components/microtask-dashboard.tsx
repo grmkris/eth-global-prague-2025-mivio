@@ -131,17 +131,17 @@ export function MicrotaskDashboard() {
 				</Button>
 			</div>
 
-			<div className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
+			<div className="flex items-center justify-between rounded-xl bg-muted/30 p-5">
 				<div>
 					<h2 className="font-medium">Your Progress</h2>
 					<p className="text-muted-foreground text-sm">
 						{completedTasks.length} of {tasks.length} tasks completed
 					</p>
 				</div>
-				<div className="flex items-center gap-2">
+				<div className="flex items-center gap-3">
 					<Progress
 						value={(completedTasks.length / tasks.length) * 100}
-						className="w-24 md:w-40"
+						className="w-32 md:w-48"
 					/>
 					<span className="font-medium text-sm">
 						{Math.round((completedTasks.length / tasks.length) * 100)}%

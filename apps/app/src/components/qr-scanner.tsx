@@ -167,7 +167,7 @@ export function QRScanner({
 							{/* Scanning overlay */}
 							{isScanning && (
 								<div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-									<div className="flex h-48 w-48 items-center justify-center rounded-lg border-2 border-primary border-dashed">
+									<div className="flex h-48 w-48 items-center justify-center rounded-2xl border-2 border-primary/60 border-dashed bg-white/10 backdrop-blur-sm">
 										<div className="text-center text-primary">
 											<div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
 											<p className="font-medium text-sm">Scanning...</p>

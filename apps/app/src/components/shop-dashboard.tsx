@@ -148,7 +148,7 @@ export function ShopDashboard() {
 				</TabsList>
 
 				<TabsContent value="all" className="mt-4">
-					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+					<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 						{filteredProducts.map((product) => (
 							<ProductCard
 								key={product.id}
@@ -160,7 +160,7 @@ export function ShopDashboard() {
 				</TabsContent>
 
 				<TabsContent value="merch" className="mt-4">
-					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+					<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 						{merchProducts.map((product) => (
 							<ProductCard
 								key={product.id}
@@ -172,7 +172,7 @@ export function ShopDashboard() {
 				</TabsContent>
 
 				<TabsContent value="food" className="mt-4">
-					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+					<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 						{foodProducts.map((product) => (
 							<ProductCard
 								key={product.id}
@@ -184,7 +184,7 @@ export function ShopDashboard() {
 				</TabsContent>
 
 				<TabsContent value="experiences" className="mt-4">
-					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+					<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 						{experienceProducts.map((product) => (
 							<ProductCard
 								key={product.id}
