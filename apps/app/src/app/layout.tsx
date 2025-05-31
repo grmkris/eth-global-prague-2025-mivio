@@ -6,6 +6,7 @@ import "~/styles/globals.css";
 import { ContextProvider } from "~/WalletContext";
 import { ThemeProvider } from "~/components/theme-provider";
 import { TRPCReactProvider } from "~/trpc/react";
+import { ProofProvider } from "@vlayer/react";
 
 const inter = Inter({ subsets: ["latin"] });
 const nunito = Inter({ subsets: ["latin"], variable: "--font-nunito" });
@@ -36,7 +37,9 @@ export default async function RootLayout({
 						enableSystem
 						disableTransitionOnChange
 					>
-						<ContextProvider cookies={cookies}>{children}</ContextProvider>
+						<ContextProvider cookies={cookies}>
+							<ProofProvider>{children}</ProofProvider>
+						</ContextProvider>
 					</ThemeProvider>
 				</TRPCReactProvider>
 			</body>
