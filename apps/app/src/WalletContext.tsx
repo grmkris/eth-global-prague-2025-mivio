@@ -1,7 +1,8 @@
 // context/index.tsx
 "use client";
 
-import { baseSepolia, flowMainnet } from "@reown/appkit/networks";
+import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
+import { baseSepolia, flowMainnet, flowTestnet } from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { type ReactNode } from "react";

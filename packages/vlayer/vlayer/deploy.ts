@@ -9,12 +9,16 @@ import {
 
 const config = getConfig();
 
+console.log("Deploying contracts");
+
 const { prover, verifier } = await deployVlayerContracts({
   proverSpec,
   verifierSpec,
   proverArgs: [],
   verifierArgs: [],
 });
+
+console.log("Contracts deployed");
 
 await writeEnvVariables(".env", {
   VITE_PROVER_ADDRESS: prover,
