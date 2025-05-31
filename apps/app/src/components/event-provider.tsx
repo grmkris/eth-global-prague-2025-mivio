@@ -50,7 +50,8 @@ export function EventProvider({
 					id: "1",
 					slug: "summer-music-fest-2025",
 					name: "Summer Music Festival 2025",
-					description: "The ultimate 3-day music experience featuring top artists across multiple genres.",
+					description:
+						"The ultimate 3-day music experience featuring top artists across multiple genres.",
 					location: "Central Park, New York",
 					startDate: "2025-07-18",
 					endDate: "2025-07-20",

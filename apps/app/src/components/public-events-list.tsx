@@ -28,7 +28,6 @@ type Event = {
 	status: "upcoming" | "active" | "completed";
 };
 
-
 export function PublicEventsList() {
 	const router = useRouter();
 	const { isConnected } = useAccount();

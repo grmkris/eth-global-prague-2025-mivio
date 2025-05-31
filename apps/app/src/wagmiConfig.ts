@@ -1,7 +1,7 @@
 // config/index.tsx
 
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
-import { flowTestnet, flowMainnet, baseSepolia } from "@reown/appkit/networks";
+import { baseSepolia, flowMainnet, flowTestnet } from "@reown/appkit/networks";
 import { cookieStorage, createStorage } from "@wagmi/core";
 
 // Get projectId from https://cloud.reown.com
