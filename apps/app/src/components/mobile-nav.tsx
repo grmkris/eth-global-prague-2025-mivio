@@ -5,6 +5,7 @@ import {
 	CheckSquare,
 	CreditCard,
 	Home,
+	QrCode,
 	ShoppingBag,
 	User,
 } from "lucide-react";
@@ -42,6 +43,12 @@ export function MobileNav() {
 						href: `/event/${eventInfo.slug}`,
 						icon: Home,
 						active: pathname === `/event/${eventInfo.slug}`,
+					},
+					{
+						name: "Scan",
+						href: `/event/${eventInfo.slug}/scan`,
+						icon: QrCode,
+						active: pathname === `/event/${eventInfo.slug}/scan`,
 					},
 					{
 						name: "Tasks",

@@ -3,7 +3,14 @@ import {
 	createAuthVerifyMessage,
 	createAuthVerifyMessageWithJWT,
 } from "@erc7824/nitrolite";
-import type { WalletClient } from "viem";
+import { type WalletClient, getAddress } from "viem";
+import {
+	type CryptoKeypair,
+	createMessageSigner,
+	createStateWalletClient,
+	loadOrGenerateKeyPair,
+} from "./keyManager";
+import type { WalletSigner } from "./keyManager";
 
 export type WSStatus =
 	| "disconnected"
@@ -63,6 +70,8 @@ export class ClearNodeClient {
 	>();
 	private authParams: AuthParams | null = null;
 	private isAuthenticated = false;
+	private keyPair: CryptoKeypair | null = null;
+	private stateWallet: WalletSigner | null = null;
 
 	constructor(options: ClearNodeClientOptions) {
 		this.options = {
@@ -75,10 +84,44 @@ export class ClearNodeClient {
 	}
 
 	/**
+	 * Initialize keys and state wallet
+	 */
+	private async initializeKeys(): Promise<void> {
+		try {
+			console.log("Initializing keys");
+			this.keyPair = await loadOrGenerateKeyPair();
+			this.stateWallet = createStateWalletClient(this.keyPair);
+			console.log("Keys initialized successfully", this.stateWallet.address);
+		} catch (error) {
+			console.error("Failed to initialize keys:", error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Get the message signer function
+	 */
+	getMessageSigner() {
+		if (!this.stateWallet) {
+			throw new Error("State wallet not initialized");
+		}
+		return createMessageSigner(this.stateWallet);
+	}
+
+	getStateWallet() {
+		return this.stateWallet;
+	}
+
+	/**
 	 * Connect to ClearNode and authenticate
 	 */
 	async connect(authParams: AuthParams): Promise<void> {
 		this.authParams = authParams;
+
+		// Initialize keys if not already done
+		if (!this.keyPair || !this.stateWallet) {
+			await this.initializeKeys();
+		}
 
 		if (this.reconnectTimeout) {
 			clearTimeout(this.reconnectTimeout);
@@ -137,10 +180,12 @@ export class ClearNodeClient {
 	 * Authenticate with ClearNode
 	 */
 	private async authenticate(): Promise<void> {
-		if (!this.ws || !this.authParams)
-			throw new Error("WebSocket not connected or auth params missing");
+		if (!this.ws || !this.authParams || !this.stateWallet)
+			throw new Error(
+				"WebSocket not connected, auth params missing, or state wallet not initialized",
+			);
 
-		const { walletAddress, signerAddress, walletClient } = this.authParams;
+		const { walletAddress, walletClient } = this.authParams;
 
 		// Check for JWT token first
 		const jwtToken =
@@ -155,14 +200,14 @@ export class ClearNodeClient {
 		} else {
 			// Create initial auth request
 			const expire = (Math.floor(Date.now() / 1000) + 3600).toString(); // 1 hour
-
+			console.log("this.stateWallet?.address", this.stateWallet?.address);
 			authRequest = await createAuthRequestMessage({
-				wallet: walletAddress,
-				participant: signerAddress,
+				wallet: getAddress(walletAddress),
+				participant: getAddress(this.stateWallet?.address ?? "0x0"),
 				app_name: "Mivio Events",
 				expire,
 				scope: "events",
-				application: walletAddress,
+				application: getAddress(walletAddress),
 				allowances: [],
 			});
 		}
@@ -178,7 +223,7 @@ export class ClearNodeClient {
 			const handleAuthResponse = async (event: MessageEvent) => {
 				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 				let response: any;
-				
+
 				try {
 					response = JSON.parse(event.data);
 				} catch (error) {
@@ -190,16 +235,15 @@ export class ClearNodeClient {
 
 				try {
 					if (response.res && response.res[1] === "auth_challenge") {
-						// Create EIP-712 signer function that properly extracts the challenge
+						// Create EIP-712 signer function
 						const eip712Signer = async (
 							data: unknown,
 						): Promise<`0x${string}`> => {
 							console.log("Creating EIP-712 signature for data:", data);
-							
+
 							let challengeUUID = "";
 
-							// The data passed to this function is the raw event.data string
-							// We need to extract the challenge from the parsed response
+							// Extract the challenge from the parsed response
 							if (response.res?.[2]?.challenge_message) {
 								challengeUUID = response.res[2].challenge_message;
 							} else if (response.res?.[2]?.challenge) {
@@ -211,7 +255,10 @@ export class ClearNodeClient {
 							}
 
 							if (!challengeUUID) {
-								console.error("Could not extract challenge from response:", response);
+								console.error(
+									"Could not extract challenge from response:",
+									response,
+								);
 								throw new Error("Challenge not found in response");
 							}
 
@@ -220,9 +267,9 @@ export class ClearNodeClient {
 							const message = {
 								challenge: challengeUUID,
 								scope: "events",
-								wallet: walletAddress,
-								application: walletAddress,
-								participant: signerAddress,
+								wallet: getAddress(walletAddress),
+								application: getAddress(walletAddress),
+								participant: getAddress(this.stateWallet?.address ?? "0x0"),
 								expire: Math.floor(Date.now() / 1000) + 3600,
 								allowances: [],
 							};
@@ -264,10 +311,16 @@ export class ClearNodeClient {
 						);
 						console.log("Sending auth_verify message");
 						this.ws?.send(authVerify);
-					} else if (response.res && (response.res[1] === "auth_verify" || response.res[1] === "auth_success")) {
+					} else if (
+						response.res &&
+						(response.res[1] === "auth_verify" ||
+							response.res[1] === "auth_success")
+					) {
 						console.log("Authentication successful");
 						// Store JWT if provided
-						const jwtToken = response.res[2]?.[0]?.jwt_token || response.res[2]?.[0]?.jwt_token;
+						const jwtToken =
+							response.res[2]?.[0]?.jwt_token ||
+							response.res[2]?.[0]?.jwt_token;
 						if (jwtToken && typeof window !== "undefined") {
 							console.log("Storing JWT token");
 							window.localStorage?.setItem("clearnode_jwt", jwtToken);
@@ -282,9 +335,9 @@ export class ClearNodeClient {
 						(response.res && response.res[1] === "error")
 					) {
 						const errorMsg =
-							response.err?.[2] || 
-							response.res?.[2]?.[0]?.error || 
-							response.res?.[2] || 
+							response.err?.[2] ||
+							response.res?.[2]?.[0]?.error ||
+							response.res?.[2] ||
 							"Authentication failed";
 						console.error("Authentication failed:", errorMsg);
 						if (typeof window !== "undefined") {

@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircle2, MapPin, QrCode, Trophy } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { RewardModal } from "~/components/reward-modal";
 import { Badge } from "~/components/ui/badge";
@@ -29,6 +30,10 @@ type Task = {
 };
 
 export function MicrotaskDashboard() {
+	const router = useRouter();
+	const params = useParams();
+	const eventSlug = params.eventSlug as string;
+
 	const [tasks, setTasks] = useState<Task[]>([
 		{
 			id: "task-1",
@@ -104,16 +109,26 @@ export function MicrotaskDashboard() {
 		);
 	};
 
+	const handleQuickScan = () => {
+		router.push(`/event/${eventSlug}/scan`);
+	};
+
 	const activeTasks = tasks.filter((task) => !task.completed);
 	const completedTasks = tasks.filter((task) => task.completed);
 
 	return (
 		<div className="space-y-6">
-			<div>
-				<h1 className="font-bold text-2xl tracking-tight">Tasks</h1>
-				<p className="text-muted-foreground">
-					Complete tasks to earn rewards at the event
-				</p>
+			<div className="flex items-center justify-between">
+				<div>
+					<h1 className="font-bold text-2xl tracking-tight">Tasks</h1>
+					<p className="text-muted-foreground">
+						Complete tasks to earn rewards at the event
+					</p>
+				</div>
+				<Button onClick={handleQuickScan} size="sm">
+					<QrCode className="mr-2 h-4 w-4" />
+					Quick Scan
+				</Button>
 			</div>
 
 			<div className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
