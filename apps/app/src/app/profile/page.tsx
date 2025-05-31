@@ -111,7 +111,7 @@ export default function ProfilePage() {
 								</div>
 								<div className="text-center">
 									<p className="text-2xl font-bold">{userStats.totalRewards}</p>
-									<p className="text-sm text-muted-foreground">EC Earned</p>
+									<p className="text-sm text-muted-foreground">USDC Earned</p>
 								</div>
 							</div>
 						</CardContent>

@@ -159,7 +159,7 @@ export function QRResultHandler({
 			case "task":
 				return `Complete task: ${parsedData.taskId}`;
 			case "payment":
-				return `Pay for: ${parsedData.itemId || "Item"} - ${parsedData.amount} EC`;
+				return `Pay for: ${parsedData.itemId || "Item"} - ${parsedData.amount} USDC`;
 			case "checkin":
 				return `Check in at: ${parsedData.locationId}`;
 			default:
@@ -231,7 +231,7 @@ export function QRResultHandler({
 										<strong>Item:</strong> {parsedData.itemId}
 									</p>
 									<p className="text-sm">
-										<strong>Amount:</strong> {parsedData.amount} EC
+										<strong>Amount:</strong> {parsedData.amount} USDC
 									</p>
 									{parsedData.vendor && (
 										<p className="text-sm">
@@ -247,7 +247,7 @@ export function QRResultHandler({
 										<strong>Location:</strong> {parsedData.locationId}
 									</p>
 									<p className="text-sm">
-										<strong>Points:</strong> +{parsedData.points || 25} EC
+										<strong>Points:</strong> +{parsedData.points || 25} USDC
 									</p>
 									<p className="text-muted-foreground text-sm">
 										Check in to earn points and track your event participation

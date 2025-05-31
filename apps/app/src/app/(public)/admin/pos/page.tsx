@@ -77,7 +77,7 @@ export default function AdminPOSPage() {
 		const transaction: Transaction = {
 			id: `txn-${Date.now()}`,
 			amount: amountValue,
-			description: description || `Payment of ${amountValue} EC`,
+			description: description || `Payment of ${amountValue} USDC`,
 			vendor: vendor,
 			timestamp: new Date(),
 			status: "pending",
@@ -155,7 +155,7 @@ export default function AdminPOSPage() {
 					<div className="flex items-center gap-6">
 						<div className="text-center">
 							<p className="font-bold text-2xl">
-								{todaysRevenue.toLocaleString()} EC
+								{todaysRevenue.toLocaleString()} USDC
 							</p>
 							<p className="text-muted-foreground text-sm">Today's Revenue</p>
 						</div>
@@ -195,7 +195,7 @@ export default function AdminPOSPage() {
 										<div className="flex items-center justify-center gap-2">
 											<DollarSign className="h-6 w-6 text-primary" />
 											<span className="font-bold font-mono text-3xl">
-												{amount || "0"} EC
+												{amount || "0"} USDC
 											</span>
 										</div>
 									</div>
@@ -212,7 +212,7 @@ export default function AdminPOSPage() {
 												size="sm"
 												onClick={() => addQuickAmount(amt)}
 											>
-												{amt} EC
+												{amt} USDC
 											</Button>
 										))}
 									</div>
@@ -319,7 +319,7 @@ export default function AdminPOSPage() {
 											<div className="flex-1">
 												<div className="flex items-center gap-2">
 													<span className="font-medium">
-														{transaction.amount} EC
+														{transaction.amount} USDC
 													</span>
 													<Badge
 														variant={
@@ -353,7 +353,7 @@ export default function AdminPOSPage() {
 				{currentTransaction && (
 					<QRCodeGenerator
 						data={getQRData(currentTransaction)}
-						title={`Payment Request: ${currentTransaction.amount} EC`}
+						title={`Payment Request: ${currentTransaction.amount} USDC`}
 						description={`${currentTransaction.vendor} - ${currentTransaction.description}`}
 						open={showQRModal}
 						onClose={() => setShowQRModal(false)}

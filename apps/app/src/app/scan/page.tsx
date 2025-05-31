@@ -66,14 +66,14 @@ export default function ScanPage() {
 									<p className="font-medium text-sm">Coffee Festival - Main Stage</p>
 									<p className="text-xs text-muted-foreground">2 hours ago</p>
 								</div>
-								<span className="text-sm text-green-600">+50 EC</span>
+								<span className="text-sm text-green-600">+50 USDC</span>
 							</div>
 							<div className="flex items-center justify-between py-2 border-b last:border-0">
 								<div>
 									<p className="font-medium text-sm">Partner Booth #12</p>
 									<p className="text-xs text-muted-foreground">Yesterday</p>
 								</div>
-								<span className="text-sm text-green-600">+25 EC</span>
+								<span className="text-sm text-green-600">+25 USDC</span>
 							</div>
 						</CardContent>
 					</Card>

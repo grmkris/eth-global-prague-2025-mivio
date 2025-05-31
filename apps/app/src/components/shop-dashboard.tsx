@@ -250,7 +250,7 @@ function ProductCard({
 			<CardContent className="pb-2">
 				<div className="flex items-center gap-1">
 					<Tag className="h-4 w-4 text-muted-foreground" />
-					<span className="font-bold">{product.price} EC</span>
+					<span className="font-bold">{product.price} USDC</span>
 				</div>
 			</CardContent>
 			<CardFooter>

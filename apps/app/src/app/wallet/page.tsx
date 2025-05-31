@@ -178,7 +178,7 @@ export default function WalletPage() {
 												<p className={`font-bold ${
 													tx.type === "received" ? "text-green-600" : "text-red-600"
 												}`}>
-													{tx.type === "received" ? "+" : "-"}{tx.amount} EC
+													{tx.type === "received" ? "+" : "-"}{tx.amount} USDC
 												</p>
 												<Badge variant="outline" className="text-xs">
 													{tx.status}
@@ -209,7 +209,7 @@ export default function WalletPage() {
 													</div>
 												</div>
 												<div className="text-right">
-													<p className="font-bold text-green-600">+{tx.amount} EC</p>
+													<p className="font-bold text-green-600">+{tx.amount} USDC</p>
 													<Badge variant="outline" className="text-xs">
 														{tx.status}
 													</Badge>
@@ -239,7 +239,7 @@ export default function WalletPage() {
 													</div>
 												</div>
 												<div className="text-right">
-													<p className="font-bold text-red-600">-{tx.amount} EC</p>
+													<p className="font-bold text-red-600">-{tx.amount} USDC</p>
 													<Badge variant="outline" className="text-xs">
 														{tx.status}
 													</Badge>

@@ -100,7 +100,7 @@ export function WalletDashboard() {
 				</CardHeader>
 				<CardContent>
 					<div className="font-bold text-4xl">
-						{balance} <span className="text-xl">EC</span>
+						{balance} <span className="text-xl">USDC</span>
 					</div>
 					<p className="mt-1 text-foreground/70 text-sm">EventCoins</p>
 				</CardContent>
@@ -168,7 +168,7 @@ export function WalletDashboard() {
 								<div
 									className={`font-medium ${tx.type === "payment" ? "text-red-600" : "text-green-600"}`}
 								>
-									{tx.amount} EC
+									{tx.amount} USDC
 								</div>
 							</div>
 						))}
@@ -193,7 +193,7 @@ export function WalletDashboard() {
 											<p className="text-muted-foreground text-xs">{tx.date}</p>
 										</div>
 									</div>
-									<div className="font-medium text-red-600">{tx.amount} EC</div>
+									<div className="font-medium text-red-600">{tx.amount} USDC</div>
 								</div>
 							))}
 					</div>
@@ -218,7 +218,7 @@ export function WalletDashboard() {
 										</div>
 									</div>
 									<div className="font-medium text-green-600">
-										{tx.amount} EC
+										{tx.amount} USDC
 									</div>
 								</div>
 							))}

@@ -165,7 +165,7 @@ export default function AdminStorePage() {
 							</div>
 							<div className="text-center">
 								<p className="font-bold text-2xl">
-									{totalRevenue.toLocaleString()} EC
+									{totalRevenue.toLocaleString()} USDC
 								</p>
 								<p className="text-muted-foreground text-sm">Total Revenue</p>
 							</div>
@@ -224,7 +224,7 @@ export default function AdminStorePage() {
 										<span className="text-muted-foreground">Price:</span>
 										<div className="flex items-center gap-1">
 											<Tag className="h-3 w-3" />
-											<span className="font-bold">{product.price} EC</span>
+											<span className="font-bold">{product.price} USDC</span>
 										</div>
 									</div>
 									<div className="flex items-center justify-between">
@@ -243,7 +243,7 @@ export default function AdminStorePage() {
 											<DollarSign className="h-3 w-3" />
 											<span className="font-bold">
 												{(product.price * product.soldCount).toLocaleString()}{" "}
-												EC
+												USDC
 											</span>
 										</div>
 									</div>
@@ -278,7 +278,7 @@ export default function AdminStorePage() {
 					<QRCodeGenerator
 						data={getQRData(selectedProduct)}
 						title={`Payment: ${selectedProduct.name}`}
-						description={`${selectedProduct.price} EC - ${selectedProduct.vendor}`}
+						description={`${selectedProduct.price} USDC - ${selectedProduct.vendor}`}
 						open={showQRModal}
 						onClose={() => setShowQRModal(false)}
 					/>

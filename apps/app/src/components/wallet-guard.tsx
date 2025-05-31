@@ -26,7 +26,9 @@ export function WalletGuard({ children }: WalletGuardProps) {
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
-						<w3m-button />
+						<div className="flex justify-center">
+							<w3m-button />
+						</div>
 						<div className="text-center text-sm text-muted-foreground">
 							<p>By connecting, you agree to our</p>
 							<p className="underline">Terms of Service and Privacy Policy</p>

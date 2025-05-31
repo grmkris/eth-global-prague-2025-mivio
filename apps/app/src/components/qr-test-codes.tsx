@@ -24,7 +24,7 @@ const testQRCodes = [
 	},
 	{
 		name: "Payment QR",
-		description: "Pay for coffee and pastry (120 EC)",
+		description: "Pay for coffee and pastry (120 USDC)",
 		data: JSON.stringify({
 			type: "payment",
 			itemId: "prod-4",

@@ -125,7 +125,7 @@ export function EventDashboard() {
 									<p className="text-xs text-muted-foreground">Main Stage Visit</p>
 								</div>
 							</div>
-							<span className="text-sm font-medium text-secondary-foreground">+50 EC</span>
+							<span className="text-sm font-medium text-secondary-foreground">+50 USDC</span>
 						</div>
 						<div className="flex items-center justify-between py-1.5 border-b last:border-0">
 							<div className="flex items-center gap-2">
@@ -137,7 +137,7 @@ export function EventDashboard() {
 									<p className="text-xs text-muted-foreground">Coffee & Pastry</p>
 								</div>
 							</div>
-							<span className="text-sm font-medium text-destructive">-120 EC</span>
+							<span className="text-sm font-medium text-destructive">-120 USDC</span>
 						</div>
 						<div className="flex items-center justify-between py-1.5 border-b last:border-0">
 							<div className="flex items-center gap-2">
@@ -149,7 +149,7 @@ export function EventDashboard() {
 									<p className="text-xs text-muted-foreground">Partner Booth #42</p>
 								</div>
 							</div>
-							<span className="text-sm font-medium text-primary">+25 EC</span>
+							<span className="text-sm font-medium text-primary">+25 USDC</span>
 						</div>
 					</CardContent>
 				</Card>

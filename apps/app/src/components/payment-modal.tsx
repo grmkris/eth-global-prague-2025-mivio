@@ -67,7 +67,7 @@ export function PaymentModal({
 							placeholder="Enter amount"
 						/>
 						<p className="text-muted-foreground text-xs">
-							Available balance: {balance} EC
+							Available balance: {balance} USDC
 						</p>
 						{Number.parseInt(amount) > availableBalance && (
 							<p className="text-red-500 text-xs">
