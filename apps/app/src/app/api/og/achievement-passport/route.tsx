@@ -2,49 +2,104 @@ import type { ImageResponse } from "next/og";
 import { ImageResponse as ImageResponseClass } from "next/og";
 import type { NextRequest } from "next/server";
 
-// Mock function to map NFT ID to wallet address
-async function mapNftIdToWallet(nftId: string): Promise<string | null> {
-	// Mock mapping - replace with actual database/contract queries
-	const nftToWalletMap: Record<string, string> = {
-		"1": "0x1234567890123456789012345678901234567890",
-		"2": "0x2345678901234567890123456789012345678901",
-		"3": "0x3456789012345678901234567890123456789012",
-		"4": "0x4567890123456789012345678901234567890123",
-		"5": "0x5678901234567890123456789012345678901234",
-		// Add more mock mappings as needed
-	};
+// Type definitions
+type Achievement = {
+	id: number;
+	name: string;
+	icon: string;
+	earned: boolean;
+	progress?: number;
+};
 
-	return nftToWalletMap[nftId] || null;
+type RecentEvent = {
+	id: number;
+	name: string;
+	status: "active" | "completed";
+	points: number;
+};
+
+type UserStats = {
+	tasksCompleted: number;
+	eventsAttended: number;
+	totalSpent: number;
+	favoriteCategory: string;
+	favoriteGenre?: string;
+};
+
+type UserData = {
+	user: {
+		username: string;
+		totalEvents: number;
+		totalPoints: number;
+		level: number;
+		avatar: string;
+	};
+	achievements: Achievement[];
+	recentEvents: RecentEvent[];
+	stats: UserStats;
+};
+
+type NFTMetadata = {
+	properties?: {
+		userData?: {
+			username: string;
+			walletAddress: string;
+			totalEvents: number;
+			totalPoints: number;
+			level: number;
+			achievements: Achievement[];
+			recentEvents: RecentEvent[];
+			stats: UserStats;
+		};
+	};
+};
+
+// Fetch NFT metadata from our own API
+async function getNftMetadata(nftId: string): Promise<NFTMetadata | null> {
+	try {
+    const url = new URL(`https://eth-global-prague-2025-mivio-app.vercel.app/api/nft/${nftId}`);
+		const response = await fetch(
+			url.toString(),
+		);
+
+    console.log("Fetching metadata from:", url.toString());
+
+		if (!response.ok) {
+			throw new Error(`Failed to fetch metadata: ${response.statusText}`);
+		}
+
+		const metadata = await response.json();
+		return metadata;
+	} catch (error) {
+		console.error("Error fetching NFT metadata:", error);
+		// Return null to fall back to mock data
+		return null;
+	}
 }
 
-// This would come from your database
-async function getUserData(walletAddress: string) {
-	// Mock data - replace with actual database queries
+// Fallback mock function (kept for development/fallback)
+async function getFallbackUserData(nftId: string): Promise<UserData> {
 	return {
 		user: {
-			username: "FestivalFan",
-			totalEvents: 7,
-			totalPoints: 12450,
-			level: 15,
-			avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${walletAddress}`,
+			username: "FallbackUser",
+			totalEvents: 3,
+			totalPoints: 5000,
+			level: 8,
+			avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${nftId}`,
 		},
 		achievements: [
-			{ id: 1, name: "Early Adopter", icon: "🎯", earned: true },
-			{ id: 2, name: "Network Maven", icon: "🤝", earned: true },
-			{ id: 3, name: "Task Master", icon: "✅", earned: false, progress: 0.8 },
-			{ id: 4, name: "Shopping Expert", icon: "🛍️", earned: true },
-			{ id: 5, name: "Event Legend", icon: "👑", earned: false, progress: 0.6 },
+			{ id: 1, name: "Festival Starter", icon: "🎵", earned: true },
+			{ id: 2, name: "Music Maven", icon: "🎧", earned: false, progress: 0.5 },
 		],
 		recentEvents: [
-			{ id: 1, name: "Summer Music Fest", status: "active", points: 1250 },
-			{ id: 2, name: "Indie Rock Weekend", status: "completed", points: 890 },
-			{ id: 3, name: "Jazz & Blues Fest", status: "completed", points: 650 },
+			{ id: 1, name: "Sample Festival", status: "active", points: 1000 },
 		],
 		stats: {
-			tasksCompleted: 45,
-			eventsAttended: 7,
-			totalSpent: 8950,
-			favorite_category: "Music",
+			tasksCompleted: 10,
+			eventsAttended: 3,
+			totalSpent: 2500,
+			favoriteCategory: "Music",
+			favoriteGenre: "General",
 		},
 	};
 }
@@ -60,20 +115,55 @@ export async function GET(request: NextRequest) {
 		return new Response("NFT ID required", { status: 400 });
 	}
 
-	// Map NFT ID to wallet address
-	const walletAddress = await mapNftIdToWallet(nftId);
+	// Fetch metadata from our NFT endpoint
+	const metadata = await getNftMetadata(nftId);
+	let userData: UserData;
 
-	if (!walletAddress) {
-		return new Response("NFT not found or invalid NFT ID", { status: 404 });
+	if (metadata?.properties?.userData) {
+		// Use data from metadata
+		userData = {
+			user: {
+				username: metadata.properties.userData.username,
+				totalEvents: metadata.properties.userData.totalEvents,
+				totalPoints: metadata.properties.userData.totalPoints,
+				level: metadata.properties.userData.level,
+				avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${metadata.properties.userData.walletAddress}`,
+			},
+			achievements: metadata.properties.userData.achievements,
+			recentEvents: metadata.properties.userData.recentEvents,
+			stats: metadata.properties.userData.stats,
+		};
+		console.log("Using metadata from NFT endpoint");
+	} else {
+		// Fallback to mock data
+		userData = await getFallbackUserData(nftId);
+		console.log("Using fallback data");
 	}
 
-	console.log("Mapped to wallet address:", walletAddress);
-
-	const data = await getUserData(walletAddress);
-	const earnedAchievements = data.achievements.filter((a) => a.earned);
-	const inProgressAchievements = data.achievements.filter(
-		(a) => !a.earned && a.progress,
+	const earnedAchievements = userData.achievements.filter((a: Achievement) => a.earned);
+	const inProgressAchievements = userData.achievements.filter(
+		(a: Achievement) => !a.earned && a.progress,
 	);
+
+	// Get icon based on favorite genre
+	const getGenreIcon = (genre?: string) => {
+		switch (genre?.toLowerCase()) {
+			case "rock":
+			case "indie":
+				return "🎸";
+			case "jazz":
+				return "🎷";
+			case "electronic":
+			case "edm":
+				return "🎧";
+			case "classical":
+				return "🎼";
+			case "pop":
+				return "🎤";
+			default:
+				return "🎵";
+		}
+	};
 
 	return new ImageResponseClass(
 		<div
@@ -111,7 +201,7 @@ export async function GET(request: NextRequest) {
 							fontSize: "40px",
 						}}
 					>
-						🎪
+						{getGenreIcon(userData.stats.favoriteGenre)}
 					</div>
 					<div style={{ display: "flex", flexDirection: "column" }}>
 						<h1
@@ -122,7 +212,7 @@ export async function GET(request: NextRequest) {
 								fontWeight: "bold",
 							}}
 						>
-							{data.user.username}
+							{userData.user.username}
 						</h1>
 						<p
 							style={{
@@ -131,27 +221,30 @@ export async function GET(request: NextRequest) {
 								margin: "8px 0 0 0",
 							}}
 						>
-							Level {data.user.level} • {data.user.totalEvents} Events
+							Level {userData.user.level} • {userData.user.totalEvents} Festivals
 						</p>
 					</div>
 				</div>
 
-				{/* QR Code placeholder */}
+				{/* NFT ID Badge */}
 				<div
 					style={{
-						width: "100px",
-						height: "100px",
-						background: "white",
+						background: "rgba(255,255,255,0.9)",
 						borderRadius: "12px",
+						padding: "16px 20px",
 						display: "flex",
+						flexDirection: "column",
 						alignItems: "center",
 						justifyContent: "center",
-						fontSize: "12px",
-						color: "black",
-						flexShrink: 0,
+						minWidth: "100px",
 					}}
 				>
-					<span style={{ display: "flex" }}>QR CODE</span>
+					<div style={{ color: "#1e1b4b", fontSize: "12px", fontWeight: "bold", display: "flex" }}>
+						Music Pass #{nftId}
+					</div>
+					<div style={{ color: "#6b7280", fontSize: "10px", display: "flex" }}>
+						Mivio Festival
+					</div>
 				</div>
 			</div>
 
@@ -190,12 +283,12 @@ export async function GET(request: NextRequest) {
 								margin: "0 0 10px 0",
 							}}
 						>
-							Total Points
+							Festival Points
 						</h3>
 						<div
 							style={{ color: "white", fontSize: "36px", fontWeight: "bold" }}
 						>
-							{data.user.totalPoints.toLocaleString()}
+							{userData.user.totalPoints.toLocaleString()}
 						</div>
 					</div>
 
@@ -218,12 +311,12 @@ export async function GET(request: NextRequest) {
 								margin: "0 0 20px 0",
 							}}
 						>
-							Recent Events
+							Recent Festivals
 						</h3>
 						<div
 							style={{ display: "flex", flexDirection: "column", gap: "12px" }}
 						>
-							{data.recentEvents.slice(0, 3).map((event) => (
+							{userData.recentEvents.slice(0, 3).map((event: RecentEvent) => (
 								<div
 									key={event.id}
 									style={{
@@ -296,7 +389,7 @@ export async function GET(request: NextRequest) {
 							marginBottom: "30px",
 						}}
 					>
-						{earnedAchievements.map((achievement) => (
+						{earnedAchievements.map((achievement: Achievement) => (
 							<div
 								key={achievement.id}
 								style={{
@@ -342,7 +435,7 @@ export async function GET(request: NextRequest) {
 									gap: "12px",
 								}}
 							>
-								{inProgressAchievements.map((achievement) => (
+								{inProgressAchievements.map((achievement: Achievement) => (
 									<div
 										key={achievement.id}
 										style={{
