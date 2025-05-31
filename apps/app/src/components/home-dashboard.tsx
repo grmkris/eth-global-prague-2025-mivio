@@ -1,21 +1,14 @@
 "use client";
 
-import { 
-	Calendar, 
-	MapPin, 
-	Bell,
-	Plus,
-	Send,
-	Download
-} from "lucide-react";
+import { Bell, Calendar, Download, MapPin, Plus, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
-import { Badge } from "~/components/ui/badge";
-import { Progress } from "~/components/ui/progress";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { useAccount } from "wagmi";
 import { useMemo } from "react";
+import { useAccount } from "wagmi";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import { Progress } from "~/components/ui/progress";
 
 type Event = {
 	id: string;
@@ -87,7 +80,7 @@ export function HomeDashboard() {
 		currentQuest: "General Event Engagement",
 		questProgress: 1,
 		questTotal: 5,
-		balance: 160.00,
+		balance: 160.0,
 		currency: "USDC",
 	};
 
@@ -106,7 +99,7 @@ export function HomeDashboard() {
 		const startMonth = start.toLocaleDateString("en-US", { month: "short" });
 		const startDay = start.getDate();
 		const endDay = end.getDate();
-		
+
 		if (startDate === endDate) {
 			return `${startMonth} ${startDay}`;
 		}
@@ -123,7 +116,7 @@ export function HomeDashboard() {
 	};
 
 	return (
-		<div className="flex flex-col h-screen bg-background">
+		<div className="flex h-screen flex-col bg-background">
 			{/* Header */}
 			<div className="flex items-center justify-between p-3 pb-1">
 				<div className="flex items-center gap-2">
@@ -135,12 +128,12 @@ export function HomeDashboard() {
 					</Avatar>
 					<div>
 						<h1 className="font-semibold text-base">{getGreeting()}</h1>
-						<p className="text-xs text-muted-foreground">Your Festival Hub</p>
+						<p className="text-muted-foreground text-xs">Your Festival Hub</p>
 					</div>
 				</div>
 				<Button size="icon" variant="ghost" className="relative h-9 w-9">
 					<Bell className="h-4 w-4" />
-					<span className="absolute top-1 right-1 h-1.5 w-1.5 bg-red-500 rounded-full" />
+					<span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-red-500" />
 				</Button>
 			</div>
 
@@ -148,15 +141,15 @@ export function HomeDashboard() {
 			<div className="flex-1 overflow-y-auto px-3 pb-16">
 				{/* Upcoming Events */}
 				<div className="mt-3">
-					<h2 className="font-semibold text-sm mb-2">Upcoming Events</h2>
-					<div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-3 px-3">
+					<h2 className="mb-2 font-semibold text-sm">Upcoming Events</h2>
+					<div className="scrollbar-hide -mx-3 flex gap-2 overflow-x-auto px-3">
 						{events.map((event) => (
-							<Card 
+							<Card
 								key={event.id}
-								className="flex-shrink-0 w-56 cursor-pointer overflow-hidden hover:shadow-lg transition-shadow"
+								className="w-56 flex-shrink-0 cursor-pointer overflow-hidden transition-shadow hover:shadow-lg"
 								onClick={() => handleEventClick(event.slug)}
 							>
-								<div className="relative h-32 bg-muted overflow-hidden">
+								<div className="relative h-32 overflow-hidden bg-muted">
 									<img
 										src={event.bannerImage}
 										alt={event.name}
@@ -164,12 +157,13 @@ export function HomeDashboard() {
 									/>
 								</div>
 								<CardContent className="p-3">
-									<h3 className="font-semibold text-sm mb-0.5">{event.name}</h3>
-									<p className="text-xs text-muted-foreground mb-2">
-										{formatEventDate(event.startDate, event.endDate)}, {event.location}
+									<h3 className="mb-0.5 font-semibold text-sm">{event.name}</h3>
+									<p className="mb-2 text-muted-foreground text-xs">
+										{formatEventDate(event.startDate, event.endDate)},{" "}
+										{event.location}
 									</p>
-									<Button 
-										className="w-full h-8 text-xs"
+									<Button
+										className="h-8 w-full text-xs"
 										variant={event.id === "1" ? "default" : "secondary"}
 										onClick={(e) => {
 											e.stopPropagation();
@@ -185,43 +179,52 @@ export function HomeDashboard() {
 				</div>
 
 				{/* XP Progress */}
-				<div className="mt-4 bg-muted/30 rounded-lg p-3">
-					<div className="flex items-center justify-between mb-1.5">
-						<span className="font-semibold text-xs">XP: {userStats.xp.toLocaleString()}</span>
-						<span className="text-xs text-orange-500 font-medium flex items-center gap-1">
+				<div className="mt-4 rounded-lg bg-muted/30 p-3">
+					<div className="mb-1.5 flex items-center justify-between">
+						<span className="font-semibold text-xs">
+							XP: {userStats.xp.toLocaleString()}
+						</span>
+						<span className="flex items-center gap-1 font-medium text-orange-500 text-xs">
 							🔥 {userStats.currentStreak} day streak
 						</span>
 					</div>
-					<Progress value={(userStats.xp / userStats.xpMax) * 100} className="h-2" />
-					<p className="text-xs text-muted-foreground mt-1.5">
-						Current Quest: {userStats.currentQuest} ({userStats.questProgress}/{userStats.questTotal})
+					<Progress
+						value={(userStats.xp / userStats.xpMax) * 100}
+						className="h-2"
+					/>
+					<p className="mt-1.5 text-muted-foreground text-xs">
+						Current Quest: {userStats.currentQuest} ({userStats.questProgress}/
+						{userStats.questTotal})
 					</p>
 				</div>
 
 				{/* Recent Badges */}
 				<div className="mt-4">
-					<div className="flex items-center justify-between mb-2">
+					<div className="mb-2 flex items-center justify-between">
 						<h2 className="font-semibold text-sm">Recent Badges</h2>
-						<Button 
-							variant="link" 
-							size="sm" 
-							className="text-primary h-auto p-0 text-xs"
+						<Button
+							variant="link"
+							size="sm"
+							className="h-auto p-0 text-primary text-xs"
 							onClick={() => router.push("/achievements")}
 						>
 							View All
 						</Button>
 					</div>
-					<div className="flex gap-3 overflow-x-auto scrollbar-hide -mx-3 px-3 pb-1">
+					<div className="scrollbar-hide -mx-3 flex gap-3 overflow-x-auto px-3 pb-1">
 						{recentBadges.map((badge) => (
-							<div key={badge.id} className="flex flex-col items-center gap-0.5 flex-shrink-0">
-								<div className="h-14 w-14 rounded-full bg-muted flex items-center justify-center overflow-hidden relative">
-									<img 
-										src={badge.image} 
+							<div
+								key={badge.id}
+								className="flex flex-shrink-0 flex-col items-center gap-0.5"
+							>
+								<div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-muted">
+									<img
+										src={badge.image}
 										alt={badge.name}
 										className="absolute inset-0 h-full w-full object-cover"
 										onError={(e) => {
 											const img = e.currentTarget;
-											img.style.display = 'none';
+											img.style.display = "none";
 											const parent = img.parentElement;
 											if (parent) {
 												parent.innerHTML = '<div class="text-lg">🏆</div>';
@@ -229,7 +232,9 @@ export function HomeDashboard() {
 										}}
 									/>
 								</div>
-								<span className="text-xs text-muted-foreground text-center max-w-[56px]">{badge.name}</span>
+								<span className="max-w-[56px] text-center text-muted-foreground text-xs">
+									{badge.name}
+								</span>
 							</div>
 						))}
 					</div>
@@ -239,12 +244,16 @@ export function HomeDashboard() {
 				<div className="mt-4 mb-2">
 					<Card className="bg-gradient-to-br from-primary/10 to-background">
 						<CardContent className="p-3">
-							<p className="text-xs text-muted-foreground mb-0.5">Balance</p>
-							<div className="flex items-center justify-between mb-2">
-								<p className="text-xl font-bold">
+							<p className="mb-0.5 text-muted-foreground text-xs">Balance</p>
+							<div className="mb-2 flex items-center justify-between">
+								<p className="font-bold text-xl">
 									{userStats.currency} ${userStats.balance.toFixed(2)}
 								</p>
-								<Button size="icon" variant="secondary" className="h-8 w-8 rounded-full">
+								<Button
+									size="icon"
+									variant="secondary"
+									className="h-8 w-8 rounded-full"
+								>
 									<Plus className="h-4 w-4" />
 								</Button>
 							</div>
@@ -264,4 +273,4 @@ export function HomeDashboard() {
 			</div>
 		</div>
 	);
-} 
+}

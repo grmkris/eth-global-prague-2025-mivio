@@ -88,7 +88,7 @@ export function WalletDashboard() {
 				</p>
 			</div>
 
-			<Card className="bg-primary/10 border-primary/20">
+			<Card className="border-primary/20 bg-primary/10">
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2">
 						<Wallet className="h-5 w-5" />
@@ -193,7 +193,9 @@ export function WalletDashboard() {
 											<p className="text-muted-foreground text-xs">{tx.date}</p>
 										</div>
 									</div>
-									<div className="font-medium text-red-600">{tx.amount} USDC</div>
+									<div className="font-medium text-red-600">
+										{tx.amount} USDC
+									</div>
 								</div>
 							))}
 					</div>

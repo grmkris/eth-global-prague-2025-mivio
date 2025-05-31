@@ -1,6 +1,6 @@
+import type { VariantProps } from "class-variance-authority";
 import { cn } from "~/lib/utils";
 import { Badge, type badgeVariants } from "./badge";
-import type { VariantProps } from "class-variance-authority";
 
 interface AnimatedBadgeProps
 	extends React.ComponentProps<"span">,
@@ -13,9 +13,9 @@ export function AnimatedBadge({ className, ...props }: AnimatedBadgeProps) {
 		<Badge
 			{...props}
 			className={cn(
-				"animate-in fade-in-50 slide-in-from-top-1 duration-300",
+				"fade-in-50 slide-in-from-top-1 animate-in duration-300",
 				className,
 			)}
 		/>
 	);
-} 
+}

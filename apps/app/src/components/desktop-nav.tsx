@@ -8,8 +8,8 @@ import {
 	Home,
 	LogOut,
 	QrCode,
-	Trophy,
 	Settings,
+	Trophy,
 	User,
 } from "lucide-react";
 import Link from "next/link";
@@ -19,8 +19,8 @@ import ConnectButton from "~/components/connect-button";
 import { ThemeSwitcher } from "~/components/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
-import { cn } from "~/lib/utils";
 import { useUser } from "~/components/user-provider";
+import { cn } from "~/lib/utils";
 
 export function DesktopNav() {
 	const pathname = usePathname();
@@ -94,9 +94,9 @@ export function DesktopNav() {
 				{address ? (
 					<div className="flex items-center gap-3">
 						<Avatar>
-							<AvatarImage 
-								src={user?.avatar || "/placeholder.svg?height=40&width=40"} 
-								alt={user?.name || "User"} 
+							<AvatarImage
+								src={user?.avatar || "/placeholder.svg?height=40&width=40"}
+								alt={user?.name || "User"}
 							/>
 							<AvatarFallback className="bg-primary/10 text-primary">
 								<User className="h-5 w-5" />
@@ -106,7 +106,7 @@ export function DesktopNav() {
 							<h2 className="font-semibold text-base">
 								Hello, {user?.displayName || "there"}!
 							</h2>
-							<p className="text-muted-foreground text-sm font-light">
+							<p className="font-light text-muted-foreground text-sm">
 								Your Festival Hub
 							</p>
 						</div>

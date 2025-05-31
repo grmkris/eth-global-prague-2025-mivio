@@ -1,12 +1,6 @@
 "use client";
 
-import {
-	Home,
-	Trophy,
-	CreditCard,
-	Settings,
-	QrCode,
-} from "lucide-react";
+import { CreditCard, Home, QrCode, Settings, Trophy } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
@@ -34,41 +28,42 @@ export function MobileNav() {
 			}
 		: null;
 
-	const navItems = isEventRoute && eventInfo
-		? [
-				{
-					name: "Home",
-					href: `/events/${eventInfo.slug}`,
-					icon: Home,
-					active: pathname === `/events/${eventInfo.slug}`,
-				},
-				{
-					name: "Progress",
-					href: `/events/${eventInfo.slug}/tasks`,
-					icon: Trophy,
-					active: pathname === `/events/${eventInfo.slug}/tasks`,
-				},
-				{
-					name: "Wallet",
-					href: `/events/${eventInfo.slug}/wallet`,
-					icon: CreditCard,
-					active: pathname === `/events/${eventInfo.slug}/wallet`,
-				},
-				{
-					name: "Profile",
-					href: `/events/${eventInfo.slug}/profile`,
-					icon: Settings,
-					active: pathname === `/events/${eventInfo.slug}/profile`,
-				},
-			]
-		: [
-				{
-					name: "Events",
-					href: "/events",
-					icon: Home,
-					active: pathname === "/events",
-				},
-			];
+	const navItems =
+		isEventRoute && eventInfo
+			? [
+					{
+						name: "Home",
+						href: `/events/${eventInfo.slug}`,
+						icon: Home,
+						active: pathname === `/events/${eventInfo.slug}`,
+					},
+					{
+						name: "Progress",
+						href: `/events/${eventInfo.slug}/tasks`,
+						icon: Trophy,
+						active: pathname === `/events/${eventInfo.slug}/tasks`,
+					},
+					{
+						name: "Wallet",
+						href: `/events/${eventInfo.slug}/wallet`,
+						icon: CreditCard,
+						active: pathname === `/events/${eventInfo.slug}/wallet`,
+					},
+					{
+						name: "Profile",
+						href: `/events/${eventInfo.slug}/profile`,
+						icon: Settings,
+						active: pathname === `/events/${eventInfo.slug}/profile`,
+					},
+				]
+			: [
+					{
+						name: "Events",
+						href: "/events",
+						icon: Home,
+						active: pathname === "/events",
+					},
+				];
 
 	const handleScanPay = () => {
 		if (isEventRoute && eventInfo) {
@@ -84,12 +79,12 @@ export function MobileNav() {
 			<button
 				type="button"
 				onClick={handleScanPay}
-				className="fixed bottom-20 left-1/2 z-[60] -translate-x-1/2 transform group md:hidden"
+				className="-translate-x-1/2 group fixed bottom-20 left-1/2 z-[60] transform md:hidden"
 				aria-label="Scan & Pay"
 			>
 				<div className="relative">
 					{/* Pulse animation */}
-					<div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-25" />
+					<div className="absolute inset-0 animate-ping rounded-full bg-primary opacity-25" />
 					{/* Button shadow */}
 					<div className="absolute inset-0 rounded-full bg-primary/30 blur-xl" />
 					{/* Button */}
@@ -97,14 +92,14 @@ export function MobileNav() {
 						<QrCode className="h-7 w-7" strokeWidth={2.5} />
 					</div>
 					{/* Tooltip */}
-					<span className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-foreground/90 px-3 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+					<span className="-top-10 -translate-x-1/2 absolute left-1/2 whitespace-nowrap rounded-md bg-foreground/90 px-3 py-1.5 font-medium text-background text-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100">
 						Scan & Pay
 					</span>
 				</div>
 			</button>
 
 			{/* Navigation Bar */}
-			<div className="fixed right-0 bottom-0 left-0 border-t bg-card md:hidden z-50">
+			<div className="fixed right-0 bottom-0 left-0 z-50 border-t bg-card md:hidden">
 				{isEventRoute && eventInfo && (
 					<div className="border-b bg-muted/30 px-4 py-2">
 						<div className="flex items-center justify-between">
@@ -113,7 +108,7 @@ export function MobileNav() {
 							</div>
 							<Link
 								href="/"
-								className="text-muted-foreground text-xs hover:text-foreground transition-colors duration-200"
+								className="text-muted-foreground text-xs transition-colors duration-200 hover:text-foreground"
 							>
 								Change
 							</Link>
@@ -143,7 +138,7 @@ export function MobileNav() {
 					))}
 				</div>
 				{address && (
-					<div className="pb-safe pb-1 text-center text-muted-foreground text-xs">
+					<div className="pb-1 pb-safe text-center text-muted-foreground text-xs">
 						{address.slice(0, 6)}...{address.slice(-4)}
 					</div>
 				)}

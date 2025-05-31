@@ -1,26 +1,26 @@
 "use client";
 
 import { 
-	User, 
-	Settings, 
+	Award,
 	Bell, 
-	Shield, 
-	LogOut, 
+	Calendar,
+	Camera,
 	ChevronRight,
 	Copy,
-	Camera,
-	Award,
-	Calendar,
-	MapPin
+	LogOut, 
+	MapPin,
+	Settings, 
+	Shield, 
+	User 
 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
-import { Badge } from "~/components/ui/badge";
-import { Switch } from "~/components/ui/switch";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { WalletGuard } from "~/components/wallet-guard";
-import { BottomNavigation } from "~/components/bottom-navigation";
 import { useAccount, useDisconnect } from "wagmi";
+import { BottomNavigation } from "~/components/bottom-navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import { Switch } from "~/components/ui/switch";
+import { WalletGuard } from "~/components/wallet-guard";
 
 export default function ProfilePage() {
 	const { address } = useAccount();
@@ -67,12 +67,12 @@ export default function ProfilePage() {
 		<WalletGuard>
 			<div className="min-h-screen pb-20">
 				<div className="p-6">
-					<h1 className="font-bold text-2xl mb-6">Profile</h1>
+					<h1 className="mb-6 font-bold text-2xl">Profile</h1>
 
 					{/* Profile Header */}
 					<Card className="mb-6">
 						<CardContent className="p-6">
-							<div className="flex items-center gap-4 mb-4">
+							<div className="mb-4 flex items-center gap-4">
 								<div className="relative">
 									<Avatar className="h-20 w-20">
 										<AvatarImage src="/placeholder-avatar.png" />
@@ -83,7 +83,7 @@ export default function ProfilePage() {
 									<Button
 										size="icon"
 										variant="secondary"
-										className="absolute bottom-0 right-0 h-8 w-8 rounded-full"
+										className="absolute right-0 bottom-0 h-8 w-8 rounded-full"
 									>
 										<Camera className="h-4 w-4" />
 									</Button>
@@ -106,36 +106,36 @@ export default function ProfilePage() {
 
 							<div className="grid grid-cols-2 gap-4">
 								<div className="text-center">
-									<p className="text-2xl font-bold">{userStats.eventsAttended}</p>
-									<p className="text-sm text-muted-foreground">Events</p>
+									<p className="font-bold text-2xl">{userStats.eventsAttended}</p>
+									<p className="text-muted-foreground text-sm">Events</p>
 								</div>
 								<div className="text-center">
-									<p className="text-2xl font-bold">{userStats.totalRewards}</p>
-									<p className="text-sm text-muted-foreground">USDC Earned</p>
+									<p className="font-bold text-2xl">{userStats.totalRewards}</p>
+									<p className="text-muted-foreground text-sm">USDC Earned</p>
 								</div>
 							</div>
 						</CardContent>
 					</Card>
 
 					{/* Stats Grid */}
-					<div className="grid grid-cols-2 gap-4 mb-6">
+					<div className="mb-6 grid grid-cols-2 gap-4">
 						<Card>
 							<CardContent className="p-4">
-								<div className="flex items-center gap-2 mb-2">
+								<div className="mb-2 flex items-center gap-2">
 									<Award className="h-4 w-4 text-primary" />
-									<p className="text-sm font-medium">Achievements</p>
+									<p className="font-medium text-sm">Achievements</p>
 								</div>
-								<p className="text-xl font-bold">{userStats.achievements}</p>
-								<p className="text-xs text-muted-foreground">Unlocked</p>
+								<p className="font-bold text-xl">{userStats.achievements}</p>
+								<p className="text-muted-foreground text-xs">Unlocked</p>
 							</CardContent>
 						</Card>
 						<Card>
 							<CardContent className="p-4">
-								<div className="flex items-center gap-2 mb-2">
+								<div className="mb-2 flex items-center gap-2">
 									<Calendar className="h-4 w-4 text-primary" />
-									<p className="text-sm font-medium">Member Since</p>
+									<p className="font-medium text-sm">Member Since</p>
 								</div>
-								<p className="text-sm font-bold">{userStats.joinedDate}</p>
+								<p className="font-bold text-sm">{userStats.joinedDate}</p>
 							</CardContent>
 						</Card>
 					</div>
@@ -149,15 +149,15 @@ export default function ProfilePage() {
 							{settings.map((setting) => (
 								<div
 									key={setting.title}
-									className="flex items-center justify-between py-3 border-b last:border-0"
+									className="flex items-center justify-between border-b py-3 last:border-0"
 								>
 									<div className="flex items-center gap-3">
-										<div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+										<div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
 											<setting.icon className="h-5 w-5 text-muted-foreground" />
 										</div>
 										<div>
 											<p className="font-medium">{setting.title}</p>
-											<p className="text-sm text-muted-foreground">
+											<p className="text-muted-foreground text-sm">
 												{setting.description}
 											</p>
 										</div>

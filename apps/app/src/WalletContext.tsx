@@ -1,7 +1,6 @@
 // context/index.tsx
 "use client";
 
-
 import { baseSepolia } from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

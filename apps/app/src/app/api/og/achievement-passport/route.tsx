@@ -58,7 +58,7 @@ type NFTMetadata = {
 function getCharacterImage(nftId: string): string {
 	const id = Number.parseInt(nftId) || 0; // Default to 0 if invalid
 	const characterIndex = id % 3; // Cycle through 0, 1, 2
-	
+
 	switch (characterIndex) {
 		case 0:
 			return "/nft-1.png"; // Character with pink hair and glasses
@@ -75,7 +75,7 @@ function getCharacterImage(nftId: string): string {
 function getCharacterName(nftId: string): string {
 	const id = Number.parseInt(nftId) || 0;
 	const characterIndex = id % 3;
-	
+
 	switch (characterIndex) {
 		case 0:
 			return "Tech Maverick";
@@ -91,12 +91,12 @@ function getCharacterName(nftId: string): string {
 // Fetch NFT metadata from our own API
 async function getNftMetadata(nftId: string): Promise<NFTMetadata | null> {
 	try {
-    const url = new URL(`https://eth-global-prague-2025-mivio-app.vercel.app/api/nft/${nftId}`);
-		const response = await fetch(
-			url.toString(),
+		const url = new URL(
+			`https://eth-global-prague-2025-mivio-app.vercel.app/api/nft/${nftId}`,
 		);
+		const response = await fetch(url.toString());
 
-    console.log("Fetching metadata from:", url.toString());
+		console.log("Fetching metadata from:", url.toString());
 
 		if (!response.ok) {
 			throw new Error(`Failed to fetch metadata: ${response.statusText}`);
@@ -170,7 +170,9 @@ export async function GET(request: NextRequest) {
 		console.log("Using fallback data");
 	}
 
-	const earnedAchievements = userData.achievements.filter((a: Achievement) => a.earned);
+	const earnedAchievements = userData.achievements.filter(
+		(a: Achievement) => a.earned,
+	);
 	const inProgressAchievements = userData.achievements.filter(
 		(a: Achievement) => !a.earned && a.progress,
 	);
@@ -293,7 +295,14 @@ export async function GET(request: NextRequest) {
 						minWidth: "100px",
 					}}
 				>
-					<div style={{ color: "#1e1b4b", fontSize: "12px", fontWeight: "bold", display: "flex" }}>
+					<div
+						style={{
+							color: "#1e1b4b",
+							fontSize: "12px",
+							fontWeight: "bold",
+							display: "flex",
+						}}
+					>
 						Event Pass #{nftId}
 					</div>
 					<div style={{ color: "#6b7280", fontSize: "10px", display: "flex" }}>

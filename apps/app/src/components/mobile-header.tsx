@@ -1,8 +1,8 @@
 "use client";
 
 import { User } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { ThemeSwitcher } from "~/components/theme-switcher";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { useUser } from "~/components/user-provider";
 
 export function MobileHeader() {
@@ -13,9 +13,9 @@ export function MobileHeader() {
 			<div className="flex items-center justify-between p-4">
 				<div className="flex items-center gap-3">
 					<Avatar>
-						<AvatarImage 
-							src={user?.avatar || "/placeholder.svg?height=40&width=40"} 
-							alt={user?.name || "User"} 
+						<AvatarImage
+							src={user?.avatar || "/placeholder.svg?height=40&width=40"}
+							alt={user?.name || "User"}
 						/>
 						<AvatarFallback className="bg-primary/10 text-primary">
 							<User className="h-5 w-5" />
@@ -25,7 +25,7 @@ export function MobileHeader() {
 						<h2 className="font-semibold text-base">
 							Hello, {user?.displayName || "there"}!
 						</h2>
-						<p className="text-muted-foreground text-sm font-light">
+						<p className="font-light text-muted-foreground text-sm">
 							Your Festival Hub
 						</p>
 					</div>

@@ -25,10 +25,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 		// In a real app, this would fetch user data from an API based on the wallet address
 		const fetchUserData = async () => {
 			setLoading(true);
-			
+
 			// Simulate API call
 			await new Promise((resolve) => setTimeout(resolve, 300));
-			
+
 			if (address) {
 				// Mock user data - in production, this would come from your backend
 				setUser({
@@ -39,7 +39,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 			} else {
 				setUser(null);
 			}
-			
+
 			setLoading(false);
 		};
 
@@ -59,4 +59,4 @@ export function useUser() {
 		throw new Error("useUser must be used within a UserProvider");
 	}
 	return context;
-} 
+}

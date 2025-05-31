@@ -381,9 +381,13 @@ export function PublicEventDetail({ eventSlug }: { eventSlug: string }) {
 								<div className="flex items-center justify-between text-sm">
 									<span className="text-muted-foreground">Type</span>
 									<span className="font-medium capitalize">
-										{event.slug.includes("coffee") ? "Festival" : 
-										 event.slug.includes("art") ? "Exhibition" : 
-										 event.slug.includes("synthwave") ? "Music Festival" : "Event"}
+										{event.slug.includes("coffee")
+											? "Festival"
+											: event.slug.includes("art")
+												? "Exhibition"
+												: event.slug.includes("synthwave")
+													? "Music Festival"
+													: "Event"}
 									</span>
 								</div>
 							</CardContent>

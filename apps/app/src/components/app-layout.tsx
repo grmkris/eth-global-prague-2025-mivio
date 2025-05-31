@@ -3,13 +3,13 @@
 import type React from "react";
 
 import { usePathname } from "next/navigation";
+import { useAccount } from "wagmi";
+import { BottomNavigation } from "~/components/bottom-navigation";
 import { DesktopNav } from "~/components/desktop-nav";
 import { MobileHeader } from "~/components/mobile-header";
 import { MobileNav } from "~/components/mobile-nav";
-import { useIsMobile } from "~/hooks/use-mobile";
-import { useAccount } from "wagmi";
-import { BottomNavigation } from "~/components/bottom-navigation";
 import { WalletGuard } from "~/components/wallet-guard";
+import { useIsMobile } from "~/hooks/use-mobile";
 
 interface AppLayoutProps {
 	children: React.ReactNode;

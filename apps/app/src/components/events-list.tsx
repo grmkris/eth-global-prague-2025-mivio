@@ -114,7 +114,7 @@ export function EventsList() {
 				{events.map((event) => (
 					<Card
 						key={event.id}
-						className="overflow-hidden transition-all duration-200 hover:shadow-lg hover:scale-[1.02]"
+						className="overflow-hidden transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
 					>
 						<div className="relative aspect-video bg-muted">
 							<img

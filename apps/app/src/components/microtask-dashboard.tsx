@@ -1,8 +1,8 @@
 "use client";
 
-import { CheckCircle2, MapPin, QrCode, Trophy, Mail } from "lucide-react";
+import { CheckCircle2, Mail, MapPin, QrCode, Trophy } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { RewardModal } from "~/components/reward-modal";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -14,9 +14,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "~/components/ui/card";
-import { Progress } from "~/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { useEmailProofVerification } from "~/hooks/useEmailProofVerification";
 import {
 	Dialog,
 	DialogContent,
@@ -24,6 +21,9 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "~/components/ui/dialog";
+import { Progress } from "~/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { useEmailProofVerification } from "~/hooks/useEmailProofVerification";
 
 type Task = {
 	id: string;
@@ -44,13 +44,15 @@ export function MicrotaskDashboard() {
 
 	const [showEmailModal, setShowEmailModal] = useState(false);
 	const [emailFile, setEmailFile] = useState<string>("");
-	const { startProving, verificationError, onChainVerificationStatus } = useEmailProofVerification();
+	const { startProving, verificationError, onChainVerificationStatus } =
+		useEmailProofVerification();
 
 	const [tasks, setTasks] = useState<Task[]>([
 		{
 			id: "task-0",
 			title: "Verify Ticket Ownership",
-			description: "Prove you own a valid ticket using zero-knowledge email verification",
+			description:
+				"Prove you own a valid ticket using zero-knowledge email verification",
 			location: "Digital Verification",
 			reward: "VIP Access Badge",
 			rewardType: "badge",
@@ -61,7 +63,8 @@ export function MicrotaskDashboard() {
 		{
 			id: "task-1",
 			title: "Visit Tasting Hall",
-			description: "Explore the main coffee tasting area and sample different origins",
+			description:
+				"Explore the main coffee tasting area and sample different origins",
 			location: "Tasting Hall - Main Pavilion",
 			reward: "50 EventCoins",
 			rewardType: "token",
@@ -72,7 +75,8 @@ export function MicrotaskDashboard() {
 		{
 			id: "task-2",
 			title: "Scan Roaster's QR",
-			description: "Visit a coffee roaster's booth and scan their special blend QR code",
+			description:
+				"Visit a coffee roaster's booth and scan their special blend QR code",
 			location: "Roaster Row - Exhibition Hall",
 			reward: "Coffee Expert Badge",
 			rewardType: "badge",
@@ -138,8 +142,8 @@ export function MicrotaskDashboard() {
 	};
 
 	const completeTask = (taskId: string) => {
-		const task = tasks.find(t => t.id === taskId);
-		
+		const task = tasks.find((t) => t.id === taskId);
+
 		if (task?.type === "verify") {
 			setShowEmailModal(true);
 			return;
@@ -168,7 +172,7 @@ export function MicrotaskDashboard() {
 	// Monitor email verification status
 	useEffect(() => {
 		if (onChainVerificationStatus === "success") {
-			setTasks(prevTasks => 
+			setTasks((prevTasks) =>
 				prevTasks.map((task) => {
 					if (task.id === "task-0" && task.type === "verify") {
 						const completedTask = { ...task, progress: 100, completed: true };
@@ -178,7 +182,7 @@ export function MicrotaskDashboard() {
 						return completedTask;
 					}
 					return task;
-				})
+				}),
 			);
 		}
 	}, [onChainVerificationStatus]);
@@ -353,13 +357,14 @@ export function MicrotaskDashboard() {
 					<DialogHeader>
 						<DialogTitle>Verify Ticket Ownership</DialogTitle>
 						<DialogDescription>
-							Upload your ticket confirmation email to prove ownership using zero-knowledge proof
+							Upload your ticket confirmation email to prove ownership using
+							zero-knowledge proof
 						</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-4">
 						<div className="flex flex-col items-center justify-center space-y-4 py-6">
 							<Mail className="h-12 w-12 text-muted-foreground" />
-							<p className="text-center text-sm text-muted-foreground">
+							<p className="text-center text-muted-foreground text-sm">
 								Upload the .eml file of your ticket confirmation email
 							</p>
 							<Button onClick={handleEmailUpload} variant="outline">
@@ -367,16 +372,18 @@ export function MicrotaskDashboard() {
 								Upload Email File
 							</Button>
 						</div>
-						
+
 						{verificationError && (
 							<div className="rounded-lg bg-red-50 p-3">
-								<p className="text-sm text-red-600">{verificationError.toString()}</p>
+								<p className="text-red-600 text-sm">
+									{verificationError.toString()}
+								</p>
 							</div>
 						)}
-						
+
 						{emailFile && !verificationError && (
 							<div className="rounded-lg bg-blue-50 p-3">
-								<p className="text-sm text-blue-600">
+								<p className="text-blue-600 text-sm">
 									Generating zero-knowledge proof... This may take a moment.
 								</p>
 							</div>

@@ -1,12 +1,27 @@
 "use client";
 
-import { Trophy, Award, Star, Zap, Target, Users, Calendar, MapPin } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+	Award,
+	Calendar,
+	MapPin,
+	Star,
+	Target,
+	Trophy,
+	Users,
+	Zap,
+} from "lucide-react";
+import { BottomNavigation } from "~/components/bottom-navigation";
 import { Badge } from "~/components/ui/badge";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "~/components/ui/card";
 import { Progress } from "~/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { WalletGuard } from "~/components/wallet-guard";
-import { BottomNavigation } from "~/components/bottom-navigation";
 
 export default function AchievementsPage() {
 	const achievements = [
@@ -71,29 +86,29 @@ export default function AchievementsPage() {
 		<WalletGuard>
 			<div className="min-h-screen pb-20">
 				<div className="p-6">
-					<h1 className="font-bold text-2xl mb-6">Achievements</h1>
+					<h1 className="mb-6 font-bold text-2xl">Achievements</h1>
 
 					{/* Stats Overview */}
-					<div className="grid grid-cols-3 gap-4 mb-6">
+					<div className="mb-6 grid grid-cols-3 gap-4">
 						<Card>
 							<CardContent className="p-4 text-center">
-								<Zap className="h-6 w-6 text-primary mx-auto mb-2" />
-								<p className="text-2xl font-bold">2,450</p>
-								<p className="text-xs text-muted-foreground">Total Points</p>
+								<Zap className="mx-auto mb-2 h-6 w-6 text-primary" />
+								<p className="font-bold text-2xl">2,450</p>
+								<p className="text-muted-foreground text-xs">Total Points</p>
 							</CardContent>
 						</Card>
 						<Card>
 							<CardContent className="p-4 text-center">
-								<Trophy className="h-6 w-6 text-primary mx-auto mb-2" />
-								<p className="text-2xl font-bold">24</p>
-								<p className="text-xs text-muted-foreground">Unlocked</p>
+								<Trophy className="mx-auto mb-2 h-6 w-6 text-primary" />
+								<p className="font-bold text-2xl">24</p>
+								<p className="text-muted-foreground text-xs">Unlocked</p>
 							</CardContent>
 						</Card>
 						<Card>
 							<CardContent className="p-4 text-center">
-								<Target className="h-6 w-6 text-primary mx-auto mb-2" />
-								<p className="text-2xl font-bold">#156</p>
-								<p className="text-xs text-muted-foreground">Ranking</p>
+								<Target className="mx-auto mb-2 h-6 w-6 text-primary" />
+								<p className="font-bold text-2xl">#156</p>
+								<p className="text-muted-foreground text-xs">Ranking</p>
 							</CardContent>
 						</Card>
 					</div>
@@ -104,24 +119,30 @@ export default function AchievementsPage() {
 							<TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
 						</TabsList>
 
-						<TabsContent value="achievements" className="space-y-4 mt-4">
+						<TabsContent value="achievements" className="mt-4 space-y-4">
 							{achievements.map((achievement) => (
-								<Card key={achievement.id} className={achievement.unlocked ? "" : "opacity-60"}>
+								<Card
+									key={achievement.id}
+									className={achievement.unlocked ? "" : "opacity-60"}
+								>
 									<CardContent className="p-4">
 										<div className="flex items-start gap-4">
-											<div className={`h-12 w-12 rounded-full flex items-center justify-center overflow-hidden ${
-												achievement.unlocked ? "" : "grayscale"
-											}`}>
-												<img 
-													src={achievement.image} 
+											<div
+												className={`flex h-12 w-12 items-center justify-center overflow-hidden rounded-full ${
+													achievement.unlocked ? "" : "grayscale"
+												}`}
+											>
+												<img
+													src={achievement.image}
 													alt={achievement.name}
 													className="h-full w-full object-cover"
 													onError={(e) => {
 														const img = e.currentTarget;
-														img.style.display = 'none';
+														img.style.display = "none";
 														const parent = img.parentElement;
 														if (parent) {
-															parent.innerHTML = '<div class="text-2xl">🏆</div>';
+															parent.innerHTML =
+																'<div class="text-2xl">🏆</div>';
 														}
 													}}
 												/>
@@ -129,32 +150,47 @@ export default function AchievementsPage() {
 											<div className="flex-1">
 												<div className="flex items-start justify-between">
 													<div>
-														<h3 className="font-semibold">{achievement.name}</h3>
-														<p className="text-sm text-muted-foreground">
+														<h3 className="font-semibold">
+															{achievement.name}
+														</h3>
+														<p className="text-muted-foreground text-sm">
 															{achievement.description}
 														</p>
 													</div>
-													<Badge variant={achievement.unlocked ? "default" : "secondary"}>
+													<Badge
+														variant={
+															achievement.unlocked ? "default" : "secondary"
+														}
+													>
 														+{achievement.points}
 													</Badge>
 												</div>
 												{achievement.unlocked && achievement.unlockedAt && (
-													<p className="text-xs text-muted-foreground mt-2">
-														Unlocked on {new Date(achievement.unlockedAt).toLocaleDateString()}
+													<p className="mt-2 text-muted-foreground text-xs">
+														Unlocked on{" "}
+														{new Date(
+															achievement.unlockedAt,
+														).toLocaleDateString()}
 													</p>
 												)}
-												{!achievement.unlocked && achievement.progress !== undefined && (
-													<div className="mt-3">
-														<div className="flex justify-between text-xs mb-1">
-															<span>Progress</span>
-															<span>{achievement.progress}/{achievement.total}</span>
+												{!achievement.unlocked &&
+													achievement.progress !== undefined && (
+														<div className="mt-3">
+															<div className="mb-1 flex justify-between text-xs">
+																<span>Progress</span>
+																<span>
+																	{achievement.progress}/{achievement.total}
+																</span>
+															</div>
+															<Progress
+																value={
+																	(achievement.progress / achievement.total) *
+																	100
+																}
+																className="h-2"
+															/>
 														</div>
-														<Progress 
-															value={(achievement.progress / achievement.total) * 100} 
-															className="h-2" 
-														/>
-													</div>
-												)}
+													)}
 											</div>
 										</div>
 									</CardContent>
@@ -170,26 +206,31 @@ export default function AchievementsPage() {
 								</CardHeader>
 								<CardContent className="space-y-3">
 									{leaderboard.map((entry) => (
-										<div 
+										<div
 											key={entry.rank}
-											className={`flex items-center justify-between py-3 px-3 rounded-lg ${
+											className={`flex items-center justify-between rounded-lg px-3 py-3 ${
 												entry.isUser ? "bg-primary/10" : ""
 											}`}
 										>
 											<div className="flex items-center gap-3">
-												<span className="font-bold text-lg w-8">#{entry.rank}</span>
+												<span className="w-8 font-bold text-lg">
+													#{entry.rank}
+												</span>
 												<div>
 													<p className="font-medium">{entry.name}</p>
-													<p className="text-sm text-muted-foreground">
+													<p className="text-muted-foreground text-sm">
 														{entry.points.toLocaleString()} points
 													</p>
 												</div>
 											</div>
 											{entry.change !== 0 && (
-												<span className={`text-sm ${
-													entry.change > 0 ? "text-green-600" : "text-red-600"
-												}`}>
-													{entry.change > 0 ? "↑" : "↓"} {Math.abs(entry.change)}
+												<span
+													className={`text-sm ${
+														entry.change > 0 ? "text-green-600" : "text-red-600"
+													}`}
+												>
+													{entry.change > 0 ? "↑" : "↓"}{" "}
+													{Math.abs(entry.change)}
 												</span>
 											)}
 										</div>
@@ -203,4 +244,4 @@ export default function AchievementsPage() {
 			<BottomNavigation />
 		</WalletGuard>
 	);
-} 
+}

@@ -16,8 +16,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from "~/components/ui/card";
-import { Skeleton } from "~/components/ui/skeleton";
 import { Progress } from "~/components/ui/progress";
+import { Skeleton } from "~/components/ui/skeleton";
 
 export function EventDashboard() {
 	const { event, loading, error } = useEvent();
@@ -70,7 +70,9 @@ export function EventDashboard() {
 					<h1 className="mb-1 font-bold text-2xl text-white tracking-tight">
 						{event.name}
 					</h1>
-					<p className="max-w-2xl text-sm text-white/90 line-clamp-1">{event.description}</p>
+					<p className="line-clamp-1 max-w-2xl text-sm text-white/90">
+						{event.description}
+					</p>
 				</div>
 			</div>
 
@@ -78,9 +80,7 @@ export function EventDashboard() {
 			<div className="grid gap-4 md:grid-cols-1">
 				<Card>
 					<CardHeader className="pb-2">
-						<CardTitle className="font-medium text-sm">
-							Event Details
-						</CardTitle>
+						<CardTitle className="font-medium text-sm">Event Details</CardTitle>
 					</CardHeader>
 					<CardContent className="space-y-2">
 						<div className="flex items-center gap-2 text-sm">
@@ -96,7 +96,9 @@ export function EventDashboard() {
 							<MapPin className="h-3.5 w-3.5 text-muted-foreground" />
 							<div>
 								<p className="font-medium text-xs">Location</p>
-								<p className="text-muted-foreground text-xs">{event.location}</p>
+								<p className="text-muted-foreground text-xs">
+									{event.location}
+								</p>
 							</div>
 						</div>
 					</CardContent>
@@ -108,48 +110,60 @@ export function EventDashboard() {
 				{/* Recent Payments */}
 				<Card>
 					<CardHeader className="pb-3">
-						<CardTitle className="text-base flex items-center gap-2">
+						<CardTitle className="flex items-center gap-2 text-base">
 							<Wallet className="h-5 w-5 text-primary" />
 							Recent Activity
 						</CardTitle>
-						<CardDescription className="text-xs">Your latest transactions</CardDescription>
+						<CardDescription className="text-xs">
+							Your latest transactions
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-2">
-						<div className="flex items-center justify-between py-1.5 border-b last:border-0">
+						<div className="flex items-center justify-between border-b py-1.5 last:border-0">
 							<div className="flex items-center gap-2">
-								<div className="h-7 w-7 rounded-full bg-secondary/20 flex items-center justify-center">
+								<div className="flex h-7 w-7 items-center justify-center rounded-full bg-secondary/20">
 									<CheckSquare className="h-3.5 w-3.5 text-secondary-foreground" />
 								</div>
 								<div>
 									<p className="font-medium text-sm">Task Completed</p>
-									<p className="text-xs text-muted-foreground">Main Stage Visit</p>
+									<p className="text-muted-foreground text-xs">
+										Main Stage Visit
+									</p>
 								</div>
 							</div>
-							<span className="text-sm font-medium text-secondary-foreground">+50 USDC</span>
+							<span className="font-medium text-secondary-foreground text-sm">
+								+50 USDC
+							</span>
 						</div>
-						<div className="flex items-center justify-between py-1.5 border-b last:border-0">
+						<div className="flex items-center justify-between border-b py-1.5 last:border-0">
 							<div className="flex items-center gap-2">
-								<div className="h-7 w-7 rounded-full bg-destructive/10 flex items-center justify-center">
+								<div className="flex h-7 w-7 items-center justify-center rounded-full bg-destructive/10">
 									<ShoppingBag className="h-3.5 w-3.5 text-destructive" />
 								</div>
 								<div>
 									<p className="font-medium text-sm">Purchase</p>
-									<p className="text-xs text-muted-foreground">Coffee & Pastry</p>
+									<p className="text-muted-foreground text-xs">
+										Coffee & Pastry
+									</p>
 								</div>
 							</div>
-							<span className="text-sm font-medium text-destructive">-120 USDC</span>
+							<span className="font-medium text-destructive text-sm">
+								-120 USDC
+							</span>
 						</div>
-						<div className="flex items-center justify-between py-1.5 border-b last:border-0">
+						<div className="flex items-center justify-between border-b py-1.5 last:border-0">
 							<div className="flex items-center gap-2">
-								<div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+								<div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10">
 									<MapPin className="h-3.5 w-3.5 text-primary" />
 								</div>
 								<div>
 									<p className="font-medium text-sm">Check-in</p>
-									<p className="text-xs text-muted-foreground">Partner Booth #42</p>
+									<p className="text-muted-foreground text-xs">
+										Partner Booth #42
+									</p>
 								</div>
 							</div>
-							<span className="text-sm font-medium text-primary">+25 USDC</span>
+							<span className="font-medium text-primary text-sm">+25 USDC</span>
 						</div>
 					</CardContent>
 				</Card>
@@ -157,29 +171,31 @@ export function EventDashboard() {
 				{/* Progress Summary */}
 				<Card>
 					<CardHeader className="pb-3">
-						<CardTitle className="text-base flex items-center gap-2">
+						<CardTitle className="flex items-center gap-2 text-base">
 							<Trophy className="h-5 w-5 text-primary" />
 							Your Progress
 						</CardTitle>
-						<CardDescription className="text-xs">Keep up the great work!</CardDescription>
+						<CardDescription className="text-xs">
+							Keep up the great work!
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-3">
 						<div>
-							<div className="flex justify-between text-sm mb-1">
+							<div className="mb-1 flex justify-between text-sm">
 								<span>Daily Tasks</span>
 								<span className="font-medium">3/5 completed</span>
 							</div>
 							<Progress value={60} className="h-2" />
 						</div>
 						<div>
-							<div className="flex justify-between text-sm mb-1">
+							<div className="mb-1 flex justify-between text-sm">
 								<span>Event Level Progress</span>
 								<span className="font-medium">Level 3 (65%)</span>
 							</div>
 							<Progress value={65} className="h-2" />
 						</div>
 						<div>
-							<div className="flex justify-between text-sm mb-1">
+							<div className="mb-1 flex justify-between text-sm">
 								<span>Venue Exploration</span>
 								<span className="font-medium">7/10 areas</span>
 							</div>
