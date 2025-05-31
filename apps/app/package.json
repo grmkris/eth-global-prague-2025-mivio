@@ -36,6 +36,7 @@
 		"@trpc/react-query": "^11.1.4",
 		"@trpc/server": "^11.1.4",
 		"@types/qrcode": "^1.5.5",
+		"@vercel/og": "^0.6.8",
 		"@vlayer/react": "1.0.2-nightly-20250530-3f01bfdcfb6b20d608f7bcef25f9907164ad3966",
 		"@wagmi/core": "^2.17.2",
 		"@yudiel/react-qr-scanner": "^2.3.1",
