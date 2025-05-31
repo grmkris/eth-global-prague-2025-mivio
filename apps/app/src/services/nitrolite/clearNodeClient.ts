@@ -3,12 +3,12 @@ import {
 	createAuthVerifyMessage,
 	createAuthVerifyMessageWithJWT,
 } from "@erc7824/nitrolite";
-import { getAddress, type WalletClient } from "viem";
-import { 
-	loadOrGenerateKeyPair, 
-	createStateWalletClient, 
-	createMessageSigner,
+import { type WalletClient, getAddress } from "viem";
+import {
 	type CryptoKeypair,
+	createMessageSigner,
+	createStateWalletClient,
+	loadOrGenerateKeyPair,
 } from "./keyManager";
 import type { WalletSigner } from "./keyManager";
 
@@ -181,7 +181,9 @@ export class ClearNodeClient {
 	 */
 	private async authenticate(): Promise<void> {
 		if (!this.ws || !this.authParams || !this.stateWallet)
-			throw new Error("WebSocket not connected, auth params missing, or state wallet not initialized");
+			throw new Error(
+				"WebSocket not connected, auth params missing, or state wallet not initialized",
+			);
 
 		const { walletAddress, walletClient } = this.authParams;
 
@@ -221,7 +223,7 @@ export class ClearNodeClient {
 			const handleAuthResponse = async (event: MessageEvent) => {
 				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 				let response: any;
-				
+
 				try {
 					response = JSON.parse(event.data);
 				} catch (error) {
@@ -238,7 +240,7 @@ export class ClearNodeClient {
 							data: unknown,
 						): Promise<`0x${string}`> => {
 							console.log("Creating EIP-712 signature for data:", data);
-							
+
 							let challengeUUID = "";
 
 							// Extract the challenge from the parsed response
@@ -253,7 +255,10 @@ export class ClearNodeClient {
 							}
 
 							if (!challengeUUID) {
-								console.error("Could not extract challenge from response:", response);
+								console.error(
+									"Could not extract challenge from response:",
+									response,
+								);
 								throw new Error("Challenge not found in response");
 							}
 
@@ -306,10 +311,16 @@ export class ClearNodeClient {
 						);
 						console.log("Sending auth_verify message");
 						this.ws?.send(authVerify);
-					} else if (response.res && (response.res[1] === "auth_verify" || response.res[1] === "auth_success")) {
+					} else if (
+						response.res &&
+						(response.res[1] === "auth_verify" ||
+							response.res[1] === "auth_success")
+					) {
 						console.log("Authentication successful");
 						// Store JWT if provided
-						const jwtToken = response.res[2]?.[0]?.jwt_token || response.res[2]?.[0]?.jwt_token;
+						const jwtToken =
+							response.res[2]?.[0]?.jwt_token ||
+							response.res[2]?.[0]?.jwt_token;
 						if (jwtToken && typeof window !== "undefined") {
 							console.log("Storing JWT token");
 							window.localStorage?.setItem("clearnode_jwt", jwtToken);
@@ -324,9 +335,9 @@ export class ClearNodeClient {
 						(response.res && response.res[1] === "error")
 					) {
 						const errorMsg =
-							response.err?.[2] || 
-							response.res?.[2]?.[0]?.error || 
-							response.res?.[2] || 
+							response.err?.[2] ||
+							response.res?.[2]?.[0]?.error ||
+							response.res?.[2] ||
 							"Authentication failed";
 						console.error("Authentication failed:", errorMsg);
 						if (typeof window !== "undefined") {

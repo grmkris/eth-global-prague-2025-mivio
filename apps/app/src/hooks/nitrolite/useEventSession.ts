@@ -1,15 +1,15 @@
 "use client";
 
+import {
+	type RequestData,
+	type ResponsePayload,
+	createAppSessionMessage,
+	createCloseAppSessionMessage,
+	createGetLedgerBalancesMessage,
+} from "@erc7824/nitrolite";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { WalletClient } from "viem";
 import { getAddress } from "viem";
-import { 
-	createAppSessionMessage, 
-	createCloseAppSessionMessage, 
-	createGetLedgerBalancesMessage, 
-	type RequestData, 
-	type ResponsePayload 
-} from "@erc7824/nitrolite";
 import {
 	type WSStatus,
 	getClearNodeClient,
@@ -66,10 +66,14 @@ const createSignedRequest = async (props: {
 };
 
 // Helper functions for localStorage
-const getStorageKey = (walletAddress: string, eventSlug: string) => 
+const getStorageKey = (walletAddress: string, eventSlug: string) =>
 	`nitrolite_session_${walletAddress}_${eventSlug}`;
 
-const saveSessionToStorage = (walletAddress: string, eventSlug: string, sessionInfo: SessionInfo | null) => {
+const saveSessionToStorage = (
+	walletAddress: string,
+	eventSlug: string,
+	sessionInfo: SessionInfo | null,
+) => {
 	try {
 		const key = getStorageKey(walletAddress, eventSlug);
 		if (sessionInfo) {
@@ -78,23 +82,29 @@ const saveSessionToStorage = (walletAddress: string, eventSlug: string, sessionI
 			localStorage.removeItem(key);
 		}
 	} catch (error) {
-		console.warn('Failed to save session to localStorage:', error);
+		console.warn("Failed to save session to localStorage:", error);
 	}
 };
 
-const loadSessionFromStorage = (walletAddress: string, eventSlug: string): SessionInfo | null => {
+const loadSessionFromStorage = (
+	walletAddress: string,
+	eventSlug: string,
+): SessionInfo | null => {
 	try {
 		const key = getStorageKey(walletAddress, eventSlug);
 		const stored = localStorage.getItem(key);
 		if (stored) {
 			const parsed = JSON.parse(stored) as SessionInfo;
 			// Validate that the stored session matches current parameters
-			if (parsed.participant === getAddress(walletAddress) && parsed.eventSlug === eventSlug) {
+			if (
+				parsed.participant === getAddress(walletAddress) &&
+				parsed.eventSlug === eventSlug
+			) {
 				return parsed;
 			}
 		}
 	} catch (error) {
-		console.warn('Failed to load session from localStorage:', error);
+		console.warn("Failed to load session from localStorage:", error);
 	}
 	return null;
 };
@@ -198,10 +208,9 @@ export function useEventSession(options: UseEventSessionOptions) {
 
 			// Request session info after connection
 			// await requestSessionInfo();
-			
+
 			// Request ledger balances after connection
 			// await requestLedgerBalances();
-			
 		} catch (err) {
 			console.error("Failed to connect to ClearNode:", err);
 			setError(
@@ -269,7 +278,8 @@ export function useEventSession(options: UseEventSessionOptions) {
 			}
 
 			// Extract app_session_id from response
-			const appSessionId = sessionData.app_session_id || sessionData.appSessionId;
+			const appSessionId =
+				sessionData.app_session_id || sessionData.appSessionId;
 			if (!appSessionId) {
 				setError("No app session ID in response");
 				return;
@@ -318,12 +328,13 @@ export function useEventSession(options: UseEventSessionOptions) {
 
 	// Request ledger balances using the ClearNode client's message signer
 	const requestLedgerBalances = useCallback(async () => {
-		if (!walletAddress || !walletClient || !clearNodeClient.current.isConnected) return;
+		if (!walletAddress || !walletClient || !clearNodeClient.current.isConnected)
+			return;
 
 		try {
 			// Get the message signer from the ClearNode client
 			const messageSigner = clearNodeClient.current.getMessageSigner();
-			
+
 			// Create signer compatible with createGetLedgerBalancesMessage
 			const signer = async (payload: RequestData | ResponsePayload) => {
 				return messageSigner({ payload, walletClient });
@@ -331,8 +342,11 @@ export function useEventSession(options: UseEventSessionOptions) {
 
 			// Create the get ledger balances message
 			console.log("requestLedgerBalances", getAddress(walletAddress));
-			const message = await createGetLedgerBalancesMessage(signer, getAddress(walletAddress));
-			
+			const message = await createGetLedgerBalancesMessage(
+				signer,
+				getAddress(walletAddress),
+			);
+
 			// Send the request
 			await clearNodeClient.current.sendRequest(message);
 		} catch (err) {
@@ -356,9 +370,11 @@ export function useEventSession(options: UseEventSessionOptions) {
 
 			// Update ledger balances
 			setLedgerBalances(balances);
-			
+
 			// Also update the offchain balance if USDC is present
-			const usdcBalance = balances.find((b: LedgerBalance) => b.asset.toLowerCase() === 'usdc');
+			const usdcBalance = balances.find(
+				(b: LedgerBalance) => b.asset.toLowerCase() === "usdc",
+			);
 			if (usdcBalance) {
 				setOffchainBalance(usdcBalance.amount);
 			}
@@ -398,13 +414,17 @@ export function useEventSession(options: UseEventSessionOptions) {
 
 		try {
 			// Define the application parameters (matching tictactoe example)
-			const eventOrganizerAddress = "0x81d786b35f3EA2F39Aa17cb18d9772E4EcD97206" as `0x${string}`;
-						// Get the message signer from the ClearNode client
-						const messageSigner = clearNodeClient.current.getMessageSigner();
-						
+			const eventOrganizerAddress =
+				"0x81d786b35f3EA2F39Aa17cb18d9772E4EcD97206" as `0x${string}`;
+			// Get the message signer from the ClearNode client
+			const messageSigner = clearNodeClient.current.getMessageSigner();
+
 			const appDefinition = {
 				protocol: "mivio", // Use the same protocol as tictactoe
-				participants: [getAddress(walletAddress), getAddress(eventOrganizerAddress)], // User and event organizer
+				participants: [
+					getAddress(walletAddress),
+					getAddress(eventOrganizerAddress),
+				], // User and event organizer
 				weights: [100, 0], // User has full control for their transactions
 				quorum: 100, // Required consensus percentage
 				challenge: 0, // No challenge period
@@ -425,54 +445,61 @@ export function useEventSession(options: UseEventSessionOptions) {
 				},
 			];
 
-
-			
 			// Create signer compatible with createAppSessionMessage
 			const signer = async (payload: RequestData | ResponsePayload) => {
 				return messageSigner({ payload, walletClient });
 			};
 
 			// Create a signed message using the createAppSessionMessage helper
-			const signedMessage = await createAppSessionMessage(
-				signer,
-				[
-					{
-						definition: appDefinition,
-						allocations: allocations,
-					},
-				],
-			);
+			const signedMessage = await createAppSessionMessage(signer, [
+				{
+					definition: appDefinition,
+					allocations: allocations,
+				},
+			]);
 
 			// Send the message and wait for response
 			const response = await new Promise<unknown[]>((resolve, reject) => {
-				const handleResponse = (message: { res?: unknown[]; err?: unknown[] }) => {
+				const handleResponse = (message: {
+					res?: unknown[];
+					err?: unknown[];
+				}) => {
 					try {
 						// Check if this is an app session response
-						if (message.res && (message.res[1] === 'create_app_session' || 
-						                   message.res[1] === 'app_session_created')) {
+						if (
+							message.res &&
+							(message.res[1] === "create_app_session" ||
+								message.res[1] === "app_session_created")
+						) {
 							console.log("handleCreateSessionResponse", message.res);
 							resolve(message.res[2] as unknown[]); // The app session data should be in the 3rd position
 						}
-						
+
 						// Also check for error responses
 						if (message.err) {
-							reject(new Error(`Error ${message.err[1]}: ${JSON.stringify(message.err[2])}`));
+							reject(
+								new Error(
+									`Error ${message.err[1]}: ${JSON.stringify(message.err[2])}`,
+								),
+							);
 						}
 					} catch (error) {
-						console.error('Error handling app session response:', error);
+						console.error("Error handling app session response:", error);
 					}
 				};
-				
+
 				// Add message handler
-				const unsubscribe = clearNodeClient.current.onMessage(handleResponse as (message: unknown) => void);
-				
+				const unsubscribe = clearNodeClient.current.onMessage(
+					handleResponse as (message: unknown) => void,
+				);
+
 				// Send the request
 				clearNodeClient.current.sendRequest(signedMessage).catch(reject);
-				
+
 				// Set timeout to prevent hanging
 				setTimeout(() => {
 					unsubscribe();
-					reject(new Error('App session creation timeout'));
+					reject(new Error("App session creation timeout"));
 				}, 10000);
 			});
 
@@ -485,15 +512,29 @@ export function useEventSession(options: UseEventSessionOptions) {
 		} catch (err) {
 			console.error("Failed to create application session:", err);
 			setError(
-				err instanceof Error ? err.message : "Failed to create application session",
+				err instanceof Error
+					? err.message
+					: "Failed to create application session",
 			);
 			setIsLoading(false);
 		}
-	}, [walletAddress, walletClient, eventSlug, sessionInfo, connectToClearNode, handleCreateSessionResponse]);
+	}, [
+		walletAddress,
+		walletClient,
+		eventSlug,
+		sessionInfo,
+		connectToClearNode,
+		handleCreateSessionResponse,
+	]);
 
 	// Close session and transfer funds
 	const closeSession = useCallback(async () => {
-		if (!walletAddress || !walletClient || !eventSlug || !sessionInfo?.sessionId) {
+		if (
+			!walletAddress ||
+			!walletClient ||
+			!eventSlug ||
+			!sessionInfo?.sessionId
+		) {
 			setError("Missing required parameters or no active session");
 			return;
 		}
@@ -515,8 +556,9 @@ export function useEventSession(options: UseEventSessionOptions) {
 		}
 
 		try {
-			const eventOrganizerAddress = "0x81d786b35f3EA2F39Aa17cb18d9772E4EcD97206" as `0x${string}`;
-			
+			const eventOrganizerAddress =
+				"0x81d786b35f3EA2F39Aa17cb18d9772E4EcD97206" as `0x${string}`;
+
 			// Define final allocations - transfer 0.1 USDC to organizer
 			const finalAllocations = [
 				{
@@ -526,60 +568,69 @@ export function useEventSession(options: UseEventSessionOptions) {
 				},
 				{
 					participant: getAddress(eventOrganizerAddress),
-					asset: "usdc", 
+					asset: "usdc",
 					amount: "0.1", // Organizer receives 0.1 USDC
 				},
 			];
 
 			// Get the message signer from the ClearNode client
 			const messageSigner = clearNodeClient.current.getMessageSigner();
-			
+
 			// Create signer compatible with createCloseAppSessionMessage
 			const signer = async (payload: RequestData | ResponsePayload) => {
 				return messageSigner({ payload, walletClient });
 			};
 
 			// Create a signed message using the createCloseAppSessionMessage helper
-			const signedMessage = await createCloseAppSessionMessage(
-				signer,
-				[
-					{
-						app_session_id: sessionInfo.sessionId as `0x${string}`,
-						allocations: finalAllocations,
-					},
-				],
-			);
+			const signedMessage = await createCloseAppSessionMessage(signer, [
+				{
+					app_session_id: sessionInfo.sessionId as `0x${string}`,
+					allocations: finalAllocations,
+				},
+			]);
 
 			// Send the message and wait for response
 			const response = await new Promise<unknown[]>((resolve, reject) => {
-				const handleResponse = (message: { res?: unknown[]; err?: unknown[] }) => {
+				const handleResponse = (message: {
+					res?: unknown[];
+					err?: unknown[];
+				}) => {
 					try {
 						// Check if this is an app session close response
-						if (message.res && (message.res[1] === 'close_app_session' || 
-						                   message.res[1] === 'app_session_closed')) {
+						if (
+							message.res &&
+							(message.res[1] === "close_app_session" ||
+								message.res[1] === "app_session_closed")
+						) {
 							console.log("handleCloseSessionResponse", message.res);
-							resolve(message.res[2] as unknown[]); 
+							resolve(message.res[2] as unknown[]);
 						}
-						
+
 						// Also check for error responses
 						if (message.err) {
-							reject(new Error(`Error ${message.err[1]}: ${JSON.stringify(message.err[2])}`));
+							reject(
+								new Error(
+									`Error ${message.err[1]}: ${JSON.stringify(message.err[2])}`,
+								),
+							);
 						}
 					} catch (error) {
-						console.error('Error handling app session close response:', error);
+						console.error("Error handling app session close response:", error);
 					}
 				};
-				
+
 				// Add message handler
-				const unsubscribe = clearNodeClient.current.onMessage(handleResponse as (message: unknown) => void);
-				
+				const unsubscribe = clearNodeClient.current.onMessage(
+					handleResponse as (message: unknown) => void,
+				);
+
 				// Send the request
 				clearNodeClient.current.sendRequest(signedMessage).catch(reject);
-				
+
 				// Set timeout to prevent hanging
 				setTimeout(() => {
 					unsubscribe();
-					reject(new Error('App session close timeout'));
+					reject(new Error("App session close timeout"));
 				}, 10000);
 			});
 
@@ -591,7 +642,7 @@ export function useEventSession(options: UseEventSessionOptions) {
 				setIsSessionOpen(false);
 				setOffchainBalance("0.00");
 				setIsLoading(false);
-				
+
 				// Request updated ledger balances after closing
 				await requestLedgerBalances();
 			} else {
@@ -600,160 +651,209 @@ export function useEventSession(options: UseEventSessionOptions) {
 		} catch (err) {
 			console.error("Failed to close application session:", err);
 			setError(
-				err instanceof Error ? err.message : "Failed to close application session",
+				err instanceof Error
+					? err.message
+					: "Failed to close application session",
 			);
 			setIsLoading(false);
 		}
-	}, [walletAddress, walletClient, eventSlug, sessionInfo, connectToClearNode, requestLedgerBalances]);
+	}, [
+		walletAddress,
+		walletClient,
+		eventSlug,
+		sessionInfo,
+		connectToClearNode,
+		requestLedgerBalances,
+	]);
 
 	// Close session with custom allocations using the ClearNode client's message signer
-	const closeSessionWithAllocations = useCallback(async (recipientAddress: `0x${string}`, userAmount: string, recipientAmount: string) => {
-		if (!walletAddress || !walletClient || !eventSlug || !sessionInfo?.sessionId) {
-			setError("Missing required parameters or no active session");
-			return;
-		}
-
-		// Ensure we're connected
-		if (!clearNodeClient.current.isConnected) {
-			await connectToClearNode();
-			// Wait a bit for connection to establish
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-
-			if (!clearNodeClient.current.isConnected) {
-				setError("Failed to connect to ClearNode");
+	const closeSessionWithAllocations = useCallback(
+		async (
+			recipientAddress: `0x${string}`,
+			userAmount: string,
+			recipientAmount: string,
+		) => {
+			if (
+				!walletAddress ||
+				!walletClient ||
+				!eventSlug ||
+				!sessionInfo?.sessionId
+			) {
+				setError("Missing required parameters or no active session");
 				return;
 			}
-		}
 
-		try {
-			// Define final allocations based on the parameters
-			const finalAllocations = [
-				{
-					participant: getAddress(walletAddress),
-					asset: "usdc",
-					amount: userAmount, // User's remaining balance
-				},
-				{
-					participant: getAddress(recipientAddress),
-					asset: "usdc", 
-					amount: recipientAmount, // Recipient receives the transfer amount
-				},
-			];
+			// Ensure we're connected
+			if (!clearNodeClient.current.isConnected) {
+				await connectToClearNode();
+				// Wait a bit for connection to establish
+				await new Promise((resolve) => setTimeout(resolve, 1000));
 
-			// Get the message signer from the ClearNode client
-			const messageSigner = clearNodeClient.current.getMessageSigner();
-			
-			// Create signer compatible with createCloseAppSessionMessage
-			const signer = async (payload: RequestData | ResponsePayload) => {
-				return messageSigner({ payload, walletClient });
-			};
+				if (!clearNodeClient.current.isConnected) {
+					setError("Failed to connect to ClearNode");
+					return;
+				}
+			}
 
-			// Create a signed message using the createCloseAppSessionMessage helper
-			const signedMessage = await createCloseAppSessionMessage(
-				signer,
-				[
+			try {
+				// Define final allocations based on the parameters
+				const finalAllocations = [
+					{
+						participant: getAddress(walletAddress),
+						asset: "usdc",
+						amount: userAmount, // User's remaining balance
+					},
+					{
+						participant: getAddress(recipientAddress),
+						asset: "usdc",
+						amount: recipientAmount, // Recipient receives the transfer amount
+					},
+				];
+
+				// Get the message signer from the ClearNode client
+				const messageSigner = clearNodeClient.current.getMessageSigner();
+
+				// Create signer compatible with createCloseAppSessionMessage
+				const signer = async (payload: RequestData | ResponsePayload) => {
+					return messageSigner({ payload, walletClient });
+				};
+
+				// Create a signed message using the createCloseAppSessionMessage helper
+				const signedMessage = await createCloseAppSessionMessage(signer, [
 					{
 						app_session_id: sessionInfo.sessionId as `0x${string}`,
 						allocations: finalAllocations,
 					},
-				],
-			);
+				]);
 
-			// Send the message and wait for response
-			const response = await new Promise<unknown[]>((resolve, reject) => {
-				const handleResponse = (message: { res?: unknown[]; err?: unknown[] }) => {
-					try {
-						// Check if this is an app session close response
-						if (message.res && (message.res[1] === 'close_app_session' || 
-						                   message.res[1] === 'app_session_closed')) {
-							console.log("handleCloseSessionResponse", message.res);
-							resolve(message.res[2] as unknown[]); 
-						}
-						
-						// Also check for error responses
-						if (message.err) {
-							reject(new Error(`Error ${message.err[1]}: ${JSON.stringify(message.err[2])}`));
-						}
-					} catch (error) {
-						console.error('Error handling app session close response:', error);
-					}
-				};
-				
-				// Add message handler
-				const unsubscribe = clearNodeClient.current.onMessage(handleResponse as (message: unknown) => void);
-				
-				// Send the request
-				clearNodeClient.current.sendRequest(signedMessage).catch(reject);
-				
-				// Set timeout to prevent hanging
-				setTimeout(() => {
-					unsubscribe();
-					reject(new Error('App session close timeout'));
-				}, 10000);
-			});
+				// Send the message and wait for response
+				const response = await new Promise<unknown[]>((resolve, reject) => {
+					const handleResponse = (message: {
+						res?: unknown[];
+						err?: unknown[];
+					}) => {
+						try {
+							// Check if this is an app session close response
+							if (
+								message.res &&
+								(message.res[1] === "close_app_session" ||
+									message.res[1] === "app_session_closed")
+							) {
+								console.log("handleCloseSessionResponse", message.res);
+								resolve(message.res[2] as unknown[]);
+							}
 
-			// Handle the response
-			if (response) {
-				console.log("Session closed successfully:", response);
-				// Clear the session info since it's now closed
-				setSessionInfo(null);
-				setIsSessionOpen(false);
-				setOffchainBalance("0.00");
-				setIsLoading(false);
-			} else {
-				throw new Error("Invalid response format");
+							// Also check for error responses
+							if (message.err) {
+								reject(
+									new Error(
+										`Error ${message.err[1]}: ${JSON.stringify(message.err[2])}`,
+									),
+								);
+							}
+						} catch (error) {
+							console.error(
+								"Error handling app session close response:",
+								error,
+							);
+						}
+					};
+
+					// Add message handler
+					const unsubscribe = clearNodeClient.current.onMessage(
+						handleResponse as (message: unknown) => void,
+					);
+
+					// Send the request
+					clearNodeClient.current.sendRequest(signedMessage).catch(reject);
+
+					// Set timeout to prevent hanging
+					setTimeout(() => {
+						unsubscribe();
+						reject(new Error("App session close timeout"));
+					}, 10000);
+				});
+
+				// Handle the response
+				if (response) {
+					console.log("Session closed successfully:", response);
+					// Clear the session info since it's now closed
+					setSessionInfo(null);
+					setIsSessionOpen(false);
+					setOffchainBalance("0.00");
+					setIsLoading(false);
+				} else {
+					throw new Error("Invalid response format");
+				}
+			} catch (err) {
+				console.error("Failed to close application session:", err);
+				setError(
+					err instanceof Error
+						? err.message
+						: "Failed to close application session",
+				);
+				throw err; // Re-throw so the calling function can handle it
 			}
-		} catch (err) {
-			console.error("Failed to close application session:", err);
-			setError(
-				err instanceof Error ? err.message : "Failed to close application session",
-			);
-			throw err; // Re-throw so the calling function can handle it
-		}
-	}, [walletAddress, walletClient, eventSlug, sessionInfo, connectToClearNode]);
+		},
+		[walletAddress, walletClient, eventSlug, sessionInfo, connectToClearNode],
+	);
 
 	// Transfer funds within session and then close it
-	const transferAndCloseSession = useCallback(async (recipientAddress: `0x${string}`, amount: string, memo?: string) => {
-		if (!walletAddress || !walletClient || !eventSlug) {
-			setError("Missing required parameters or no active session");
-			return false;
-		}
+	const transferAndCloseSession = useCallback(
+		async (recipientAddress: `0x${string}`, amount: string, memo?: string) => {
+			if (!walletAddress || !walletClient || !eventSlug) {
+				setError("Missing required parameters or no active session");
+				return false;
+			}
 
-		setIsLoading(true);
-		setError(null);
+			setIsLoading(true);
+			setError(null);
 
-		try {
-			// Since session_transfer doesn't exist in the API, we'll close the session
-			// with allocations that reflect the desired transfer
-			console.log(`Closing session and transferring ${amount} USDC to ${recipientAddress}...`);
-			
-			// Calculate final allocations based on the transfer amount
-			const transferAmount = Number.parseFloat(amount);
-			const currentBalance = Number.parseFloat(offchainBalance);
-					 if (transferAmount > currentBalance) {
-						console.log("Insufficient balance for transfer");
-			 	setError("Insufficient balance for transfer");
-			 	setIsLoading(false);
-			 	return false;
-			 }
-			 const userFinalBalance = (currentBalance - transferAmount);
-			 const recipientFinalBalance = transferAmount;
-			
-			// Update the close session to use dynamic allocations
-			await closeSessionWithAllocations(recipientAddress, "0", recipientFinalBalance.toString());
-			
-			setIsLoading(false);
-			return true;
-			
-		} catch (err) {
-			console.error("Failed to close session:", err);
-			setError(
-				err instanceof Error ? err.message : "Failed to close session",
-			);
-			setIsLoading(false);
-			return false;
-		}
-	}, [walletAddress, walletClient, eventSlug, offchainBalance, closeSessionWithAllocations]);
+			try {
+				// Since session_transfer doesn't exist in the API, we'll close the session
+				// with allocations that reflect the desired transfer
+				console.log(
+					`Closing session and transferring ${amount} USDC to ${recipientAddress}...`,
+				);
+
+				// Calculate final allocations based on the transfer amount
+				const transferAmount = Number.parseFloat(amount);
+				const currentBalance = Number.parseFloat(offchainBalance);
+				if (transferAmount > currentBalance) {
+					console.log("Insufficient balance for transfer");
+					setError("Insufficient balance for transfer");
+					setIsLoading(false);
+					return false;
+				}
+				const userFinalBalance = currentBalance - transferAmount;
+				const recipientFinalBalance = transferAmount;
+
+				// Update the close session to use dynamic allocations
+				await closeSessionWithAllocations(
+					recipientAddress,
+					"0",
+					recipientFinalBalance.toString(),
+				);
+
+				setIsLoading(false);
+				return true;
+			} catch (err) {
+				console.error("Failed to close session:", err);
+				setError(
+					err instanceof Error ? err.message : "Failed to close session",
+				);
+				setIsLoading(false);
+				return false;
+			}
+		},
+		[
+			walletAddress,
+			walletClient,
+			eventSlug,
+			offchainBalance,
+			closeSessionWithAllocations,
+		],
+	);
 
 	return {
 		sessionInfo,

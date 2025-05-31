@@ -4,11 +4,11 @@ import {
 	AlertCircle,
 	CheckCircle2,
 	Loader2,
+	RefreshCw,
 	Send,
+	Wallet,
 	Wifi,
 	WifiOff,
-	RefreshCw,
-	Wallet,
 } from "lucide-react";
 import { useState } from "react";
 import type { WalletClient } from "viem";
@@ -204,8 +204,8 @@ export function NitroliteTestDashboard({
 						<Alert>
 							<Wifi className="h-4 w-4" />
 							<AlertDescription>
-								Click the button below to establish a connection to ClearNode and
-								enable off-chain payment capabilities.
+								Click the button below to establish a connection to ClearNode
+								and enable off-chain payment capabilities.
 							</AlertDescription>
 						</Alert>
 					)}
@@ -278,7 +278,7 @@ export function NitroliteTestDashboard({
 						)}
 
 						{isConnected && isSessionOpen && (
-							<div className="flex items-center justify-center gap-2 text-green-600 dark:text-green-500 text-sm">
+							<div className="flex items-center justify-center gap-2 text-green-600 text-sm dark:text-green-500">
 								<CheckCircle2 className="h-4 w-4" />
 								Session active - Ready for payments
 							</div>
@@ -297,8 +297,7 @@ export function NitroliteTestDashboard({
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+						<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 							<Button
 								onClick={handleRefreshBalance}
 								disabled={isRefreshingBalance}
@@ -318,11 +317,12 @@ export function NitroliteTestDashboard({
 								)}
 							</Button>
 						</div>
-						
+
 						<Alert>
 							<AlertCircle className="h-4 w-4" />
 							<AlertDescription>
-								Use these buttons to manually test the API calls. Check the browser console for detailed responses.
+								Use these buttons to manually test the API calls. Check the
+								browser console for detailed responses.
 							</AlertDescription>
 						</Alert>
 					</CardContent>
@@ -337,7 +337,8 @@ export function NitroliteTestDashboard({
 							<div>
 								<CardTitle>Ledger Balances</CardTitle>
 								<CardDescription>
-									Your off-chain balances across all assets (auto-refreshes every 30s)
+									Your off-chain balances across all assets (auto-refreshes
+									every 30s)
 								</CardDescription>
 							</div>
 							<Button
@@ -368,15 +369,13 @@ export function NitroliteTestDashboard({
 												{balance.asset.toUpperCase()}
 											</span>
 										</div>
-										<span className="font-bold text-lg">
-											{balance.amount}
-										</span>
+										<span className="font-bold text-lg">{balance.amount}</span>
 									</div>
 								))}
 							</div>
 						) : (
 							<div className="py-6 text-center text-muted-foreground">
-								<Wallet className="mx-auto h-8 w-8 mb-2" />
+								<Wallet className="mx-auto mb-2 h-8 w-8" />
 								<p>No balances found</p>
 								<p className="text-sm">
 									Create a session to start with off-chain funds
@@ -393,7 +392,8 @@ export function NitroliteTestDashboard({
 					<CardHeader>
 						<CardTitle>Transfer & Close Session</CardTitle>
 						<CardDescription>
-							Transfer funds and close the session (demonstrates createCloseAppSessionMessage)
+							Transfer funds and close the session (demonstrates
+							createCloseAppSessionMessage)
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
@@ -455,7 +455,9 @@ export function NitroliteTestDashboard({
 				<Card>
 					<CardHeader>
 						<CardTitle>Transfer History</CardTitle>
-						<CardDescription>Recent session closures with transfers</CardDescription>
+						<CardDescription>
+							Recent session closures with transfers
+						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<div className="space-y-2">

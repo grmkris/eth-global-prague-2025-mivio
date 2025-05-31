@@ -5,6 +5,7 @@ import {
 	CheckSquare,
 	FlaskConical,
 	MapPin,
+	QrCode,
 	ShoppingBag,
 	Trophy,
 	User,
@@ -56,6 +57,10 @@ export function EventDashboard() {
 			month: "long",
 			day: "numeric",
 		});
+	};
+
+	const handleScanQR = () => {
+		router.push(`/event/${event.slug}/scan`);
 	};
 
 	const navigationCards = [
@@ -180,6 +185,29 @@ export function EventDashboard() {
 					</CardContent>
 				</Card>
 			</div>
+
+			{/* QR Scanner Button */}
+			<Card className="border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5">
+				<CardContent className="p-6">
+					<div className="flex items-center justify-between">
+						<div className="space-y-1">
+							<h3 className="font-semibold text-lg">Quick Scan</h3>
+							<p className="text-muted-foreground">
+								Scan QR codes to complete tasks, make payments, or check in at
+								booths
+							</p>
+						</div>
+						<Button
+							size="lg"
+							onClick={handleScanQR}
+							className="ml-4 min-w-[120px]"
+						>
+							<QrCode className="mr-2 h-5 w-5" />
+							Scan QR
+						</Button>
+					</div>
+				</CardContent>
+			</Card>
 
 			{/* Navigation Cards */}
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">

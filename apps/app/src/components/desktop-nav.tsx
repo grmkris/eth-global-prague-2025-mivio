@@ -8,6 +8,7 @@ import {
 	HelpCircle,
 	Home,
 	LogOut,
+	QrCode,
 	ShoppingBag,
 	User,
 } from "lucide-react";
@@ -49,6 +50,12 @@ export function DesktopNav() {
 						href: `/event/${eventInfo.slug}`,
 						icon: Home,
 						active: pathname === `/event/${eventInfo.slug}`,
+					},
+					{
+						name: "Scan QR",
+						href: `/event/${eventInfo.slug}/scan`,
+						icon: QrCode,
+						active: pathname === `/event/${eventInfo.slug}/scan`,
 					},
 					{
 						name: "Tasks",

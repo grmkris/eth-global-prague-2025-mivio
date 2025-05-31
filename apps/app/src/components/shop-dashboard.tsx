@@ -1,6 +1,7 @@
 "use client";
 
-import { Search, ShoppingBag, Tag } from "lucide-react";
+import { QrCode, Search, ShoppingBag, Tag } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { PaymentModal } from "~/components/payment-modal";
 import { Badge } from "~/components/ui/badge";
@@ -27,6 +28,10 @@ type Product = {
 };
 
 export function ShopDashboard() {
+	const router = useRouter();
+	const params = useParams();
+	const eventSlug = params.eventSlug as string;
+
 	const [searchQuery, setSearchQuery] = useState("");
 	const [showPaymentModal, setShowPaymentModal] = useState(false);
 	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -93,6 +98,10 @@ export function ShopDashboard() {
 		setShowPaymentModal(true);
 	};
 
+	const handleQuickScan = () => {
+		router.push(`/event/${eventSlug}/scan`);
+	};
+
 	const filteredProducts = products.filter(
 		(product) =>
 			product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -107,11 +116,17 @@ export function ShopDashboard() {
 
 	return (
 		<div className="space-y-6">
-			<div>
-				<h1 className="font-bold text-2xl tracking-tight">Shop</h1>
-				<p className="text-muted-foreground">
-					Browse and purchase items with your EventCoins
-				</p>
+			<div className="flex items-center justify-between">
+				<div>
+					<h1 className="font-bold text-2xl tracking-tight">Shop</h1>
+					<p className="text-muted-foreground">
+						Browse and purchase items with your EventCoins
+					</p>
+				</div>
+				<Button onClick={handleQuickScan} size="sm" variant="outline">
+					<QrCode className="mr-2 h-4 w-4" />
+					Scan to Pay
+				</Button>
 			</div>
 
 			<div className="relative">
