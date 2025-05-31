@@ -21,6 +21,7 @@ import {
 	CardTitle,
 } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
+import { Vlayer } from "./vlayer";
 
 export function EventDashboard() {
 	const { event, loading, error } = useEvent();
@@ -202,6 +203,8 @@ export function EventDashboard() {
 					</Card>
 				))}
 			</div>
+
+			<Vlayer />
 		</div>
 	);
 }

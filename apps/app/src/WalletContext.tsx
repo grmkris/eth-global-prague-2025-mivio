@@ -1,7 +1,8 @@
 // context/index.tsx
 "use client";
 
-import { flowMainnet } from "@reown/appkit/networks";
+import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
+import { baseSepolia, flowMainnet, flowTestnet } from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { type ReactNode } from "react";
@@ -29,8 +30,8 @@ const { wagmiAdapter } = createWagmiConfig();
 createAppKit({
 	adapters: [wagmiAdapter],
 	projectId,
-	networks: [flowMainnet],
-	defaultNetwork: flowMainnet,
+	networks: [baseSepolia],
+	defaultNetwork: baseSepolia,
 	metadata: metadata,
 	features: {
 		analytics: true, // Optional - defaults to your Cloud configuration

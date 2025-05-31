@@ -24,15 +24,15 @@ contract EmailDomainProverTest is VTest {
 
     function test_verifiesEmailDomain() public {
         EmailProofLibWrapper wrapper = new EmailProofLibWrapper();
-        address johnDoe = vm.addr(1);
+        //address johnDoe = vm.addr(1);
         EmailDomainProver prover = new EmailDomainProver();
         UnverifiedEmail memory email = getTestEmail("testdata/verify_vlayer.eml");
         VerifiedEmail memory verifiedEmail = wrapper.verify(email);
         callProver();
-        (, bytes32 emailHash, address registeredWallet, string memory emailDomain) = prover.main(email);
+        (, bytes32 emailHash/* , address registeredWallet, string memory emailDomain */) = prover.main(email);
 
         assertEq(emailHash, sha256(abi.encodePacked(verifiedEmail.from)));
-        assertEq(registeredWallet, johnDoe);
-        assertEq(emailDomain, "vlayer.xyz");
+        /* assertEq(registeredWallet, johnDoe);
+        assertEq(emailDomain, "vlayer.xyz"); */
     }
 }

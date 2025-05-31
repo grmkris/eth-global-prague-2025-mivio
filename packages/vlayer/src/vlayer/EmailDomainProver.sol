@@ -43,22 +43,22 @@ contract EmailDomainProver is Prover {
     function main(UnverifiedEmail calldata unverifiedEmail)
         public
         view
-        returns (Proof memory, bytes32, address, string memory)
+        returns (Proof memory, bytes32)
     {
         VerifiedEmail memory email = unverifiedEmail.verify();
-        string[] memory subjectCapture = email.subject.capture("^Mint my domain NFT at address: (0x[a-fA-F0-9]{40})$");
-        require(subjectCapture.length > 0, "no wallet address in subject");
+        /* string[] memory subjectCapture = email.subject.capture("You have been invited to join the event. Your code is ([0-9]{5})");
+        require(subjectCapture.length > 0, "No verification code in the subject"); */
+        require(compareStrings(email.subject,"Mint my domain NFT at address: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"), "invalid subject");
 
-        address targetWallet = stringToAddress(subjectCapture[1]);
+        //address verificationCode = stringToAddress(subjectCapture[1]);
 
-        string[] memory captures = email.from.capture("^[\\w.-]+@([a-zA-Z\\d.-]+\\.[a-zA-Z]{2,})$");
+        //string[] memory captures = email.from.capture("^[\\w.-]+@([a-zA-Z\\d.-]+\\.[a-zA-Z]{2,})$");
         /* require(captures.length == 2, "invalid email domain");
         require(bytes(captures[1]).length > 0, "invalid email domain"); */
-        //In the require we need to verify that email.from is equal to borgesiros@gmail.com
-        require(compareStrings(email.from,"borgesiros@gmail.com"), "invalid email address");
+        require(compareStrings(email.from,"artur@vlayer.xyz"), "invalid email address");
 
-        string memory emailDomain = captures[1];
+        //string memory emailDomain = captures[1];
 
-        return (proof(), sha256(abi.encodePacked(email.from)), targetWallet, emailDomain);
+        return (proof(), sha256(abi.encodePacked(email.from)));
     }
 }

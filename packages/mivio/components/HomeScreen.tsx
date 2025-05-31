@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { MOCK_USER, MOCK_EVENTS, MOCK_QUEST, MOCK_BADGES, UNREAD_NOTIFICATIONS_COUNT, PASTEL_COLORS } from '../constants';
 import { User, Event, Quest, BadgeItem } from '../types';
 import { BellIcon, FlameIcon, CheckIcon, PlusIcon, ChevronRightIcon, SendIcon, ReceiveIcon } from './icons/NavIcons';
+import { AppKitButton } from '@reown/appkit/react';
 
 interface AnimatedSectionProps {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ const AnimatedSection: React.FC<AnimatedSectionProps> = ({ children, delay = 0 }
 const Header: React.FC<{ user: User; notificationCount: number }> = ({ user, notificationCount }) => {
   return (
     <div className="flex items-center justify-between p-4">
+      <appkit-button />
       <div className="flex items-center space-x-3">
         <img src={user.avatarUrl} alt={user.name} className="w-12 h-12 rounded-full shadow-md" />
         <div>

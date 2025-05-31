@@ -28,6 +28,7 @@ type Event = {
 	status: "upcoming" | "active" | "completed";
 };
 
+
 export function PublicEventsList() {
 	const router = useRouter();
 	const { isConnected } = useAccount();
@@ -106,6 +107,7 @@ export function PublicEventsList() {
 
 	return (
 		<div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+			<appkit-button />
 			<div className="container mx-auto px-4 py-12">
 				{/* Hero Section */}
 				<div className="mb-12 space-y-4 text-center">
