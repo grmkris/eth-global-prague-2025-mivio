@@ -1,13 +1,22 @@
-import { getAddress, keccak256, toBytes, toHex, type Hex } from "viem";
-import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
+import { keccak256, toBytes, toHex, type Hex } from "viem";
 import type { WalletClient } from "viem";
+import { ethers } from "ethers";
+import type { RequestData, ResponsePayload } from "@erc7824/nitrolite";
+
+export type WalletSigner = {
+  address: `0x${string}`;
+  sign: (payload: RequestData | ResponsePayload) => Promise<Hex>;
+}
 
 const CRYPTO_KEYPAIR_KEY = "nitrolite_crypto_keypair";
 
 export interface CryptoKeypair {
-  privateKey: Hex;
-  address: `0x${string}`;
+  /** Private key in hexadecimal format */
+  privateKey: string;
+  /** Optional Ethereum address derived from the public key */
+  address?: string;
 }
+
 
 export interface StateWalletClient {
   account: {
@@ -21,13 +30,18 @@ export interface StateWalletClient {
  */
 export const generateKeyPair = async (): Promise<CryptoKeypair> => {
   try {
-    const privateKey = generatePrivateKey();
-    const account = privateKeyToAccount(privateKey);
-    
-    return {
-      privateKey,
-      address: getAddress(account.address),
-    };
+    const wallet = ethers.Wallet.createRandom();
+
+        // Hash the private key with Keccak256 for additional security
+        const privateKeyHash = ethers.keccak256(wallet.privateKey as string);
+
+        // Derive public key from hashed private key to create a new wallet
+        const walletFromHashedKey = new ethers.Wallet(privateKeyHash);
+
+        return {
+            privateKey: privateKeyHash,
+            address: ethers.getAddress(walletFromHashedKey.address),
+        };
   } catch (error) {
     console.error("Error generating keypair:", error);
     throw error;
@@ -45,6 +59,7 @@ export const loadOrGenerateKeyPair = async (): Promise<CryptoKeypair> => {
   try {
     // Check for existing keys
     const savedKeys = localStorage.getItem(CRYPTO_KEYPAIR_KEY);
+    console.log("savedKeys", savedKeys);
     if (savedKeys) {
       try {
         const parsed = JSON.parse(savedKeys) as CryptoKeypair;
@@ -73,33 +88,34 @@ export const loadOrGenerateKeyPair = async (): Promise<CryptoKeypair> => {
  * Creates a state wallet client from a keypair
  * This is used for signing state channel messages
  */
-export const createStateWalletClient = (keyPair: CryptoKeypair): StateWalletClient => {
-  const account = privateKeyToAccount(keyPair.privateKey);
+export const createStateWalletClient = (keyPair: CryptoKeypair): WalletSigner => {
+  try {
+    // Create ethers wallet from private key
+    const wallet = new ethers.Wallet(keyPair.privateKey);
 
-  return {
-    account: {
-      address: getAddress(account.address),
-    },
-    signMessage: async ({ message }) => {
-      let messageBytes: Uint8Array;
-      
-      if (message.raw instanceof Uint8Array) {
-        messageBytes = message.raw;
-      } else if (typeof message.raw === 'string') {
-        // If it's a hex string, convert to bytes
-        messageBytes = toBytes(message.raw as Hex);
-      } else {
-        throw new Error("Invalid message format");
-      }
+    return {
+        address: ethers.getAddress(wallet.address) as Hex,
+        sign: async (payload: RequestData | ResponsePayload): Promise<Hex> => {
+            try {
+                const message = JSON.stringify(payload);
+                console.log("Signing message in Sign function:", message);
+                const digestHex = ethers.id(message);
+                console.log("Digest Hex:", digestHex);
+                const messageBytes = ethers.getBytes(digestHex);
 
-      // Sign the message
-      const signature = await account.signMessage({
-        message: { raw: messageBytes },
-      });
+                const { serialized: signature } = wallet.signingKey.sign(messageBytes);
 
-      return signature;
-    },
-  };
+                return signature as Hex;
+            } catch (error) {
+                console.error("Error signing message:", error);
+                throw error;
+            }
+        },
+    };
+} catch (error) {
+    console.error("Error creating ethers signer:", error);
+    throw error;
+}
 };
 
 /**
@@ -115,7 +131,7 @@ export const clearStoredKeys = (): void => {
 /**
  * Creates a message signer function that uses the state wallet
  */
-export const createMessageSigner = (stateWallet: StateWalletClient) => {
+export const createMessageSigner = (stateWallet: WalletSigner) => {
   return async (props: { payload: unknown; walletClient: WalletClient }) => {
     const { payload } = props;
     console.log("signing message", payload);
@@ -124,9 +140,7 @@ export const createMessageSigner = (stateWallet: StateWalletClient) => {
     const messageBytes = toBytes(digestHex);
     console.log("stateWallet", stateWallet);
 
-    const signature = await stateWallet.signMessage({
-      message: { raw: messageBytes },
-    });
+    const signature = await stateWallet.sign(payload as RequestData | ResponsePayload);
 
     return signature;
   };

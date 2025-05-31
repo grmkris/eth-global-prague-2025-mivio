@@ -65,6 +65,40 @@ const createSignedRequest = async (props: {
 	return JSON.stringify(request);
 };
 
+// Helper functions for localStorage
+const getStorageKey = (walletAddress: string, eventSlug: string) => 
+	`nitrolite_session_${walletAddress}_${eventSlug}`;
+
+const saveSessionToStorage = (walletAddress: string, eventSlug: string, sessionInfo: SessionInfo | null) => {
+	try {
+		const key = getStorageKey(walletAddress, eventSlug);
+		if (sessionInfo) {
+			localStorage.setItem(key, JSON.stringify(sessionInfo));
+		} else {
+			localStorage.removeItem(key);
+		}
+	} catch (error) {
+		console.warn('Failed to save session to localStorage:', error);
+	}
+};
+
+const loadSessionFromStorage = (walletAddress: string, eventSlug: string): SessionInfo | null => {
+	try {
+		const key = getStorageKey(walletAddress, eventSlug);
+		const stored = localStorage.getItem(key);
+		if (stored) {
+			const parsed = JSON.parse(stored) as SessionInfo;
+			// Validate that the stored session matches current parameters
+			if (parsed.participant === getAddress(walletAddress) && parsed.eventSlug === eventSlug) {
+				return parsed;
+			}
+		}
+	} catch (error) {
+		console.warn('Failed to load session from localStorage:', error);
+	}
+	return null;
+};
+
 export function useEventSession(options: UseEventSessionOptions) {
 	const { walletAddress, walletClient, eventSlug } = options;
 
@@ -86,6 +120,25 @@ export function useEventSession(options: UseEventSessionOptions) {
 		{ eventSlug, walletAddress: walletAddress ?? ("" as `0x${string}`) },
 		{ enabled: !!eventSlug && !!walletAddress },
 	);
+
+	// Load session from localStorage on mount
+	useEffect(() => {
+		if (walletAddress && eventSlug) {
+			const storedSession = loadSessionFromStorage(walletAddress, eventSlug);
+			if (storedSession && storedSession.status === "open") {
+				setSessionInfo(storedSession);
+				setIsSessionOpen(true);
+				setOffchainBalance(storedSession.balance);
+			}
+		}
+	}, [walletAddress, eventSlug]);
+
+	// Save session to localStorage whenever it changes
+	useEffect(() => {
+		if (walletAddress && eventSlug) {
+			saveSessionToStorage(walletAddress, eventSlug, sessionInfo);
+		}
+	}, [sessionInfo, walletAddress, eventSlug]);
 
 	// Subscribe to ClearNode status and messages on mount
 	useEffect(() => {
@@ -661,7 +714,7 @@ export function useEventSession(options: UseEventSessionOptions) {
 
 	// Transfer funds within session and then close it
 	const transferAndCloseSession = useCallback(async (recipientAddress: `0x${string}`, amount: string, memo?: string) => {
-		if (!walletAddress || !walletClient || !eventSlug || !sessionInfo?.sessionId) {
+		if (!walletAddress || !walletClient || !eventSlug) {
 			setError("Missing required parameters or no active session");
 			return false;
 		}
@@ -677,18 +730,17 @@ export function useEventSession(options: UseEventSessionOptions) {
 			// Calculate final allocations based on the transfer amount
 			const transferAmount = Number.parseFloat(amount);
 			const currentBalance = Number.parseFloat(offchainBalance);
-			
-			if (transferAmount > currentBalance) {
-				setError("Insufficient balance for transfer");
-				setIsLoading(false);
-				return false;
-			}
-			
-			const userFinalBalance = (currentBalance - transferAmount).toFixed(2);
-			const recipientFinalBalance = transferAmount.toFixed(2);
+					 if (transferAmount > currentBalance) {
+						console.log("Insufficient balance for transfer");
+			 	setError("Insufficient balance for transfer");
+			 	setIsLoading(false);
+			 	return false;
+			 }
+			 const userFinalBalance = (currentBalance - transferAmount);
+			 const recipientFinalBalance = transferAmount;
 			
 			// Update the close session to use dynamic allocations
-			await closeSessionWithAllocations(recipientAddress, userFinalBalance, recipientFinalBalance);
+			await closeSessionWithAllocations(recipientAddress, "0", recipientFinalBalance.toString());
 			
 			setIsLoading(false);
 			return true;
@@ -701,7 +753,7 @@ export function useEventSession(options: UseEventSessionOptions) {
 			setIsLoading(false);
 			return false;
 		}
-	}, [walletAddress, walletClient, eventSlug, sessionInfo, offchainBalance, closeSessionWithAllocations]);
+	}, [walletAddress, walletClient, eventSlug, offchainBalance, closeSessionWithAllocations]);
 
 	return {
 		sessionInfo,

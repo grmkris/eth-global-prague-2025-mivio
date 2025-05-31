@@ -9,8 +9,8 @@ import {
 	createStateWalletClient, 
 	createMessageSigner,
 	type CryptoKeypair,
-	type StateWalletClient 
 } from "./keyManager";
+import type { WalletSigner } from "./keyManager";
 
 export type WSStatus =
 	| "disconnected"
@@ -71,7 +71,7 @@ export class ClearNodeClient {
 	private authParams: AuthParams | null = null;
 	private isAuthenticated = false;
 	private keyPair: CryptoKeypair | null = null;
-	private stateWallet: StateWalletClient | null = null;
+	private stateWallet: WalletSigner | null = null;
 
 	constructor(options: ClearNodeClientOptions) {
 		this.options = {
@@ -88,9 +88,10 @@ export class ClearNodeClient {
 	 */
 	private async initializeKeys(): Promise<void> {
 		try {
+			console.log("Initializing keys");
 			this.keyPair = await loadOrGenerateKeyPair();
 			this.stateWallet = createStateWalletClient(this.keyPair);
-			console.log("Keys initialized successfully");
+			console.log("Keys initialized successfully", this.stateWallet.address);
 		} catch (error) {
 			console.error("Failed to initialize keys:", error);
 			throw error;
@@ -182,7 +183,7 @@ export class ClearNodeClient {
 		if (!this.ws || !this.authParams || !this.stateWallet)
 			throw new Error("WebSocket not connected, auth params missing, or state wallet not initialized");
 
-		const { walletAddress, signerAddress, walletClient } = this.authParams;
+		const { walletAddress, walletClient } = this.authParams;
 
 		// Check for JWT token first
 		const jwtToken =
@@ -197,10 +198,10 @@ export class ClearNodeClient {
 		} else {
 			// Create initial auth request
 			const expire = (Math.floor(Date.now() / 1000) + 3600).toString(); // 1 hour
-
+			console.log("this.stateWallet?.address", this.stateWallet?.address);
 			authRequest = await createAuthRequestMessage({
 				wallet: getAddress(walletAddress),
-				participant: getAddress(this.stateWallet?.account.address ?? "0x0"),
+				participant: getAddress(this.stateWallet?.address ?? "0x0"),
 				app_name: "Mivio Events",
 				expire,
 				scope: "events",
@@ -263,7 +264,7 @@ export class ClearNodeClient {
 								scope: "events",
 								wallet: getAddress(walletAddress),
 								application: getAddress(walletAddress),
-								participant: getAddress(this.stateWallet?.account.address ?? "0x0"),
+								participant: getAddress(this.stateWallet?.address ?? "0x0"),
 								expire: Math.floor(Date.now() / 1000) + 3600,
 								allowances: [],
 							};
