@@ -1,0 +1,50 @@
+{
+  "name": "contracts",
+  "description": "Foundry-based template for developing Solidity smart contracts",
+  "version": "1.0.0",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.2.0",
+    "@prb/math": "4.1.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@types/bun": "^1.2.2",
+    "bun": "^1.2.2",
+    "forge-std": "github:foundry-rs/forge-std#v1.8.1",
+    "solhint": "^5.0.5"
+  },
+  "keywords": [
+    "blockchain",
+    "ethereum",
+    "forge",
+    "foundry",
+    "smart-contracts",
+    "solidity",
+    "template"
+  ],
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf cache out",
+    "build": "forge build",
+    "lint": "bun run lint:sol",
+    "lint:sol": "forge fmt --check && bun solhint \"{script,src,test}/**/*.sol\"",
+    "format:sol": "forge fmt",
+    "format": "pnpm biome format --write src test script lib",
+    "test": "forge test",
+    "test:coverage": "forge coverage",
+    "test:coverage:report": "forge coverage --report lcov && genhtml lcov.info --branch-coverage --output-dir coverage",
+    "deploy:local": "forge script script/Deploy.s.sol:Deploy --fork-url http://localhost:8545 -vvvv",
+    "deploy:sepolia": "source .env && forge script script/Deploy.s.sol:Deploy --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast --verify -vvvv",
+    "deploy:flow": "source .env && forge script script/Deploy.s.sol:Deploy --rpc-url $FLOW_RPC_URL --private-key $PRIVATE_KEY --broadcast --verify --verifier blockscout --verifier-url https://evm-testnet.flowscan.io/api",
+    "deploy:flow:mainnet": "source .env && forge script script/Deploy.s.sol:Deploy --rpc-url $FLOW_MAINNET_RPC_URL --private-key $PRIVATE_KEY --broadcast --verify --verifier blockscout --verifier-url https://evm.flowscan.io/api",
+    "deployer:address": "source .env && cast wallet address --private-key $PRIVATE_KEY",
+    "deploy:citrea": "source .env && forge script script/Deploy.s.sol:Deploy --rpc-url $CITREA_TESTNET_RPC_URL --private-key $PRIVATE_KEY --broadcast --verify -vvvv",
+    "deploy:rootstock": "REQ_TIMEOUT=100000 source .env && forge script script/Deploy.s.sol:Deploy --rpc-url $ROOTSTOCK_TESTNET_RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --evm-version london"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "bun"
+    ]
+  }
+}
