@@ -193,7 +193,7 @@ const BrandActivationDetailPage: React.FC = () => {
 
         <div className="mt-auto pt-6 text-center">
           <Link 
-            to={`/events/${eventId}`} 
+            to={`/event/${eventId}`} 
             className={`text-sm ${PASTEL_COLORS.lavender.text} font-medium hover:underline hover:text-purple-700`}
           >
             Back to {eventData.name} Details

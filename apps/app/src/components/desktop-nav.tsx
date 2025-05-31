@@ -29,9 +29,9 @@ export function DesktopNav() {
 	const { user } = useUser();
 
 	// Check if we're in an event-specific route
-	const isEventRoute = pathname.includes("/event/");
+	const isEventRoute = pathname.includes("/events/") && pathname !== "/event";
 	const eventSlug = isEventRoute
-		? pathname.split("/event/")[1]?.split("/")[0]
+		? pathname.split("/events/")[1]?.split("/")[0]
 		: null;
 
 	// Try to get event info from the path for now (in a real app, this would come from context or API)
@@ -50,41 +50,41 @@ export function DesktopNav() {
 			? [
 					{
 						name: "Home",
-						href: `/event/${eventInfo.slug}`,
+						href: `/events/${eventInfo.slug}`,
 						icon: Home,
-						active: pathname === `/event/${eventInfo.slug}`,
+						active: pathname === `/events/${eventInfo.slug}`,
 					},
 					{
-						name: "Progress",
-						href: `/event/${eventInfo.slug}/tasks`,
+						name: "Tasks",
+						href: `/events/${eventInfo.slug}/tasks`,
 						icon: Trophy,
-						active: pathname === `/event/${eventInfo.slug}/tasks`,
+						active: pathname === `/events/${eventInfo.slug}/tasks`,
 					},
 					{
-						name: "Scan & Pay",
-						href: `/event/${eventInfo.slug}/scan`,
+						name: "Scan",
+						href: `/events/${eventInfo.slug}/scan`,
 						icon: QrCode,
-						active: pathname === `/event/${eventInfo.slug}/scan`,
+						active: pathname === `/events/${eventInfo.slug}/scan`,
 					},
 					{
 						name: "Wallet",
-						href: `/event/${eventInfo.slug}/wallet`,
+						href: `/events/${eventInfo.slug}/wallet`,
 						icon: CreditCard,
-						active: pathname === `/event/${eventInfo.slug}/wallet`,
+						active: pathname === `/events/${eventInfo.slug}/wallet`,
 					},
 					{
 						name: "Profile",
-						href: `/event/${eventInfo.slug}/profile`,
+						href: `/events/${eventInfo.slug}/profile`,
 						icon: Settings,
-						active: pathname === `/event/${eventInfo.slug}/profile`,
+						active: pathname === `/events/${eventInfo.slug}/profile`,
 					},
 				]
 			: [
 					{
 						name: "Events",
-						href: "/events",
+						href: "/event",
 						icon: Calendar,
-						active: pathname === "/events" || pathname.startsWith("/events/"),
+						active: pathname === "/event" || pathname.startsWith("/events/"),
 					},
 				];
 
@@ -124,7 +124,7 @@ export function DesktopNav() {
 			{isEventRoute && eventInfo && (
 				<div className="mb-6 border-b px-2 pb-4">
 					<Link
-						href="/events"
+						href="/"
 						className="mb-2 flex items-center gap-2 text-muted-foreground text-sm hover:text-foreground"
 					>
 						<ArrowLeft className="h-3 w-3" />

@@ -2481,7 +2481,7 @@ const BrandActivationDetailPage: React.FC = () => {
 
         <div className="mt-auto pt-6 text-center">
           <Link 
-            to={`/events/${eventId}`} 
+            to={`/event/${eventId}`} 
             className={`text-sm ${PASTEL_COLORS.lavender.text} font-medium hover:underline hover:text-purple-700`}
           >
             Back to {eventData.name} Details
@@ -2655,7 +2655,7 @@ import { TicketIcon } from '../components/icons/NavIcons'; // Example icon, can 
 const EventListItemCard: React.FC<{ event: Event }> = ({ event }) => {
   return (
     <Link 
-      to={`/events/${event.id}`} 
+      to={`/event/${event.id}`} 
       className="block bg-white p-5 rounded-2xl shadow-lg mb-4 transition-all duration-300 hover:shadow-xl active:scale-[0.98]"
       aria-label={`View details for ${event.name}`}
     >
@@ -3493,7 +3493,7 @@ const ProgressProfilePage: React.FC = () => {
   };
   
   const handleEventHistoryClick = (eventId: string) => {
-    navigate(`/events/${eventId}`); // Navigate to the event detail page
+    navigate(`/event/${eventId}`); // Navigate to the event detail page
   };
 
   return (
@@ -4029,8 +4029,8 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<HomeScreen />} />
             <Route path="/events" element={<EventsListPage />} /> {/* Kept for direct access if needed */}
-            <Route path="/events/:eventId" element={<EventDetailPage />} />
-            <Route path="/events/:eventId/activation/:activationId" element={<BrandActivationDetailPage />} />
+            <Route path="/event/:eventId" element={<EventDetailPage />} />
+            <Route path="/event/:eventId/activation/:activationId" element={<BrandActivationDetailPage />} />
             
             <Route path="/progress" element={<ProgressProfilePage />} /> {/* New Progress Screen Route */}
             <Route path="/scan" element={<ScanPage />} />

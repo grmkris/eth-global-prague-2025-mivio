@@ -30,8 +30,8 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<HomeScreen />} />
             <Route path="/events" element={<EventsListPage />} /> {/* Kept for direct access if needed */}
-            <Route path="/events/:eventId" element={<EventDetailPage />} />
-            <Route path="/events/:eventId/activation/:activationId" element={<BrandActivationDetailPage />} />
+            <Route path="/event/:eventId" element={<EventDetailPage />} />
+            <Route path="/event/:eventId/activation/:activationId" element={<BrandActivationDetailPage />} />
             
             <Route path="/progress" element={<ProgressProfilePage />} /> {/* New Progress Screen Route */}
             <Route path="/scan" element={<ScanPage />} />

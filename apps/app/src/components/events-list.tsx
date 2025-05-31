@@ -73,8 +73,8 @@ export function EventsList() {
 		},
 	]);
 
-	const handleEventSelect = (eventSlug: string) => {
-		router.push(`/event/${eventSlug}`);
+	const handleEventClick = (eventSlug: string) => {
+		router.push(`/events/${eventSlug}`);
 	};
 
 	const getStatusBadge = (status: Event["status"]) => {
@@ -154,7 +154,7 @@ export function EventsList() {
 						<CardFooter>
 							<Button
 								className="w-full"
-								onClick={() => handleEventSelect(event.slug)}
+								onClick={() => handleEventClick(event.slug)}
 								disabled={event.status === "completed"}
 							>
 								{event.status === "completed" ? "View Details" : "Join Event"}

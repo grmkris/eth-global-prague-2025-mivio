@@ -164,7 +164,7 @@ export function PublicEventDetail({ eventSlug }: { eventSlug: string }) {
 					<p className="text-muted-foreground">
 						The event you're looking for doesn't exist.
 					</p>
-					<Button onClick={() => router.push("/events")}>
+					<Button onClick={() => router.push("/event")}>
 						<ArrowLeft className="mr-2 h-4 w-4" />
 						Back to Events
 					</Button>
@@ -184,7 +184,7 @@ export function PublicEventDetail({ eventSlug }: { eventSlug: string }) {
 
 	const handleJoinEvent = () => {
 		if (isConnected) {
-			router.push(`/event/${event.slug}`);
+			router.push(`/events/${event.slug}`);
 		}
 	};
 
@@ -195,7 +195,7 @@ export function PublicEventDetail({ eventSlug }: { eventSlug: string }) {
 			<div className="container mx-auto px-4 py-6">
 				<Button
 					variant="ghost"
-					onClick={() => router.push("/events")}
+					onClick={() => router.push("/event")}
 					className="mb-4"
 				>
 					<ArrowLeft className="mr-2 h-4 w-4" />

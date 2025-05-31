@@ -158,8 +158,8 @@ export function MicrotaskDashboard() {
 		);
 	};
 
-	const handleQuickScan = () => {
-		router.push(`/event/${eventSlug}/scan`);
+	const handleCheckIn = () => {
+		router.push(`/events/${eventSlug}/scan`);
 	};
 
 	const activeTasks = tasks.filter((task) => !task.completed);
@@ -192,7 +192,7 @@ export function MicrotaskDashboard() {
 						Complete tasks to earn rewards at the event
 					</p>
 				</div>
-				<Button onClick={handleQuickScan} size="sm">
+				<Button onClick={handleCheckIn} size="sm">
 					<QrCode className="mr-2 h-4 w-4" />
 					Quick Scan
 				</Button>

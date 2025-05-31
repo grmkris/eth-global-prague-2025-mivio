@@ -5,7 +5,7 @@ import {
 	Trophy,
 	CreditCard,
 	Settings,
-	Plus,
+	QrCode,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -18,9 +18,9 @@ export function MobileNav() {
 	const { address } = useAccount();
 
 	// Check if we're in an event-specific route
-	const isEventRoute = pathname.includes("/event/");
+	const isEventRoute = pathname.includes("/events/") && pathname !== "/event";
 	const eventSlug = isEventRoute
-		? pathname.split("/event/")[1]?.split("/")[0]
+		? pathname.split("/events/")[1]?.split("/")[0]
 		: null;
 
 	// Try to get event info from the path for now
@@ -38,73 +38,73 @@ export function MobileNav() {
 		? [
 				{
 					name: "Home",
-					href: `/event/${eventInfo.slug}`,
+					href: `/events/${eventInfo.slug}`,
 					icon: Home,
-					active: pathname === `/event/${eventInfo.slug}`,
+					active: pathname === `/events/${eventInfo.slug}`,
 				},
 				{
 					name: "Progress",
-					href: `/event/${eventInfo.slug}/tasks`,
+					href: `/events/${eventInfo.slug}/tasks`,
 					icon: Trophy,
-					active: pathname === `/event/${eventInfo.slug}/tasks`,
+					active: pathname === `/events/${eventInfo.slug}/tasks`,
 				},
 				{
 					name: "Wallet",
-					href: `/event/${eventInfo.slug}/wallet`,
+					href: `/events/${eventInfo.slug}/wallet`,
 					icon: CreditCard,
-					active: pathname === `/event/${eventInfo.slug}/wallet`,
+					active: pathname === `/events/${eventInfo.slug}/wallet`,
 				},
 				{
 					name: "Profile",
-					href: `/event/${eventInfo.slug}/profile`,
+					href: `/events/${eventInfo.slug}/profile`,
 					icon: Settings,
-					active: pathname === `/event/${eventInfo.slug}/profile`,
+					active: pathname === `/events/${eventInfo.slug}/profile`,
 				},
 			]
 		: [
 				{
 					name: "Events",
-					href: "/events",
+					href: "/event",
 					icon: Home,
-					active: pathname === "/events" || pathname.startsWith("/events/"),
+					active: pathname === "/event",
 				},
 			];
 
 	const handleScanPay = () => {
 		if (isEventRoute && eventInfo) {
-			router.push(`/event/${eventInfo.slug}/scan`);
+			router.push(`/events/${eventInfo.slug}/scan`);
+		} else {
+			router.push("/scan");
 		}
 	};
 
 	return (
 		<>
-			{/* Floating ScanPay Button */}
-			{isEventRoute && (
-				<button
-					type="button"
-					onClick={handleScanPay}
-					className="fixed bottom-16 left-1/2 z-50 -translate-x-1/2 transform group"
-					aria-label="Scan & Pay"
-				>
-					<div className="relative">
-						{/* Pulse animation */}
-						<div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-25" />
-						{/* Button shadow */}
-						<div className="absolute inset-0 rounded-full bg-primary/30 blur-xl" />
-						{/* Button */}
-						<div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-200 hover:scale-110 active:scale-95">
-							<Plus className="h-6 w-6" strokeWidth={2.5} />
-						</div>
-						{/* Tooltip */}
-						<span className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-foreground/90 px-2 py-1 text-xs text-background opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-							Scan & Pay
-						</span>
+			{/* Floating ScanPay Button - Now visible on all pages */}
+			<button
+				type="button"
+				onClick={handleScanPay}
+				className="fixed bottom-20 left-1/2 z-[60] -translate-x-1/2 transform group md:hidden"
+				aria-label="Scan & Pay"
+			>
+				<div className="relative">
+					{/* Pulse animation */}
+					<div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-25" />
+					{/* Button shadow */}
+					<div className="absolute inset-0 rounded-full bg-primary/30 blur-xl" />
+					{/* Button */}
+					<div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl transition-all duration-200 hover:scale-110 active:scale-95">
+						<QrCode className="h-7 w-7" strokeWidth={2.5} />
 					</div>
-				</button>
-			)}
+					{/* Tooltip */}
+					<span className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-foreground/90 px-3 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+						Scan & Pay
+					</span>
+				</div>
+			</button>
 
 			{/* Navigation Bar */}
-			<div className="fixed right-0 bottom-0 left-0 border-t bg-card md:hidden">
+			<div className="fixed right-0 bottom-0 left-0 border-t bg-card md:hidden z-50">
 				{isEventRoute && eventInfo && (
 					<div className="border-b bg-muted/30 px-4 py-2">
 						<div className="flex items-center justify-between">
@@ -112,7 +112,7 @@ export function MobileNav() {
 								<p className="truncate font-medium text-xs">{eventInfo.name}</p>
 							</div>
 							<Link
-								href="/events"
+								href="/"
 								className="text-muted-foreground text-xs hover:text-foreground transition-colors duration-200"
 							>
 								Change

@@ -353,7 +353,7 @@ const ProgressProfilePage: React.FC = () => {
   };
   
   const handleEventHistoryClick = (eventId: string) => {
-    navigate(`/events/${eventId}`); // Navigate to the event detail page
+    navigate(`/event/${eventId}`); // Navigate to the event detail page
   };
 
   return (

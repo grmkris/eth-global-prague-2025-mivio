@@ -7,7 +7,7 @@ import { TicketIcon } from '../components/icons/NavIcons'; // Example icon, can 
 const EventListItemCard: React.FC<{ event: Event }> = ({ event }) => {
   return (
     <Link 
-      to={`/events/${event.id}`} 
+      to={`/event/${event.id}`} 
       className="block bg-white p-5 rounded-2xl shadow-lg mb-4 transition-all duration-300 hover:shadow-xl active:scale-[0.98]"
       aria-label={`View details for ${event.name}`}
     >

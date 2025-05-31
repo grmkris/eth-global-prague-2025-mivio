@@ -98,8 +98,8 @@ export function ShopDashboard() {
 		setShowPaymentModal(true);
 	};
 
-	const handleQuickScan = () => {
-		router.push(`/event/${eventSlug}/scan`);
+	const handleQuickPay = () => {
+		router.push(`/events/${eventSlug}/scan`);
 	};
 
 	const filteredProducts = products.filter(
@@ -123,7 +123,7 @@ export function ShopDashboard() {
 						Browse and purchase items with your EventCoins
 					</p>
 				</div>
-				<Button onClick={handleQuickScan} size="sm" variant="outline">
+				<Button onClick={handleQuickPay} size="sm" variant="outline">
 					<QrCode className="mr-2 h-4 w-4" />
 					Scan to Pay
 				</Button>
