@@ -164,7 +164,7 @@ export function PublicEventDetail({ eventSlug }: { eventSlug: string }) {
 					<p className="text-muted-foreground">
 						The event you're looking for doesn't exist.
 					</p>
-					<Button onClick={() => router.push("/event")}>
+					<Button onClick={() => router.push("/events")}>
 						<ArrowLeft className="mr-2 h-4 w-4" />
 						Back to Events
 					</Button>
@@ -195,7 +195,7 @@ export function PublicEventDetail({ eventSlug }: { eventSlug: string }) {
 			<div className="container mx-auto px-4 py-6">
 				<Button
 					variant="ghost"
-					onClick={() => router.push("/event")}
+					onClick={() => router.push("/events")}
 					className="mb-4"
 				>
 					<ArrowLeft className="mr-2 h-4 w-4" />

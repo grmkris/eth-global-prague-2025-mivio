@@ -311,7 +311,7 @@ export function QRResultHandler({
 				<PaymentModal
 					open={showPaymentModal}
 					onClose={() => setShowPaymentModal(false)}
-					balance="1,250"
+					balance="2,450"
 					onPayment={(amount) => {
 						setShowPaymentModal(false);
 						onSuccess();

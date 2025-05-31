@@ -90,7 +90,7 @@ export function EventProvider({
 				setEvent(foundEvent);
 			} else {
 				setError("Event not found");
-				router.push("/event");
+				router.push("/events");
 			}
 
 			setLoading(false);

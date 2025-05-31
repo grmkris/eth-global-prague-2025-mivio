@@ -38,7 +38,7 @@ export default function MorePage() {
 			icon: Sparkles,
 			title: "Events",
 			subtitle: "Browse all events",
-			href: "/event",
+			href: "/events",
 		},
 		{
 			icon: Bell,
@@ -79,7 +79,7 @@ export default function MorePage() {
 					<div className="space-y-2">
 						{menuItems.map((item, index) => (
 							<Card 
-								key={index}
+								key={item.title}
 								className="cursor-pointer hover:bg-muted/50 transition-colors"
 								onClick={() => handleMenuClick(item.href)}
 							>

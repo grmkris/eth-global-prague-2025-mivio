@@ -200,7 +200,7 @@ export function ShopDashboard() {
 				<PaymentModal
 					open={showPaymentModal}
 					onClose={() => setShowPaymentModal(false)}
-					balance="1,250"
+					balance="2,450"
 					onPayment={(amount) => {
 						// Handle payment
 						setShowPaymentModal(false);

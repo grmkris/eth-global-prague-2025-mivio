@@ -82,9 +82,9 @@ export function DesktopNav() {
 			: [
 					{
 						name: "Events",
-						href: "/event",
+						href: "/events",
 						icon: Calendar,
-						active: pathname === "/event" || pathname.startsWith("/events/"),
+						active: pathname === "/events" || pathname.startsWith("/events/"),
 					},
 				];
 

@@ -131,7 +131,7 @@ export function ProfileDashboard() {
 								<Trophy className="h-5 w-5 text-amber-500" />
 								<span className="font-medium">EventCoins Balance:</span>
 							</div>
-							<span className="font-bold">1,250 USDC</span>
+							<span className="font-bold">2,450 USDC</span>
 						</div>
 
 						<div className="flex items-center justify-between">

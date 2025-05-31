@@ -37,7 +37,7 @@ type Transaction = {
 };
 
 export function WalletDashboard() {
-	const [balance, setBalance] = useState("1,250");
+	const [balance, setBalance] = useState("2,450");
 	const [showPaymentModal, setShowPaymentModal] = useState(false);
 	const [showTopUpModal, setShowTopUpModal] = useState(false);
 

@@ -19,7 +19,7 @@ export default function LoginPage() {
 
 	useEffect(() => {
 		if (address) {
-			router.push("/event");
+			router.push("/events");
 		}
 	}, [address, router]);
 

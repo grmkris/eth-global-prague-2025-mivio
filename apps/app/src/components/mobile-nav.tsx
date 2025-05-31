@@ -64,9 +64,9 @@ export function MobileNav() {
 		: [
 				{
 					name: "Events",
-					href: "/event",
+					href: "/events",
 					icon: Home,
-					active: pathname === "/event",
+					active: pathname === "/events",
 				},
 			];
 
