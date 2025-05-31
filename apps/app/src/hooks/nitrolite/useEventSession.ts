@@ -276,6 +276,7 @@ export function useEventSession(options: UseEventSessionOptions) {
 	const handleCreateSessionResponse = useCallback(
 		// biome-ignore lint: life is hard
 		(data: any) => {
+			console.log("handleCreateSessionResponse", data);
 			if (!data || !Array.isArray(data)) return;
 
 			const sessionData = data[0];
@@ -432,6 +433,7 @@ export function useEventSession(options: UseEventSessionOptions) {
 						// Check if this is an app session response
 						if (message.res && (message.res[1] === 'create_app_session' || 
 						                   message.res[1] === 'app_session_created')) {
+							console.log("handleCreateSessionResponse", message.res);
 							resolve(message.res[2] as unknown[]); // The app session data should be in the 3rd position
 						}
 						
@@ -543,29 +545,6 @@ export function useEventSession(options: UseEventSessionOptions) {
 		},
 		[sessionInfo, walletAddress, walletClient, updateBalance],
 	);
-
-	// Auto-create session if user has joined event but no session
-	useEffect(() => {
-		if (
-			participantStats &&
-			!sessionInfo &&
-			!isLoading &&
-			walletAddress &&
-			walletClient &&
-			connectionStatus === "connected" &&
-			hasManuallyConnectedRef.current // Only auto-create after manual connection
-		) {
-			createSession();
-		}
-	}, [
-		participantStats,
-		sessionInfo,
-		isLoading,
-		walletAddress,
-		walletClient,
-		connectionStatus,
-		createSession,
-	]);
 
 	// Update balance when session opens or periodically
 	useEffect(() => {

@@ -1,0 +1,4567 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+components/
+  brandActivationDetail/
+    BrandActivationHeader.tsx
+    BrandInfoCard.tsx
+    Confetti.tsx
+    OfflineBanner.tsx
+    QuestCompleteModal.tsx
+    Toast.tsx
+    XPStatusCard.tsx
+  eventDetail/
+    BrandActivationCard.tsx
+    EventHeader.tsx
+    EventUnlockSection.tsx
+    ShopCard.tsx
+  icons/
+    NavIcons.tsx
+  modals/
+    BadgeDetailModal.tsx
+    ConfirmationModal.tsx
+  profile/
+    SwitchToggle.tsx
+  wallet/
+    index.html
+    ModalBase.tsx
+    SendModal.tsx
+    TopUpModal.tsx
+    TransactionDetailModal.tsx
+    TransactionItemCard.tsx
+    TransactionList.tsx
+    WalletBalanceCard.tsx
+  BottomNavigationBar.tsx
+  HomeScreen.tsx
+pages/
+  BadgesPage.tsx
+  BrandActivationDetailPage.tsx
+  EventDetailPage.tsx
+  EventsListPage.tsx
+  ProfilePage.tsx
+  ProgressProfilePage.tsx
+  ScanPage.tsx
+  WalletPage.tsx
+.gitignore
+App.tsx
+constants.ts
+index.html
+index.tsx
+metadata.json
+package.json
+README.md
+tsconfig.json
+types.ts
+vite.config.ts
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="components/brandActivationDetail/BrandActivationHeader.tsx">
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronLeftIcon } from '../icons/NavIcons';
+import { BrandActivation } from '../../types';
+import { PASTEL_COLORS } from '../../constants';
+
+interface BrandActivationHeaderProps {
+  activation: BrandActivation;
+}
+
+const BrandActivationHeader: React.FC<BrandActivationHeaderProps> = ({ activation }) => {
+  const navigate = useNavigate();
+
+  // Choose a pastel color for the icon background, maybe from activation.themeColor or a default
+  const iconBgColor = activation.themeColor || PASTEL_COLORS.sky.light;
+  const iconTextColor = PASTEL_COLORS.sky.text; // Or derive from themeColor
+
+  return (
+    <header className="p-4 sticky top-0 bg-white/90 backdrop-blur-md z-40 border-b border-slate-200">
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => navigate(-1)}
+          className={`p-2 rounded-full hover:${PASTEL_COLORS.mint.light} active:bg-green-200 transition-colors`}
+          aria-label="Go back"
+        >
+          <ChevronLeftIcon className={`w-6 h-6 ${PASTEL_COLORS.mint.text}`} />
+        </button>
+        <div className="flex-1 text-center flex items-center justify-center space-x-2">
+          {activation.logoUrl && (
+            <div className={`w-8 h-8 rounded-full ${iconBgColor} flex items-center justify-center text-lg shadow-sm`}>
+              {activation.logoUrl.length > 2 ? <img src={activation.logoUrl} alt="" className="w-5 h-5"/> : 
+              <span className={iconTextColor}>{activation.logoUrl}</span>}
+            </div>
+          )}
+          <h1 className="text-xl font-bold text-slate-800 truncate">{activation.name}</h1>
+        </div>
+        <div className="w-10"> {/* Spacer to balance the back button */}</div>
+      </div>
+    </header>
+  );
+};
+
+export default BrandActivationHeader;
+</file>
+
+<file path="components/brandActivationDetail/BrandInfoCard.tsx">
+import React from 'react';
+import { PASTEL_COLORS } from '../../constants';
+
+interface BrandInfoCardProps {
+  description: string;
+}
+
+const BrandInfoCard: React.FC<BrandInfoCardProps> = ({ description }) => {
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-lg">
+      <h3 className="text-lg font-semibold text-slate-700 mb-2">About this Activation</h3>
+      <p className={`text-sm ${PASTEL_COLORS.textLight}`}>{description}</p>
+    </div>
+  );
+};
+
+export default BrandInfoCard;
+</file>
+
+<file path="components/brandActivationDetail/Confetti.tsx">
+import React from 'react';
+
+const ConfettiPiece: React.FC<{ delay: number, color: string, left: number, duration: number }> = ({ delay, color, left, duration }) => (
+  <div
+    className="absolute w-2 h-4 opacity-0 animate-fall"
+    style={{
+      backgroundColor: color,
+      left: `${left}%`,
+      animationDelay: `${delay}s`,
+      animationDuration: `${duration}s`,
+      transform: `rotate(${Math.random() * 360}deg)`,
+    }}
+  />
+);
+
+const Confetti: React.FC = () => {
+  const colors = ['#a7f3d0', '#bfdbfe', '#fbcfe8', '#fef3c7', '#ddd6fe']; // Pastel colors
+  const pieces = Array.from({ length: 50 }).map((_, i) => ({
+    id: i,
+    delay: Math.random() * 0.5, // Start falling at slightly different times
+    color: colors[Math.floor(Math.random() * colors.length)],
+    left: Math.random() * 100,
+    duration: Math.random() * 2 + 2, // Fall for 2-4 seconds
+  }));
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-[100] overflow-hidden">
+      {pieces.map(p => (
+        <ConfettiPiece key={p.id} {...p} />
+      ))}
+      <style>{`
+        @keyframes fall {
+          0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+        .animate-fall {
+          animation-name: fall;
+          animation-timing-function: linear;
+          animation-fill-mode: forwards;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default Confetti;
+</file>
+
+<file path="components/brandActivationDetail/OfflineBanner.tsx">
+import React from 'react';
+import { ExclamationCircleIcon } from '../icons/NavIcons';
+import { PASTEL_COLORS } from '../../constants';
+
+interface OfflineBannerProps {
+  isOnline: boolean;
+  message?: string; // Optional custom message
+}
+
+const OfflineBanner: React.FC<OfflineBannerProps> = ({ isOnline, message }) => {
+  if (isOnline) {
+    return null;
+  }
+
+  const displayMessage = message || "You're offline. Check-in will sync when connected.";
+  const bgColor = message ? PASTEL_COLORS.mint.light : PASTEL_COLORS.sky.light; // Mint for wallet, Sky for general
+  const textColor = message ? PASTEL_COLORS.mint.text : PASTEL_COLORS.sky.text;
+
+
+  return (
+    <div className={`sticky top-0 p-3 ${bgColor} text-center z-50 shadow-md animate-slideDownFadeIn`}>
+      <p className={`${textColor} text-sm font-medium flex items-center justify-center`}>
+        <ExclamationCircleIcon className="w-5 h-5 mr-2" />
+        {displayMessage}
+      </p>
+      <style>{`
+        @keyframes slideDownFadeIn {
+          0% { opacity: 0; transform: translateY(-100%); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slideDownFadeIn { animation: slideDownFadeIn 0.5s ease-out; }
+      `}</style>
+    </div>
+  );
+};
+
+export default OfflineBanner;
+</file>
+
+<file path="components/brandActivationDetail/QuestCompleteModal.tsx">
+import React from 'react';
+import { BadgeItem } from '../../types';
+import { CheckCircleIcon, XMarkIcon } from '../icons/NavIcons'; // Assuming XMarkIcon exists or is added
+import { PASTEL_COLORS } from '../../constants';
+
+interface QuestCompleteModalProps {
+  badge: BadgeItem;
+  onClose: () => void;
+}
+
+const QuestCompleteModal: React.FC<QuestCompleteModalProps> = ({ badge, onClose }) => {
+  return (
+    <div 
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="questCompleteTitle"
+    >
+      <div className="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-sm text-center transform animate-slideUp">
+        <button 
+            onClick={onClose} 
+            className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-slate-100 transition-colors"
+            aria-label="Close quest completion modal"
+        >
+            <XMarkIcon className="w-5 h-5 text-slate-500" />
+        </button>
+
+        <CheckCircleIcon className={`w-16 h-16 ${PASTEL_COLORS.mint.text} mx-auto mb-4`} />
+        <h2 id="questCompleteTitle" className="text-2xl font-bold text-slate-800 mb-2">Quest Complete!</h2>
+        <p className={`${PASTEL_COLORS.textDark} mb-4`}>You've unlocked a new badge:</p>
+        
+        <div className="bg-slate-50 p-4 rounded-xl mb-6 flex flex-col items-center space-y-2">
+          <img src={badge.iconUrl} alt={badge.name} className="w-20 h-20 rounded-full shadow-md border-2 border-white" />
+          <h3 className="text-lg font-semibold text-slate-700">{badge.name}</h3>
+          <p className={`text-xs ${PASTEL_COLORS.textLight}`}>{badge.description}</p>
+        </div>
+
+        <button
+          onClick={onClose}
+          className={`${PASTEL_COLORS.mint.button} text-white w-full py-3 px-6 rounded-xl text-lg font-semibold transition-all duration-300 hover:opacity-90 active:scale-95`}
+        >
+          Awesome!
+        </button>
+      </div>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(20px) scale(0.95); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+        .animate-slideUp { animation: slideUp 0.4s ease-out forwards; }
+      `}</style>
+    </div>
+  );
+};
+
+export default QuestCompleteModal;
+</file>
+
+<file path="components/brandActivationDetail/Toast.tsx">
+import React, { useEffect } from 'react';
+import { CheckCircleIcon, ExclamationCircleIcon, XCircleIcon, InformationCircleIcon, XMarkIcon } from '../icons/NavIcons';
+import { PASTEL_COLORS } from '../../constants';
+
+export interface ToastMessage {
+  id: string;
+  type: 'success' | 'error' | 'info';
+  message: string;
+}
+
+interface ToastProps {
+  toast: ToastMessage | null;
+  onDismiss: (id: string) => void;
+}
+
+const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => {
+        onDismiss(toast.id);
+      }, 3000); // Auto-dismiss after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [toast, onDismiss]);
+
+  if (!toast) {
+    return null;
+  }
+
+  let bgColor = PASTEL_COLORS.sky.light;
+  let textColor = PASTEL_COLORS.sky.text;
+  let IconComponent = InformationCircleIcon; // Renamed to avoid conflict with imported Icon
+
+  switch (toast.type) {
+    case 'success':
+      bgColor = PASTEL_COLORS.mint.light;
+      textColor = PASTEL_COLORS.mint.text;
+      IconComponent = CheckCircleIcon;
+      break;
+    case 'error':
+      bgColor = PASTEL_COLORS.blush.light; // Using blush for error as red-500 is not pastel
+      textColor = PASTEL_COLORS.blush.text;
+      IconComponent = XCircleIcon;
+      break;
+    case 'info': // Fallthrough default
+    default:
+      IconComponent = InformationCircleIcon; 
+      break;
+  }
+
+
+  return (
+    <div 
+        className={`fixed bottom-20 left-1/2 -translate-x-1/2 p-4 rounded-xl shadow-2xl ${bgColor} ${textColor} flex items-center space-x-3 max-w-md w-[90%] z-[60] animate-toastIn`}
+        role="alert"
+    >
+      <IconComponent className="w-6 h-6 flex-shrink-0" />
+      <span className="flex-grow text-sm font-medium">{toast.message}</span>
+      <button onClick={() => onDismiss(toast.id)} className="p-1 rounded-full hover:bg-black/10" aria-label="Dismiss toast">
+        <XMarkIcon className="w-4 h-4" />
+      </button>
+      <style>{`
+        @keyframes toastIn {
+          from { opacity: 0; transform: translate(-50%, 20px); }
+          to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        .animate-toastIn { animation: toastIn 0.3s ease-out forwards; }
+      `}</style>
+    </div>
+  );
+};
+
+export default Toast;
+</file>
+
+<file path="components/brandActivationDetail/XPStatusCard.tsx">
+import React from 'react';
+import { FlameIcon, CheckIcon, SoulboundNFEstagio1Icon, SoulboundNFEstagio2Icon, SoulboundNFEstagio3Icon } from '../icons/NavIcons';
+import { PASTEL_COLORS } from '../../constants';
+
+interface XPStatusCardProps {
+  xpAvailableForCheckIn: number;
+  currentXPInActivation: number;
+  totalXPInActivation: number;
+  questTitle: string;
+  questCurrentProgress: number;
+  questTargetProgress: number;
+  isQuestCompleted: boolean;
+  dailyStreak: number;
+  soulboundNftLevel: 1 | 2 | 3; // Simplified level for NFT visual
+}
+
+const XPStatusCard: React.FC<XPStatusCardProps> = ({
+  xpAvailableForCheckIn,
+  currentXPInActivation,
+  totalXPInActivation,
+  questTitle,
+  questCurrentProgress,
+  questTargetProgress,
+  isQuestCompleted,
+  dailyStreak,
+  soulboundNftLevel
+}) => {
+  const progressPercentage = totalXPInActivation > 0 ? (currentXPInActivation / totalXPInActivation) * 100 : 0;
+
+  let NftIconComponent;
+  switch (soulboundNftLevel) {
+    case 1: NftIconComponent = SoulboundNFEstagio1Icon; break;
+    case 2: NftIconComponent = SoulboundNFEstagio2Icon; break;
+    case 3: NftIconComponent = SoulboundNFEstagio3Icon; break;
+    default: NftIconComponent = SoulboundNFEstagio1Icon;
+  }
+
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-lg space-y-5">
+      {/* XP Available from this interaction */}
+      <div className={`${PASTEL_COLORS.mint.light} p-4 rounded-xl text-center`}>
+        <p className={`text-3xl font-bold ${PASTEL_COLORS.mint.text}`}>+{xpAvailableForCheckIn} XP</p>
+        <p className={`text-sm ${PASTEL_COLORS.mint.text}`}>Available from this Check-In</p>
+      </div>
+
+      {/* XP Progress for this activation */}
+      <div>
+        <div className="flex justify-between items-center mb-1">
+          <h3 className="text-sm font-medium text-slate-600">XP from this Activation</h3>
+          <p className="text-sm font-semibold text-slate-700">{currentXPInActivation.toLocaleString()} / {totalXPInActivation.toLocaleString()}</p>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+          <div
+            className={`${PASTEL_COLORS.mint.button} h-3 rounded-full transition-all duration-1000 ease-out`}
+            style={{ width: `${progressPercentage}%` }}
+            aria-valuenow={progressPercentage}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            role="progressbar"
+            aria-label={`XP progress for this activation: ${currentXPInActivation} of ${totalXPInActivation}`}
+          />
+        </div>
+      </div>
+
+      {/* Current Quest */}
+      <div className="border-t border-slate-200 pt-4">
+        <h3 className="text-sm font-medium text-slate-600 mb-1">Current Quest</h3>
+        <div className="flex items-center justify-between text-sm text-slate-700">
+          <span>{questTitle} ({questCurrentProgress}/{questTargetProgress})</span>
+          {isQuestCompleted && <CheckIcon className={`w-5 h-5 ${PASTEL_COLORS.mint.text}`} />}
+        </div>
+      </div>
+      
+      {/* Daily Streak & Soulbound NFT */}
+      <div className="flex justify-between items-center border-t border-slate-200 pt-4">
+        <div className="flex items-center space-x-2 text-sm">
+          <FlameIcon className="w-6 h-6 text-orange-500 animate-pulse-streak" />
+          <span className="text-slate-700 font-medium">{dailyStreak} day streak</span>
+        </div>
+        <div className="flex flex-col items-center space-y-1">
+           <div className="w-12 h-12 relative">
+            <NftIconComponent className="w-full h-full text-purple-500 opacity-80" />
+            <div className="absolute inset-0 bg-white/10 animate-nft-shine"></div>
+           </div>
+          <p className="text-xs text-slate-500">Soulbound NFT</p>
+        </div>
+      </div>
+      <style>{`
+        @keyframes pulseStreak {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        .animate-pulse-streak { animation: pulseStreak 2s infinite ease-in-out; }
+
+        @keyframes nftShine {
+          0% { transform: translateX(-100%) skewX(-20deg); opacity: 0; }
+          30% { transform: translateX(-100%) skewX(-20deg); opacity: 0.3; }
+          70% { transform: translateX(100%) skewX(-20deg); opacity: 0.3; }
+          100% { transform: translateX(100%) skewX(-20deg); opacity: 0; }
+        }
+        .animate-nft-shine {
+          position: absolute;
+          top: 0; left: 0;
+          width: 50%; height: 100%;
+          background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%);
+          animation: nftShine 3s infinite linear;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default XPStatusCard;
+</file>
+
+<file path="components/eventDetail/BrandActivationCard.tsx">
+import React from 'react';
+import { BrandActivation } from '../../types';
+import { SparklesIcon } from '../icons/NavIcons';
+import { PASTEL_COLORS } from '../../constants';
+
+interface BrandActivationCardProps {
+  activation: BrandActivation;
+}
+
+const BrandActivationCard: React.FC<BrandActivationCardProps> = ({ activation }) => {
+  return (
+    <div 
+      className="flex-shrink-0 w-48 bg-white rounded-2xl shadow-lg p-4 mr-4 transition-all duration-300 hover:shadow-xl active:scale-[0.98] cursor-pointer"
+      role="button"
+      tabIndex={0}
+      aria-label={`Activate ${activation.name}`}
+    >
+      <div className="flex items-center mb-3">
+        <div className={`w-10 h-10 rounded-full ${activation.themeColor} flex items-center justify-center text-xl mr-3 shadow-sm`}>
+          {activation.logoUrl && activation.logoUrl.length > 2 ? <img src={activation.logoUrl} alt="" className="w-6 h-6"/> : activation.logoUrl }
+        </div>
+        <h4 className="text-md font-semibold text-slate-700 flex-1 truncate">{activation.name}</h4>
+      </div>
+      <div className={`${PASTEL_COLORS.mint.light} ${PASTEL_COLORS.mint.text} px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center space-x-1.5`}>
+        <SparklesIcon className="w-4 h-4" />
+        <span>{activation.xpAvailable} XP Available</span>
+      </div>
+    </div>
+  );
+};
+
+export default BrandActivationCard;
+</file>
+
+<file path="components/eventDetail/EventHeader.tsx">
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronLeftIcon, InformationCircleIcon, MapPinIcon } from '../icons/NavIcons';
+import { Event } from '../../types';
+import { PASTEL_COLORS } from '../../constants';
+
+interface EventHeaderProps {
+  event: Event;
+}
+
+const EventHeader: React.FC<EventHeaderProps> = ({ event }) => {
+  const navigate = useNavigate();
+
+  return (
+    <header className="p-4 sticky top-0 bg-white/80 backdrop-blur-md z-10 border-b border-slate-200">
+      <div className="flex items-center justify-between">
+        <button 
+          onClick={() => navigate(-1)} 
+          className={`p-2 rounded-full hover:${PASTEL_COLORS.mint.light} active:bg-green-200 transition-colors`}
+          aria-label="Go back"
+        >
+          <ChevronLeftIcon className={`w-6 h-6 ${PASTEL_COLORS.mint.text}`} />
+        </button>
+        <div className="flex-1 text-center">
+          <h1 className="text-xl font-bold text-slate-800 truncate">{event.name}</h1>
+          <div className="text-xs text-slate-500 flex items-center justify-center space-x-1">
+            <MapPinIcon className="w-3 h-3 inline-block" />
+            <span>{event.location} &bull; {event.dates}</span>
+          </div>
+        </div>
+        <button 
+          className={`p-2 rounded-full hover:${PASTEL_COLORS.lavender.light} active:bg-purple-200 transition-colors`}
+          aria-label="Event information"
+        >
+          <InformationCircleIcon className={`w-6 h-6 ${PASTEL_COLORS.lavender.text}`} />
+        </button>
+      </div>
+    </header>
+  );
+};
+
+export default EventHeader;
+</file>
+
+<file path="components/eventDetail/EventUnlockSection.tsx">
+import React, { useState, useEffect } from 'react';
+import { Event } from '../../types';
+import { PASTEL_COLORS } from '../../constants';
+import { CheckCircleIcon, ExclamationCircleIcon } from '../icons/NavIcons';
+
+interface EventUnlockSectionProps {
+  event: Event;
+  onUnlockSuccess: () => void; // Callback when event is successfully unlocked
+}
+
+const EventUnlockSection: React.FC<EventUnlockSectionProps> = ({ event, onUnlockSuccess }) => {
+  const [isUnlocked, setIsUnlocked] = useState(event.isUnlockedByUser || false);
+  const [inputValue, setInputValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  const handleUnlockAttempt = () => {
+    if (!isOnline) {
+      setError("You're offline. Event unlock unavailable.");
+      return;
+    }
+    if (!inputValue.trim()) {
+      setError("Please enter your ticket e-mail or code.");
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+
+    // Mock API call
+    setTimeout(() => {
+      // Mock validation: accept any non-empty input for demo
+      if (inputValue.trim()) { 
+        setIsUnlocked(true);
+        setShowSuccess(true);
+        onUnlockSuccess(); // Notify parent
+        setTimeout(() => setShowSuccess(false), 2500); // Hide success message after a bit
+      } else {
+        setError("Invalid ticket e-mail or code. Please try again.");
+      }
+      setIsLoading(false);
+    }, 1500);
+  };
+
+  if (isUnlocked) {
+    return (
+      <div className="p-5 rounded-2xl shadow-lg bg-white text-center">
+        {showSuccess && (
+          <div className={`mb-4 p-3 rounded-xl ${PASTEL_COLORS.mint.light} flex items-center justify-center space-x-2 animate-fadeIn`}>
+            <CheckCircleIcon className={`w-6 h-6 ${PASTEL_COLORS.mint.text}`} />
+            <span className={`${PASTEL_COLORS.mint.text} font-medium`}>Event Unlocked! Welcome!</span>
+          </div>
+        )}
+        <button 
+          className={`${PASTEL_COLORS.mint.button} text-white w-full py-3 px-6 rounded-xl text-lg font-semibold transition-all duration-300 hover:opacity-90 active:scale-95 transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400`}
+          style={{animation: showSuccess ? 'gentleBounceIn 0.5s ease-out 0.2s both' : 'none'}}
+        >
+          Enter Event
+        </button>
+        <p className={`mt-3 text-sm ${PASTEL_COLORS.textLight}`}>Your access is confirmed!</p>
+        <style>{`
+          @keyframes gentleBounceIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            70% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+          }
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-5 rounded-2xl shadow-lg bg-white">
+      {!isOnline && (
+        <div className={`mb-4 p-3 rounded-xl ${PASTEL_COLORS.sky.light} text-center ${PASTEL_COLORS.sky.text}`}>
+          You’re offline—event unlock unavailable, but you can browse info.
+        </div>
+      )}
+      <h2 className="text-xl font-semibold text-slate-700 mb-2">Unlock with Ticket</h2>
+      <p className={`text-sm ${PASTEL_COLORS.textLight} mb-4`}>Enter your ticket e-mail or code below.</p>
+      <input
+        type="text"
+        value={inputValue}
+        onChange={(e) => { setInputValue(e.target.value); setError(null); }}
+        placeholder="Email or Code"
+        disabled={!isOnline || isLoading}
+        className={`w-full px-4 py-3 mb-3 border ${PASTEL_COLORS.inputBorder} rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none transition-shadow`}
+      />
+      {error && (
+        <p className={`text-sm ${PASTEL_COLORS.error} mb-3 flex items-center`}>
+          <ExclamationCircleIcon className="w-5 h-5 mr-1" /> {error}
+        </p>
+      )}
+      <button
+        onClick={handleUnlockAttempt}
+        disabled={!isOnline || isLoading}
+        className={`${PASTEL_COLORS.lavender.button} text-white w-full py-3 px-6 rounded-xl text-lg font-semibold transition-all duration-300 hover:opacity-90 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400`}
+      >
+        {isLoading ? 'Unlocking...' : 'Unlock Event'}
+      </button>
+    </div>
+  );
+};
+
+export default EventUnlockSection;
+</file>
+
+<file path="components/eventDetail/ShopCard.tsx">
+import React from 'react';
+import { Shop } from '../../types';
+import { PASTEL_COLORS } from '../../constants';
+
+interface ShopCardProps {
+  shop: Shop;
+}
+
+const ShopCard: React.FC<ShopCardProps> = ({ shop }) => {
+  return (
+    <div className="bg-white rounded-2xl shadow-lg p-4 transition-all duration-300 hover:shadow-xl active:scale-[0.98]">
+      <div className="flex items-center mb-3">
+        <div className={`w-10 h-10 rounded-full ${shop.themeColor} flex items-center justify-center text-xl mr-3 shadow-sm`}>
+           {shop.iconUrl && shop.iconUrl.length > 2 ? <img src={shop.iconUrl} alt="" className="w-6 h-6"/> : shop.iconUrl }
+        </div>
+        <h4 className="text-md font-semibold text-slate-700 flex-1 truncate">{shop.name}</h4>
+      </div>
+      <div className="mb-3">
+        <p className={`text-sm ${PASTEL_COLORS.textLight}`}>Top item: {shop.topItem.name}</p>
+        <span className={`${PASTEL_COLORS.mint.light} ${PASTEL_COLORS.mint.text} px-2 py-0.5 rounded-md text-xs font-semibold`}>
+          {shop.topItem.currency} ${shop.topItem.price.toFixed(2)}
+        </span>
+      </div>
+      <button 
+        className={`${PASTEL_COLORS.sky.button} text-white w-full py-2 px-4 rounded-xl text-sm font-medium transition-all duration-300 hover:opacity-90 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400`}
+      >
+        View Shop
+      </button>
+    </div>
+  );
+};
+
+export default ShopCard;
+</file>
+
+<file path="components/icons/NavIcons.tsx">
+import React from 'react';
+
+export const HomeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.122 0l8.954 8.955M2.25 12v10.5a.75.75 0 00.75.75h4.5a.75.75 0 00.75-.75V16.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75v6.75a.75.75 0 00.75.75h4.5a.75.75 0 00.75-.75V12m-18 0V6.75A2.25 2.25 0 014.5 4.5h15A2.25 2.25 0 0121.75 6.75V12" />
+  </svg>
+);
+
+export const TicketIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6.75v10.5M16.5 6.75a4.5 4.5 0 00-9 0v10.5a4.5 4.5 0 009 0M7.5 6.75h1.5v10.5H7.5M15 6.75H9m6 5.25H9" />
+  </svg>
+);
+
+export const ScanIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+  </svg>
+);
+
+export const TrophyIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013-3V5.25a3 3 0 00-3-3h-3.75a3 3 0 00-3 3V15.75a3 3 0 013 3zM16.5 18.75a3 3 0 00-3-3h-3a3 3 0 00-3 3m6-15.75V5.25m0 0v3.75m0-3.75h3.75M12 9V5.25m0 0H8.25m3.75 0V1.5M7.5 15.75V21" />
+  </svg>
+);
+
+export const GearIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-1.003 1.116-1.235l1.116-.422c.556-.21 1.156-.21 1.712 0l1.116.422c.556.232 1.026.693 1.116 1.235l.21 1.22a11.948 11.948 0 003.394 2.646l1.07-.618c.51-.293 1.117-.223 1.556.162l.886.798a1.125 1.125 0 010 1.592l-.618 1.07c-.388.672-.388 1.488 0 2.16l.618 1.07a1.125 1.125 0 010 1.592l-.886.798c-.439.385-1.046.455-1.556.162l-1.07-.618a11.95 11.95 0 00-3.394 2.646l-.21 1.22c-.09.542-.56 1.003-1.116 1.235l-1.116-.422c-.556-.21-1.156-.21-1.712 0l-1.116-.422c-.556-.232-1.026.693-1.116-1.235l-.21-1.22a11.948 11.948 0 00-3.394-2.646l-1.07.618c-.51.293-1.117-.223-1.556-.162l-.886-.798a1.125 1.125 0 010-1.592l.618-1.07c.388-.672.388-1.488 0 2.16l-.618-1.07a1.125 1.125 0 010 1.592l.886-.798c.439.385 1.046.455 1.556.162l1.07.618a11.95 11.95 0 003.394 2.646l.21-1.22z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+);
+
+export const BellIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 15.125A3 3 0 014.5 12.875h15a3 3 0 011.375 2.25M17.25 17.082C17.25 17.655 17.18 18.22 17.08 18.75M6.75 17.082C6.75 17.655 6.82 18.22 6.92 18.75" />
+  </svg>
+);
+
+export const FlameIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048l2.406-2.406a1.5 1.5 0 012.122 0l4.796 4.796a1.5 1.5 0 002.122-2.122l-2.406-2.406zM12 16.5a4.5 4.5 0 110-9 4.5 4.5 0 010 9z" />
+  </svg>
+);
+
+export const CheckIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+export const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    </svg>
+);
+
+export const ChevronRightIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+  </svg>
+);
+
+export const SendIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+  </svg>
+);
+
+export const ReceiveIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+  </svg>
+);
+
+export const HomeIconFilled: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+    <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
+    <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" />
+  </svg>
+);
+
+export const TicketIconFilled: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+    <path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a.75.75 0 01-.848 0L1.5 8.67z" />
+    <path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a.75.75 0 00.572 0L22.5 6.908z" />
+  </svg>
+);
+
+export const TrophyIconFilled: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+    <path fillRule="evenodd" d="M11.25 2.25c.385 0 .727.045 1.055.126A10.47 10.47 0 0015 1.549V1.5A.75.75 0 0115.75.75h1.5a.75.75 0 01.75.75v.05A10.472 10.472 0 0020.25 3h.195A.75.75 0 0121.75 3v1.5a.75.75 0 01-.75.75h-.196a10.472 10.472 0 00-1.255 2.25H21a.75.75 0 01.75.75V9a.75.75 0 01-.75.75h-1.056c.11.397.18.811.206 1.236.04.642.005 1.294-.123 1.918a.75.75 0 01-1.417-.518c.113-.54.148-1.09.113-1.636-.02-.34-.073-.67-.154-.99H6.363c-.08.32-.133.65-.154.99-.036.546-.001 1.096.113 1.636a.75.75 0 01-1.417.518c-.128-.624-.163-1.276-.123-1.918.025-.425.095-.84.206-1.236H3.75A.75.75 0 013 9V7.5a.75.75 0 01.75-.75h1.206A10.47 10.47 0 003.75 4.5H3A.75.75 0 012.25 4.5V3a.75.75 0 01.75-.75h.196A10.472 10.472 0 006.25 1.5V1.5A.75.75 0 017.5.75H9a.75.75 0 01.75.75v.05a10.472 10.472 0 002.25 1.5c.328-.08.67-.126 1.055-.126zm6.563 8.25a1.495 1.495 0 01-.929-1.418 1.5 1.5 0 011.5-1.5h.019a1.5 1.5 0 011.5 1.5 1.495 1.495 0 01-.93 1.418c.433.24.71.712.71 1.232v1.01a4.5 4.5 0 01-4.5 4.5h-3a4.5 4.5 0 01-4.5-4.5v-1.01c0-.52.277-.992.71-1.232A1.495 1.495 0 016.306 9.08a1.5 1.5 0 011.5-1.5h.019a1.5 1.5 0 011.5 1.5c0 .52-.277.992-.71 1.232a1.5 1.5 0 010 2.536c.433-.24.71-.712.71-1.232V11.25a3 3 0 013-3h3a3 3 0 013 3v1.01c0 .52.277.992.71 1.232a1.5 1.5 0 010 2.536c-.433.24-.71.712-.71 1.232V16.5a3 3 0 01-3 3h-3a3 3 0 01-3-3v-1.01c0-.52-.277-.992-.71-1.232a1.495 1.495 0 01-.929-1.418z" clipRule="evenodd" />
+  </svg>
+);
+
+export const GearIconFilled: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+    <path fillRule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.947 1.567L9.049 4.23A1.523 1.523 0 007.719 5.5l-1.26.01c-1.09.017-1.906.966-1.746 2.049l.167 1.098c.239.834.026 1.747-.532 2.374l-.738.846a1.912 1.912 0 000 2.726l.738.846c.558.627.77 1.54.532 2.374l-.167 1.099c-.16 1.082.656 2.032 1.746 2.048l1.26.01a1.523 1.523 0 001.33 1.271l.082.413c.248.903 1.03.566 1.947 1.567.228.017.457.026.688.026s.46-.009.688-.026c.917 0 1.699-.664 1.947-1.567l.082-.413a1.523 1.523 0 001.33-1.27l1.26-.01c1.09-.017 1.906-.966 1.746-2.049l-.167-1.098c-.239-.834-.026-1.747.532-2.374l.738-.846a1.912 1.912 0 000 2.726l-.738-.846c-.558-.627-.77-1.54-.532-2.374l.167-1.099c.16-1.082-.656-2.032-1.746-2.048l-1.26-.01a1.523 1.523 0 00-1.33-1.271l-.082-.413C14.777 2.913 13.996 2.25 13.079 2.25H11.08zm-.731 7.575a.75.75 0 011.06 0l.071.071a2.502 2.502 0 003.536 0l.071-.071a.75.75 0 111.06 1.06l-.07.07a4.002 4.002 0 01-5.658 0l-.071-.071a.75.75 0 010-1.06z" clipRule="evenodd" />
+    <path d="M12 10.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" />
+  </svg>
+);
+
+export const WalletIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12V7.5a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 7.5v9A2.25 2.25 0 005.25 18.75h13.5A2.25 2.25 0 0021 16.5M16.5 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 10.5h.008v.008H12v-.008z" />
+  </svg>
+);
+
+export const WalletIconFilled: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+    <path d="M12.375 15.826a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" />
+    <path fillRule="evenodd" d="M21 6.75A2.25 2.25 0 0018.75 4.5H5.25A2.25 2.25 0 003 6.75v10.5A2.25 2.25 0 005.25 19.5h13.5A2.25 2.25 0 0021 17.25V6.75zm-2.25 1.5V12a2.25 2.25 0 01-2.25 2.25H15a2.25 2.25 0 01-2.25-2.25V8.25A2.25 2.25 0 0115 6h.75a.75.75 0 000-1.5H15a3.75 3.75 0 00-3.75 3.75V12a3.75 3.75 0 003.75 3.75h1.5a3.75 3.75 0 003.75-3.75V8.25zM12 12.375a.375.375 0 110-.75.375.375 0 010 .75z" clipRule="evenodd" />
+  </svg>
+);
+
+
+export const ChevronLeftIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+  </svg>
+);
+
+export const CheckCircleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+export const SparklesIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L1.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.25 7.5l1.5 1.5L21 7.5l-1.5-1.5L18.25 7.5zM16.5 13.5L18 12l1.5 1.5L18 15l-1.5-1.5z" />
+  </svg>
+);
+
+export const MapPinIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+  </svg>
+);
+
+export const InformationCircleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+  </svg>
+);
+
+export const ExclamationCircleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+  </svg>
+);
+
+export const XCircleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+// Placeholder Soulbound NFT Icons
+export const SoulboundNFEstagio1Icon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <circle cx="50" cy="50" r="30" fill="rgba(192, 192, 192, 0.3)" stroke="rgba(192, 192, 192, 0.7)" strokeWidth="2"/>
+    <circle cx="50" cy="50" r="10" fill="rgba(211, 211, 211, 0.8)"/>
+    <defs>
+      <radialGradient id="shineGrad1" cx="0.3" cy="0.3" r="0.7">
+        <stop offset="0%" stopColor="white" stopOpacity="0.5" />
+        <stop offset="100%" stopColor="white" stopOpacity="0" />
+      </radialGradient>
+    </defs>
+    <circle cx="50" cy="50" r="30" fill="url(#shineGrad1)"/>
+  </svg>
+);
+
+export const SoulboundNFEstagio2Icon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <path d="M50 10 L60 40 L90 40 L65 60 L75 90 L50 70 L25 90 L35 60 L10 40 L40 40 Z" fill="rgba(173, 216, 230, 0.4)" stroke="rgba(173, 216, 230, 0.8)" strokeWidth="2"/>
+    <path d="M50 20 L58 42 L80 42 L61 58 L69 80 L50 65 L31 80 L39 58 L20 42 L42 42 Z" fill="rgba(173, 216, 230, 0.8)"/>
+    <defs>
+      <radialGradient id="shineGrad2" cx="0.3" cy="0.3" r="0.7">
+        <stop offset="0%" stopColor="white" stopOpacity="0.6" />
+        <stop offset="100%" stopColor="white" stopOpacity="0" />
+      </radialGradient>
+    </defs>
+    <path d="M50 10 L60 40 L90 40 L65 60 L75 90 L50 70 L25 90 L35 60 L10 40 L40 40 Z" fill="url(#shineGrad2)"/>
+  </svg>
+);
+
+export const SoulboundNFEstagio3Icon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <path d="M50,5 L61.8,38.2 L98.5,38.2 L68.3,59.8 L79.1,92.9 L50,70.5 L20.9,92.9 L31.7,59.8 L1.5,38.2 L38.2,38.2 Z" fill="rgba(255, 223, 186, 0.5)" stroke="rgba(255, 223, 186, 0.9)" strokeWidth="2"/>
+    <path d="M50,15 L59.5,42.1 L88.1,42.1 L64.3,60.7 L73.8,87.8 L50,68.5 L26.2,87.8 L35.7,60.7 L11.9,42.1 L40.5,42.1 Z" fill="rgba(255, 223, 186, 0.9)"/>
+     <defs>
+      <radialGradient id="shineGrad3" cx="0.3" cy="0.3" r="0.7">
+        <stop offset="0%" stopColor="white" stopOpacity="0.7" />
+        <stop offset="100%" stopColor="white" stopOpacity="0" />
+      </radialGradient>
+    </defs>
+     <path d="M50,5 L61.8,38.2 L98.5,38.2 L68.3,59.8 L79.1,92.9 L50,70.5 L20.9,92.9 L31.7,59.8 L1.5,38.2 L38.2,38.2 Z" fill="url(#shineGrad3)"/>
+  </svg>
+);
+
+export const XMarkIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
+export const ArrowUpCircleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5V4.5M12 4.5L8.25 8.25M12 4.5l3.75 3.75" transform="rotate(0 12 12) translate(0 -0.5)" />
+  </svg>
+);
+
+
+export const CoffeeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-2.25 6H6.75l-2.25-6A2.25 2.25 0 016.75 6h10.5a2.25 2.25 0 012.25 2.25zM19.5 8.25A2.25 2.25 0 0017.25 6H6.75a2.25 2.25 0 00-2.25 2.25m15 0v8.25A2.25 2.25 0 0117.25 18.75H6.75A2.25 2.25 0 014.5 16.5V8.25m10.5-2.25h-6.75" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M18 8.25c0 .414-.168.75-.375.75h-1.25c-.207 0-.375-.336-.375-.75v-1.5c0-.414.168-.75.375-.75h1.25c.207 0 .375.336.375.75v1.5z" />
+  </svg>
+);
+
+export const ShoppingBagIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+  </svg>
+);
+
+export const PaperAirplaneIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+  </svg>
+);
+
+export const ArrowDownCircleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+  <path strokeLinecap="round" strokeLinejoin="round" d="M12 15V9m-3 3h6m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l3.75-3.75M12 19.5l-3.75-3.75" transform="rotate(0 12 12) translate(0 0.5)"/>
+  </svg>
+);
+
+
+export const PlusCircleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+export const QuestionMarkCircleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+  </svg>
+);
+
+export const PencilIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+  </svg>
+);
+
+export const ClipboardDocumentIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 4.625a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0z" />
+  </svg>
+);
+
+export const CoinIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-6.75a3.75 3.75 0 010-4.5M15 14.25a3.75 3.75 0 010-4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 12.75a.75.75 0 100-1.5.75.75 0 000 1.5z" />
+  </svg>
+);
+
+export const CameraIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+  </svg>
+);
+
+export const SignalIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12 20.25h.008v.008H12v-.008z" />
+  </svg>
+);
+</file>
+
+<file path="components/modals/BadgeDetailModal.tsx">
+import React from 'react';
+import ModalBase from '../wallet/ModalBase'; // Reusing ModalBase structure
+import { BadgeItem } from '../../types';
+import { PASTEL_COLORS } from '../../constants';
+import { TrophyIcon } from '../icons/NavIcons';
+
+interface BadgeDetailModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  badge: BadgeItem | null;
+}
+
+const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({ isOpen, onClose, badge }) => {
+  if (!badge) return null;
+
+  return (
+    <ModalBase isOpen={isOpen} onClose={onClose} title="Badge Details" size="sm">
+      <div className="space-y-6 text-center">
+        <div className="flex flex-col items-center">
+          <img 
+            src={badge.iconUrl} 
+            alt={badge.name} 
+            className={`w-28 h-28 rounded-full mb-4 shadow-lg border-4 ${badge.isLocked ? 'border-slate-300 filter grayscale' : PASTEL_COLORS.sky.border}`}
+          />
+          <h2 className={`text-2xl font-bold ${badge.isLocked ? PASTEL_COLORS.textLight : PASTEL_COLORS.textDark}`}>
+            {badge.name}
+          </h2>
+          {badge.isLocked ? (
+            <p className={`${PASTEL_COLORS.red.text} text-sm font-medium`}>Locked</p>
+          ) : (
+            badge.unlockDate && <p className={`${PASTEL_COLORS.mint.text} text-sm font-medium`}>{badge.unlockDate}</p>
+          )}
+        </div>
+
+        <p className={`${PASTEL_COLORS.textLight} text-md`}>
+          {badge.description}
+        </p>
+        
+        {badge.isLocked && (
+             <div className={`${PASTEL_COLORS.yellow.light} p-3 rounded-lg text-sm ${PASTEL_COLORS.yellow.text}`}>
+                {badge.howToEarn ? (
+                  <>
+                    <strong>How to unlock:</strong> {badge.howToEarn}
+                  </>
+                ) : (
+                  "Keep exploring and completing quests to unlock this badge!"
+                )}
+            </div>
+        )}
+
+        <button
+          onClick={onClose}
+          className={`${PASTEL_COLORS.sky.button} text-white w-full py-3 px-6 rounded-xl text-md font-semibold 
+                      transition-all duration-300 hover:opacity-90 active:scale-95 focus:outline-none focus:ring-2 
+                      focus:ring-offset-2 ${PASTEL_COLORS.sky.border}`}
+        >
+          Close
+        </button>
+      </div>
+    </ModalBase>
+  );
+};
+
+export default BadgeDetailModal;
+</file>
+
+<file path="components/modals/ConfirmationModal.tsx">
+import React from 'react';
+import ModalBase from '../wallet/ModalBase'; // Reusing ModalBase structure
+import { PASTEL_COLORS } from '../../constants';
+import { ExclamationCircleIcon } from '../icons/NavIcons';
+
+interface ConfirmationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  message: React.ReactNode; // Can be string or JSX for more complex messages
+  confirmText?: string;
+  cancelText?: string;
+  confirmButtonColor?: string; // e.g., PASTEL_COLORS.red.button
+  icon?: React.ReactNode;
+}
+
+const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message,
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  confirmButtonColor = PASTEL_COLORS.mint.button,
+  icon
+}) => {
+  return (
+    <ModalBase isOpen={isOpen} onClose={onClose} title={title} size="sm">
+      <div className="space-y-6">
+        {icon && (
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-slate-100">
+            {icon}
+          </div>
+        )}
+        <div className="text-center">
+            <p className={`${PASTEL_COLORS.textDark} text-md`}>{message}</p>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row-reverse gap-3">
+          <button
+            onClick={onConfirm}
+            className={`${confirmButtonColor} text-white w-full sm:w-auto flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold 
+                        transition-all duration-300 hover:opacity-90 active:scale-95 focus:outline-none focus:ring-2 
+                        focus:ring-offset-2 ${PASTEL_COLORS.mint.border}`} // Ring color can be adapted too
+          >
+            {confirmText}
+          </button>
+          <button
+            onClick={onClose}
+            className={`bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 w-full sm:w-auto flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold 
+                        transition-all duration-300 active:scale-95 focus:outline-none focus:ring-2 
+                        focus:ring-offset-2 ${PASTEL_COLORS.sky.border}`}
+          >
+            {cancelText}
+          </button>
+        </div>
+      </div>
+    </ModalBase>
+  );
+};
+
+export default ConfirmationModal;
+</file>
+
+<file path="components/profile/SwitchToggle.tsx">
+import React from 'react';
+import { PASTEL_COLORS } from '../../constants';
+
+interface SwitchToggleProps {
+  id: string;
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  disabled?: boolean;
+  accentColorClass?: string; // e.g., PASTEL_COLORS.mint.button
+}
+
+const SwitchToggle: React.FC<SwitchToggleProps> = ({ 
+  id, 
+  label, 
+  checked, 
+  onChange, 
+  disabled = false,
+  accentColorClass = PASTEL_COLORS.mint.button 
+}) => {
+  const handleToggle = () => {
+    if (!disabled) {
+      onChange(!checked);
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-between py-3">
+      <label htmlFor={id} className={`text-md ${disabled ? PASTEL_COLORS.textLight : PASTEL_COLORS.textDark} cursor-pointer select-none`}>
+        {label}
+      </label>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        aria-labelledby={id}
+        id={`${id}-switch`}
+        onClick={handleToggle}
+        disabled={disabled}
+        className={`relative inline-flex items-center h-7 w-12 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 ${checked ? accentColorClass : 'bg-slate-300'} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer group active:scale-95'}`}
+      >
+        <span className="sr-only">{label}</span>
+        <span
+          className={`inline-block w-5 h-5 transform bg-white rounded-full transition-transform duration-200 ease-in-out shadow-md ${checked ? 'translate-x-6' : 'translate-x-1'}`}
+        />
+      </button>
+    </div>
+  );
+};
+
+export default SwitchToggle;
+</file>
+
+<file path="components/wallet/index.html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mivio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom scrollbar hiding for webkit browsers */
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    /* Custom scrollbar hiding for IE, Edge and Firefox */
+    .scrollbar-hide {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.6.1"
+  }
+}
+</script>
+</head>
+<body class="bg-white">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
+</file>
+
+<file path="components/wallet/ModalBase.tsx">
+import React from 'react';
+import { XMarkIcon } from '../icons/NavIcons';
+import { PASTEL_COLORS } from '../../constants';
+
+interface ModalBaseProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const ModalBase: React.FC<ModalBaseProps> = ({ isOpen, onClose, title, children, size = 'md' }) => {
+  if (!isOpen) return null;
+
+  let maxWidthClass = 'max-w-md'; // Default medium
+  if (size === 'sm') maxWidthClass = 'max-w-sm';
+  if (size === 'lg') maxWidthClass = 'max-w-lg';
+  
+  return (
+    <div
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-[70] animate-fadeIn"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+      onClick={onClose} // Close on overlay click
+    >
+      <div
+        className={`bg-white w-full ${maxWidthClass} rounded-t-2xl sm:rounded-2xl shadow-2xl transform animate-slideUp flex flex-col max-h-[90vh] overflow-hidden`}
+        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
+      >
+        <header className="p-4 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
+          <h2 id="modalTitle" className="text-xl font-semibold text-slate-800">
+            {title}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors"
+            aria-label="Close modal"
+          >
+            <XMarkIcon className="w-6 h-6 text-slate-500" />
+          </button>
+        </header>
+        
+        <div className="p-6 overflow-y-auto flex-grow">
+          {children}
+        </div>
+      </div>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { opacity: 0.5; transform: translateY(100%) sm:translateY(20px) scale(0.95); }
+          to { opacity: 1; transform: translateY(0) sm:translateY(0) scale(1); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+        .animate-slideUp { animation: slideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
+      `}</style>
+    </div>
+  );
+};
+
+export default ModalBase;
+</file>
+
+<file path="components/wallet/SendModal.tsx">
+import React, { useState, useEffect } from 'react';
+import ModalBase from './ModalBase';
+import { PASTEL_COLORS } from '../../constants';
+import { ExclamationCircleIcon, CheckCircleIcon, PaperAirplaneIcon } from '../icons/NavIcons';
+import { User } from '../../types';
+
+interface SendModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSendSuccess: (amount: number, recipient: string) => void;
+  currentUser: User;
+  isOnline: boolean;
+}
+
+const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, onSendSuccess, currentUser, isOnline }) => {
+  const [amount, setAmount] = useState('');
+  const [recipient, setRecipient] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setAmount('');
+      setRecipient('');
+      setError(null);
+      setSuccessMessage(null);
+      setIsLoading(false);
+    }
+  }, [isOpen]);
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*\.?\d*$/.test(value)) {
+      setAmount(value);
+    }
+    setError(null);
+    setSuccessMessage(null);
+  };
+
+  const handleRecipientChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRecipient(e.target.value);
+    setError(null);
+    setSuccessMessage(null);
+  };
+
+  const handleConfirmSend = () => {
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      setError("Please enter a valid amount.");
+      return;
+    }
+    if (!recipient.trim()) {
+      setError("Please enter a recipient.");
+      return;
+    }
+    if (numericAmount > currentUser.balance) {
+      setError("Insufficient balance.");
+      // Could add a little shake animation to the balance display here too
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    // Simulate API call or P2P action
+    setTimeout(() => {
+      onSendSuccess(numericAmount, recipient);
+      setSuccessMessage(`Successfully sent ${currentUser.currency} ${numericAmount.toFixed(2)} to ${recipient}!`);
+      setAmount('');
+      setRecipient('');
+      setIsLoading(false);
+      setTimeout(() => {
+        onClose();
+        setSuccessMessage(null);
+      }, 2000);
+    }, 1500);
+  };
+
+  return (
+    <ModalBase isOpen={isOpen} onClose={onClose} title={isOnline ? "Send Funds" : "Peer-to-Peer Payment"}>
+      <div className="space-y-6">
+        {!isOnline && (
+          <div className={`p-3 rounded-lg ${PASTEL_COLORS.mint.light} ${PASTEL_COLORS.mint.text} text-sm flex items-center space-x-2`}>
+            <PaperAirplaneIcon className="w-5 h-5"/>
+            <span>You are offline. Creating a P2P payment request. Ensure the recipient can scan or receive it.</span>
+          </div>
+        )}
+         {error && (
+          <div className={`p-3 rounded-lg ${PASTEL_COLORS.blush.light} ${PASTEL_COLORS.blush.text} text-sm flex items-center space-x-2`}>
+            <ExclamationCircleIcon className="w-5 h-5"/>
+            <span>{error}</span>
+          </div>
+        )}
+        {successMessage && (
+          <div className={`p-3 rounded-lg ${PASTEL_COLORS.mint.light} ${PASTEL_COLORS.mint.text} text-sm flex items-center space-x-2`}>
+            <CheckCircleIcon className="w-5 h-5"/>
+            <span>{successMessage}</span>
+          </div>
+        )}
+
+        <div>
+          <label htmlFor="send-recipient" className={`block text-sm font-medium ${PASTEL_COLORS.textDark} mb-1`}>
+            Recipient (Name, Username, or Address)
+          </label>
+          <input
+            type="text"
+            id="send-recipient"
+            value={recipient}
+            onChange={handleRecipientChange}
+            placeholder="e.g., @anna or 0x123..."
+            disabled={isLoading || !!successMessage}
+            className={`w-full px-4 py-3 border ${PASTEL_COLORS.inputBorder} rounded-xl text-slate-700 placeholder-slate-400 
+                        focus:outline-none focus:ring-2 ${PASTEL_COLORS.lavender.border} focus:border-transparent transition-shadow disabled:bg-slate-50`}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="send-amount" className={`block text-sm font-medium ${PASTEL_COLORS.textDark} mb-1`}>
+            Amount ({currentUser.currency})
+          </label>
+          <input
+            type="text"
+            id="send-amount"
+            value={amount}
+            onChange={handleAmountChange}
+            placeholder={`Max: ${currentUser.balance.toFixed(2)}`}
+            disabled={isLoading || !!successMessage}
+            className={`w-full px-4 py-3 border ${PASTEL_COLORS.inputBorder} rounded-xl text-slate-700 placeholder-slate-400 
+                        focus:outline-none focus:ring-2 ${PASTEL_COLORS.lavender.border} focus:border-transparent transition-shadow disabled:bg-slate-50`}
+          />
+           <p className={`text-xs ${PASTEL_COLORS.textLight} mt-1`}>Your balance: {currentUser.currency} {currentUser.balance.toFixed(2)}</p>
+        </div>
+
+        <button
+          onClick={handleConfirmSend}
+          disabled={isLoading || !!successMessage || !amount || !recipient}
+          className={`${PASTEL_COLORS.lavender.button} text-white w-full py-3.5 px-6 rounded-xl text-lg font-semibold 
+                      transition-all duration-300 hover:opacity-90 active:scale-95 disabled:opacity-60 
+                      disabled:cursor-not-allowed focus:outline-none focus:ring-2 
+                      focus:ring-offset-2 ${PASTEL_COLORS.lavender.border}`}
+        >
+          {isLoading ? 'Processing...' : (isOnline ? 'Confirm Send' : 'Create P2P Request')}
+        </button>
+      </div>
+    </ModalBase>
+  );
+};
+
+export default SendModal;
+</file>
+
+<file path="components/wallet/TopUpModal.tsx">
+import React, { useState } from 'react';
+import ModalBase from './ModalBase';
+import { PASTEL_COLORS } from '../../constants';
+import { CheckCircleIcon, ExclamationCircleIcon } from '../icons/NavIcons';
+
+interface TopUpModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onTopUpSuccess: (amount: number) => void;
+  currentCurrency: string;
+  isOnline: boolean;
+}
+
+const TopUpModal: React.FC<TopUpModalProps> = ({ isOpen, onClose, onTopUpSuccess, currentCurrency, isOnline }) => {
+  const [amount, setAmount] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'fiat' | 'crypto'>('fiat');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Allow only numbers and one decimal point
+    if (/^\d*\.?\d*$/.test(value)) {
+      setAmount(value);
+    }
+    setError(null);
+    setSuccessMessage(null);
+  };
+
+  const handleConfirmTopUp = () => {
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      setError("Please enter a valid amount.");
+      return;
+    }
+    if (!isOnline) {
+      setError("You are offline. Top up is currently unavailable.");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    // Simulate API call
+    setTimeout(() => {
+      // Mock success
+      onTopUpSuccess(numericAmount);
+      setSuccessMessage(`Successfully topped up ${currentCurrency} ${numericAmount.toFixed(2)}!`);
+      setAmount(''); // Reset amount
+      setIsLoading(false);
+      // Optional: auto close modal after a delay or keep it open to show success
+      setTimeout(() => {
+        onClose();
+        setSuccessMessage(null); // Reset success message on close
+      }, 2000);
+    }, 1500);
+  };
+  
+  // Reset state when modal opens/closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      setAmount('');
+      setError(null);
+      setSuccessMessage(null);
+      setIsLoading(false);
+      setPaymentMethod('fiat');
+    }
+  }, [isOpen]);
+
+
+  return (
+    <ModalBase isOpen={isOpen} onClose={onClose} title="Top Up Balance">
+      <div className="space-y-6">
+        {!isOnline && (
+          <div className={`p-3 rounded-lg ${PASTEL_COLORS.yellow.light} ${PASTEL_COLORS.yellow.text} text-sm flex items-center space-x-2`}>
+            <ExclamationCircleIcon className="w-5 h-5"/>
+            <span>You are offline. Top up functionality is disabled.</span>
+          </div>
+        )}
+
+        {error && (
+          <div className={`p-3 rounded-lg ${PASTEL_COLORS.blush.light} ${PASTEL_COLORS.blush.text} text-sm flex items-center space-x-2`}>
+            <ExclamationCircleIcon className="w-5 h-5"/>
+            <span>{error}</span>
+          </div>
+        )}
+        {successMessage && (
+          <div className={`p-3 rounded-lg ${PASTEL_COLORS.mint.light} ${PASTEL_COLORS.mint.text} text-sm flex items-center space-x-2`}>
+            <CheckCircleIcon className="w-5 h-5"/>
+            <span>{successMessage}</span>
+          </div>
+        )}
+
+        <div>
+          <label htmlFor="topup-amount" className={`block text-sm font-medium ${PASTEL_COLORS.textDark} mb-1`}>
+            Amount ({currentCurrency})
+          </label>
+          <input
+            type="text" // Using text to manage decimal input easily
+            id="topup-amount"
+            value={amount}
+            onChange={handleAmountChange}
+            placeholder="e.g., 50.00"
+            disabled={isLoading || !isOnline || !!successMessage}
+            className={`w-full px-4 py-3 border ${PASTEL_COLORS.inputBorder} rounded-xl text-slate-700 placeholder-slate-400 
+                        focus:outline-none focus:ring-2 ${PASTEL_COLORS.mint.border} focus:border-transparent transition-shadow disabled:bg-slate-50 disabled:cursor-not-allowed animate-input-glow`}
+          />
+        </div>
+
+        <div>
+          <span className={`block text-sm font-medium ${PASTEL_COLORS.textDark} mb-2`}>Payment Method</span>
+          <div className="flex space-x-3">
+            <button
+              onClick={() => setPaymentMethod('fiat')}
+              disabled={isLoading || !isOnline || !!successMessage}
+              className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium border transition-all
+                ${paymentMethod === 'fiat' ? `${PASTEL_COLORS.mint.button} text-white shadow-md` : `bg-white ${PASTEL_COLORS.textLight} hover:bg-slate-50 border-slate-300`}
+                disabled:opacity-60 disabled:cursor-not-allowed`}
+            >
+              Fiat (Card/Bank)
+            </button>
+            <button
+              onClick={() => setPaymentMethod('crypto')}
+              disabled={isLoading || !isOnline || !!successMessage}
+              className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium border transition-all
+                ${paymentMethod === 'crypto' ? `${PASTEL_COLORS.mint.button} text-white shadow-md` : `bg-white ${PASTEL_COLORS.textLight} hover:bg-slate-50 border-slate-300`}
+                 disabled:opacity-60 disabled:cursor-not-allowed`}
+            >
+              Crypto
+            </button>
+          </div>
+        </div>
+
+        <button
+          onClick={handleConfirmTopUp}
+          disabled={isLoading || !isOnline || !!successMessage || !amount}
+          className={`${PASTEL_COLORS.mint.button} text-white w-full py-3.5 px-6 rounded-xl text-lg font-semibold 
+                      transition-all duration-300 hover:opacity-90 active:scale-95 disabled:opacity-60 
+                      disabled:cursor-not-allowed focus:outline-none focus:ring-2 
+                      focus:ring-offset-2 ${PASTEL_COLORS.mint.border}`}
+        >
+          {isLoading ? 'Processing...' : 'Confirm Top Up'}
+        </button>
+      </div>
+      <style>{`
+        .animate-input-glow:focus {
+          box-shadow: 0 0 0 3px ${PASTEL_COLORS.mint.light.replace('bg-', 'rgba(').replace('-100', ',0.4)')}; /* Crude conversion to rgba for glow */
+        }
+      `}</style>
+    </ModalBase>
+  );
+};
+
+export default TopUpModal;
+</file>
+
+<file path="components/wallet/TransactionDetailModal.tsx">
+import React from 'react';
+import ModalBase from './ModalBase';
+import { Transaction } from '../../types';
+import { PASTEL_COLORS } from '../../constants';
+import { getTransactionIcon } from './TransactionItemCard'; // Import helper
+
+interface TransactionDetailModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  transaction: Transaction | null;
+}
+
+const DetailRow: React.FC<{ label: string; value: string | number | undefined }> = ({ label, value }) => (
+  <div className="py-2.5 border-b border-slate-100 last:border-b-0">
+    <p className={`text-xs ${PASTEL_COLORS.textLight}`}>{label}</p>
+    <p className={`text-sm font-medium ${PASTEL_COLORS.textDark}`}>{value || 'N/A'}</p>
+  </div>
+);
+
+const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({ isOpen, onClose, transaction }) => {
+  if (!transaction) return null;
+
+  const amountColor = transaction.amount > 0 ? PASTEL_COLORS.mint.text : PASTEL_COLORS.blush.text;
+  const amountPrefix = transaction.amount > 0 ? '+' : '';
+
+  return (
+    <ModalBase isOpen={isOpen} onClose={onClose} title="Transaction Details" size="sm">
+      <div className="space-y-4">
+        <div className="flex flex-col items-center text-center py-4">
+          <div className={`p-4 rounded-full ${transaction.accentColor} mb-4 shadow-md`}>
+            {getTransactionIcon(transaction.iconName, `w-10 h-10 ${PASTEL_COLORS.textDark} opacity-80`)}
+          </div>
+          <h3 className="text-2xl font-bold text-slate-800">{transaction.description}</h3>
+          <p className={`text-3xl font-bold ${amountColor}`}>
+            {amountPrefix}{transaction.currency} {Math.abs(transaction.amount).toFixed(2)}
+          </p>
+        </div>
+
+        <div className="bg-slate-50 p-4 rounded-xl space-y-1">
+          <DetailRow label="Date & Time" value={transaction.date} />
+          <DetailRow label="Type" value={transaction.type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} />
+          {transaction.merchantOrRecipient && <DetailRow label={transaction.type === 'top-up' ? 'Source' : (transaction.type === 'send' || transaction.type === 'receive' ? (transaction.amount > 0 ? 'Sender' : 'Recipient') : 'Merchant')} value={transaction.merchantOrRecipient} />}
+          <DetailRow label="Status" value={transaction.status ? transaction.status.replace(/\b\w/g, l => l.toUpperCase()) : 'Completed'} />
+          <DetailRow label="Transaction ID" value={transaction.id} />
+        </div>
+        
+        <button
+          onClick={onClose}
+          className={`${PASTEL_COLORS.sky.button} text-white w-full py-3 px-6 rounded-xl text-md font-semibold 
+                      transition-all duration-300 hover:opacity-90 active:scale-95 focus:outline-none focus:ring-2 
+                      focus:ring-offset-2 ${PASTEL_COLORS.sky.border}`}
+        >
+          Close
+        </button>
+      </div>
+    </ModalBase>
+  );
+};
+
+export default TransactionDetailModal;
+</file>
+
+<file path="components/wallet/TransactionItemCard.tsx">
+import React from 'react';
+import { Transaction } from '../../types';
+import { PASTEL_COLORS } from '../../constants';
+import { 
+  ArrowUpCircleIcon, 
+  CoffeeIcon, 
+  ShoppingBagIcon, 
+  PaperAirplaneIcon, 
+  ArrowDownCircleIcon,
+  QuestionMarkCircleIcon
+} from '../icons/NavIcons';
+
+interface TransactionItemCardProps {
+  transaction: Transaction;
+  onClick: () => void;
+}
+
+const getTransactionIcon = (iconName: Transaction['iconName'], className?: string) => {
+  const props = { className: className || "w-6 h-6" };
+  switch (iconName) {
+    case 'ArrowUpCircleIcon': return <ArrowUpCircleIcon {...props} />;
+    case 'CoffeeIcon': return <CoffeeIcon {...props} />;
+    case 'ShoppingBagIcon': return <ShoppingBagIcon {...props} />;
+    case 'PaperAirplaneIcon': return <PaperAirplaneIcon {...props} />;
+    case 'ArrowDownCircleIcon': return <ArrowDownCircleIcon {...props} />;
+    default: return <QuestionMarkCircleIcon {...props} />;
+  }
+};
+
+const TransactionItemCard: React.FC<TransactionItemCardProps> = ({ transaction, onClick }) => {
+  const amountColor = transaction.amount > 0 ? PASTEL_COLORS.mint.text : PASTEL_COLORS.blush.text;
+  const amountPrefix = transaction.amount > 0 ? '+' : '';
+
+  return (
+    <button
+      onClick={onClick}
+      className="w-full bg-white p-4 rounded-2xl shadow-lg mb-3 transition-all duration-300 hover:shadow-xl active:scale-[0.99] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-1"
+      aria-label={`View details for transaction: ${transaction.description}`}
+    >
+      <div className="flex items-center space-x-4">
+        <div className={`p-2.5 rounded-full ${transaction.accentColor} flex items-center justify-center shadow-sm`}>
+          {getTransactionIcon(transaction.iconName, `w-6 h-6 ${PASTEL_COLORS.textDark} opacity-70`)}
+        </div>
+        <div className="flex-1 min-w-0"> {/* Added min-w-0 for truncation */}
+          <p className="text-md font-semibold text-slate-800 truncate">{transaction.description}</p>
+          <p className={`text-xs ${PASTEL_COLORS.textLight}`}>{transaction.date}</p>
+        </div>
+        <div className={`text-md font-semibold ${amountColor} whitespace-nowrap`}>
+          {amountPrefix}{transaction.currency} {Math.abs(transaction.amount).toFixed(2)}
+        </div>
+      </div>
+    </button>
+  );
+};
+
+export { getTransactionIcon };
+export default TransactionItemCard;
+</file>
+
+<file path="components/wallet/TransactionList.tsx">
+import React from 'react';
+import { Transaction } from '../../types';
+import TransactionItemCard from './TransactionItemCard';
+import { PASTEL_COLORS } from '../../constants';
+
+interface TransactionListProps {
+  transactions: Transaction[];
+  onTransactionClick: (transaction: Transaction) => void;
+}
+
+const TransactionList: React.FC<TransactionListProps> = ({ transactions, onTransactionClick }) => {
+  if (!transactions || transactions.length === 0) {
+    return (
+      <div className="py-8 text-center">
+        <p className={`${PASTEL_COLORS.textLight}`}>No transactions yet.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {transactions.map((tx, index) => (
+        <div 
+          key={tx.id} 
+          className="animate-slide-in" 
+          style={{ animationDelay: `${index * 100}ms`}}
+        >
+          <TransactionItemCard 
+            transaction={tx} 
+            onClick={() => onTransactionClick(tx)} 
+          />
+        </div>
+      ))}
+      <style>{`
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateX(-20px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-slide-in { animation: slideIn 0.5s ease-out forwards; }
+      `}</style>
+    </div>
+  );
+};
+
+export default TransactionList;
+</file>
+
+<file path="components/wallet/WalletBalanceCard.tsx">
+import React, { useState, useEffect } from 'react';
+import { User, Transaction } from '../../types';
+import { PASTEL_COLORS } from '../../constants';
+import { PlusCircleIcon, PaperAirplaneIcon, ArrowUpCircleIcon } from '../icons/NavIcons'; // Assuming icons exist
+
+interface WalletBalanceCardProps {
+  user: User;
+  onTopUpClick: () => void;
+  onSendClick: () => void;
+  isOnline: boolean;
+}
+
+const WalletBalanceCard: React.FC<WalletBalanceCardProps> = ({ user, onTopUpClick, onSendClick, isOnline }) => {
+  const mostRecentTransaction = user.transactions && user.transactions.length > 0 ? user.transactions[0] : null;
+  const [balanceDisplay, setBalanceDisplay] = useState(user.balance.toFixed(2));
+  const [plusButtonAnimation, setPlusButtonAnimation] = useState('');
+
+  useEffect(() => {
+    // Animate balance update
+    const newBalance = user.balance.toFixed(2);
+    if (balanceDisplay !== newBalance) {
+      // Basic "animation" by changing the value; more complex number counting can be added
+      setBalanceDisplay(newBalance);
+    }
+  }, [user.balance, balanceDisplay]);
+  
+  const handlePlusButtonClick = () => {
+    if (!isOnline) return;
+    setPlusButtonAnimation('animate-button-pop');
+    setTimeout(() => setPlusButtonAnimation(''), 300); // Reset animation
+    onTopUpClick();
+  };
+
+  return (
+    <div className={`relative p-6 rounded-2xl shadow-xl flex flex-col ${PASTEL_COLORS.mint.light} border ${PASTEL_COLORS.mint.border} min-h-[200px] h-full`}> {/* Ensure it can grow */}
+      <button 
+        onClick={handlePlusButtonClick}
+        disabled={!isOnline}
+        className={`absolute top-4 right-4 p-1.5 rounded-full transition-colors group ${plusButtonAnimation}
+                    ${!isOnline ? 'opacity-50 cursor-not-allowed' : `${PASTEL_COLORS.mint.button} text-white hover:opacity-90 active:scale-95`}`}
+        aria-label="Top up balance"
+      >
+        <PlusCircleIcon className="w-8 h-8" />
+      </button>
+
+      <div className="mb-1">
+        <p className={`text-sm ${PASTEL_COLORS.mint.text}`}>Balance</p>
+        <h2 className={`text-4xl font-bold ${PASTEL_COLORS.textDark} transition-all duration-500`}>
+          {user.currency} <span className="tabular-nums">{balanceDisplay}</span>
+        </h2>
+      </div>
+
+      {mostRecentTransaction && (
+        <p className={`text-xs ${PASTEL_COLORS.textLight} mb-6 truncate`}>
+          {mostRecentTransaction.description} ({mostRecentTransaction.amount > 0 ? '+' : ''}{mostRecentTransaction.currency} {mostRecentTransaction.amount.toFixed(2)})
+        </p>
+      )}
+      {!mostRecentTransaction && (
+         <p className={`text-xs ${PASTEL_COLORS.textLight} mb-6`}>No recent transactions.</p>
+      )}
+
+
+      <div className="mt-auto flex space-x-3"> {/* Pushes buttons to bottom */}
+        <button
+          onClick={onTopUpClick}
+          disabled={!isOnline}
+          className={`${PASTEL_COLORS.mint.button} text-white flex-1 py-3 px-4 rounded-xl text-sm font-semibold flex items-center justify-center space-x-2 shadow-md transition-all active:scale-95 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed`}
+        >
+          <ArrowUpCircleIcon className="w-5 h-5" />
+          <span>Top Up</span>
+        </button>
+        <button
+          onClick={onSendClick}
+          // No disabled state for Send for P2P offline
+          className={`${PASTEL_COLORS.lavender.button} text-white flex-1 py-3 px-4 rounded-xl text-sm font-semibold flex items-center justify-center space-x-2 shadow-md transition-all active:scale-95 hover:shadow-lg`}
+        >
+          <PaperAirplaneIcon className="w-5 h-5" />
+          <span>{isOnline ? 'Send' : 'P2P Pay'}</span>
+        </button>
+      </div>
+      <style>{`
+        @keyframes buttonPop {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.2) rotate(15deg); }
+          100% { transform: scale(1); }
+        }
+        .animate-button-pop { animation: buttonPop 0.3s ease-out; }
+        .tabular-nums { font-variant-numeric: tabular-nums; }
+      `}</style>
+    </div>
+  );
+};
+
+export default WalletBalanceCard;
+</file>
+
+<file path="components/BottomNavigationBar.tsx">
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { NavItem } from '../types';
+import { PASTEL_COLORS } from '../constants';
+
+interface BottomNavigationBarProps {
+  items: NavItem[];
+}
+
+const BottomNavigationBar: React.FC<BottomNavigationBarProps> = ({ items }) => {
+  const location = useLocation();
+  const [isScanAnimating, setIsScanAnimating] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsScanAnimating(true);
+    const timer = setTimeout(() => setIsScanAnimating(false), 700); 
+    return () => clearTimeout(timer);
+  }, []);
+
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md shadow-t-custom border-t border-slate-200 z-50">
+      <div className="flex justify-around items-center h-16 max-w-md mx-auto px-2">
+        {items.map((item) => {
+          const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+          const IconComponent = isActive && item.activeIcon ? item.activeIcon : item.icon;
+          
+          let iconColorClass = 'text-slate-500';
+          if (isActive) {
+            if (item.id === 'home') iconColorClass = PASTEL_COLORS.lavender.filled_icon;
+            else if (item.id === 'progress') iconColorClass = PASTEL_COLORS.blush.filled_icon; // Highlight color for Progress (Trophy)
+            else if (item.id === 'wallet') iconColorClass = PASTEL_COLORS.yellow.filled_icon;
+            // else if (item.id === 'events') iconColorClass = PASTEL_COLORS.mint.filled_icon; // Events removed as top-level nav for this specific request
+            // else if (item.id === 'badges') iconColorClass = PASTEL_COLORS.blush.filled_icon; // Badges part of progress/profile
+            else if (item.id === 'profile') iconColorClass = PASTEL_COLORS.sky.filled_icon; // Profile (Settings)
+          }
+
+
+          if (item.isSpecial) {
+            return (
+              <Link
+                to={item.path}
+                key={item.id}
+                className={`relative -top-6 ${PASTEL_COLORS.mint.DEFAULT} text-white rounded-full p-4 shadow-lg transition-all duration-500 ease-out hover:scale-110 active:scale-95 transform ${isScanAnimating ? 'scale-110 opacity-100' : 'scale-100 opacity-100'}`}
+                style={{ animation: isScanAnimating ? 'bounceIn 0.7s ease-out' : 'none' }}
+                aria-label={item.label}
+              >
+                <IconComponent className="w-7 h-7" />
+                <span className="sr-only">{item.label}</span> 
+              </Link>
+            );
+          }
+          
+          return (
+            <Link
+              to={item.path}
+              key={item.id}
+              className={`flex flex-col items-center justify-center p-2 rounded-lg space-y-1 transition-all duration-200 ease-in-out transform group hover:bg-slate-100 active:scale-90 
+                ${iconColorClass}`}
+              aria-label={item.label}
+            >
+              <IconComponent className={`w-6 h-6 transition-colors ${isActive ? '' : 'group-hover:text-slate-700'}`} />
+              <span className="sr-only"> 
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+      <style>{`
+        @keyframes bounceIn {
+          0% { transform: scale(0.5) translateY(10px); opacity: 0; }
+          60% { transform: scale(1.1) translateY(-5px); opacity: 1; }
+          80% { transform: scale(0.95) translateY(0px); }
+          100% { transform: scale(1) translateY(0px); opacity: 1; }
+        }
+        .shadow-t-custom {
+          box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05), 0 -2px 4px -2px rgba(0, 0, 0, 0.04);
+        }
+      `}</style>
+    </nav>
+  );
+};
+
+export default BottomNavigationBar;
+</file>
+
+<file path="components/HomeScreen.tsx">
+import React, { useState, useEffect } from 'react';
+import { MOCK_USER, MOCK_EVENTS, MOCK_QUEST, MOCK_BADGES, UNREAD_NOTIFICATIONS_COUNT, PASTEL_COLORS } from '../constants';
+import { User, Event, Quest, BadgeItem } from '../types';
+import { BellIcon, FlameIcon, CheckIcon, PlusIcon, ChevronRightIcon, SendIcon, ReceiveIcon } from './icons/NavIcons';
+
+interface AnimatedSectionProps {
+  children: React.ReactNode;
+  delay?: number;
+}
+
+const AnimatedSection: React.FC<AnimatedSectionProps> = ({ children, delay = 0 }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, delay);
+    return () => clearTimeout(timer);
+  }, [delay]);
+
+  return (
+    <div className={`transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+      {children}
+    </div>
+  );
+};
+
+const Header: React.FC<{ user: User; notificationCount: number }> = ({ user, notificationCount }) => {
+  return (
+    <div className="flex items-center justify-between p-4">
+      <div className="flex items-center space-x-3">
+        <img src={user.avatarUrl} alt={user.name} className="w-12 h-12 rounded-full shadow-md" />
+        <div>
+          <h1 className="text-xl font-semibold text-slate-800">Hello, {user.name}!</h1>
+          <p className="text-sm text-slate-500">Your Festival Hub</p>
+        </div>
+      </div>
+      <button className="relative p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors">
+        <BellIcon className="w-6 h-6 text-slate-600" />
+        {notificationCount > 0 && (
+          <span className="absolute top-1 right-1 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white" />
+        )}
+      </button>
+    </div>
+  );
+};
+
+interface EventCardProps {
+  event: Event;
+}
+
+const EventCard: React.FC<EventCardProps> = ({ event }) => {
+  const buttonText = event.status === 'locked' ? 'Unlock' : 'Enter';
+  const buttonColor = event.status === 'locked' ? PASTEL_COLORS.lavender.button : PASTEL_COLORS.mint.button;
+
+  return (
+    <div className="flex-shrink-0 w-72 bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all hover:scale-105 active:scale-100 cursor-pointer">
+      {event.imageUrl ? (
+         <img src={event.imageUrl} alt={event.name} className="w-full h-32 object-cover" />
+      ) : (
+        <div className={`w-full h-32 ${event.abstractColor} flex items-center justify-center`}>
+           <span className="text-slate-600 text-sm">Abstract Event Art</span>
+        </div>
+      )}
+      <div className="p-4">
+        <h3 className="text-lg font-semibold text-slate-800 truncate">{event.name}</h3>
+        <p className="text-xs text-slate-500 mb-3">{event.dates}, {event.location}</p>
+        <button className={`${buttonColor} text-sm font-medium py-2 px-4 rounded-full w-full transition-transform active:scale-95`}>
+          {buttonText}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+
+const XPProgressCard: React.FC<{ user: User; quest: Quest }> = ({ user, quest }) => {
+  const progressPercentage = quest.targetProgress > 0 ? (quest.currentProgress / quest.targetProgress) * 100 : 0;
+
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-lg">
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-lg font-semibold text-slate-800">XP: {user.xp.toLocaleString()}</h2>
+        <div className="flex items-center space-x-1 text-sm text-orange-500">
+          <FlameIcon className="w-5 h-5" />
+          <span>{user.streak} day streak</span>
+        </div>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2.5 mb-3 overflow-hidden">
+        <div
+          className="bg-green-400 h-2.5 rounded-full transition-all duration-1000 ease-out"
+          style={{ width: `${progressPercentage}%` }}
+        />
+      </div>
+      <div className="flex items-center text-sm text-slate-600">
+        <span>Current Quest: {quest.title} ({quest.currentProgress}/{quest.targetProgress})</span>
+        {quest.isCompleted && <CheckIcon className="w-5 h-5 text-green-500 ml-2" />}
+      </div>
+    </div>
+  );
+};
+
+const BadgeHighlight: React.FC<{ badges: BadgeItem[] }> = ({ badges }) => {
+  const displayedBadges = badges.slice(0, 3);
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-lg">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold text-slate-800">Recent Badges</h2>
+        <button className="text-sm text-purple-600 font-medium hover:text-purple-800 flex items-center">
+          View All <ChevronRightIcon className="w-4 h-4 ml-1" />
+        </button>
+      </div>
+      <div className="flex space-x-4 justify-center">
+        {displayedBadges.map((badge) => (
+          <div key={badge.id} className="flex flex-col items-center space-y-1 group cursor-pointer">
+            <img src={badge.iconUrl} alt={badge.name} className="w-16 h-16 rounded-full shadow-md border-2 border-white group-hover:scale-110 transition-transform" />
+            <p className="text-xs text-slate-500 group-hover:text-slate-700">{badge.name}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const WalletSummaryCard: React.FC<{ user: User }> = ({ user }) => {
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-lg">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <p className="text-xs text-slate-500">Balance</p>
+          <h2 className="text-2xl font-semibold text-slate-800">{user.currency} ${user.balance.toFixed(2)}</h2>
+        </div>
+        <button className={`${PASTEL_COLORS.mint.button} rounded-full p-3 shadow-md transition-transform active:scale-90 hover:scale-105`}>
+          <PlusIcon className="w-5 h-5 text-white" />
+        </button>
+      </div>
+      <div className="flex space-x-3">
+        <button className={`${PASTEL_COLORS.mint.button} flex-1 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center space-x-2 transition-transform active:scale-95`}>
+          <SendIcon className="w-4 h-4"/>
+          <span>Send</span>
+        </button>
+        <button className={`${PASTEL_COLORS.lavender.button} flex-1 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center space-x-2 transition-transform active:scale-95`}>
+          <ReceiveIcon className="w-4 h-4"/>
+          <span>Receive</span>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+
+const HomeScreen: React.FC = () => {
+  return (
+    <div className="pb-24 bg-slate-50 min-h-screen"> {/* Padding bottom for nav bar, bg-slate-50 for slight off-white canvas */}
+      <AnimatedSection delay={0}>
+        <Header user={MOCK_USER} notificationCount={UNREAD_NOTIFICATIONS_COUNT} />
+      </AnimatedSection>
+
+      <AnimatedSection delay={100}>
+        <div className="px-4 mb-6">
+          <h2 className="text-xl font-semibold text-slate-700 mb-3">Upcoming Events</h2>
+          <div className="flex overflow-x-auto space-x-4 pb-2 scrollbar-hide">
+            {MOCK_EVENTS.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        </div>
+      </AnimatedSection>
+      
+      <div className="px-4 space-y-6">
+        <AnimatedSection delay={200}>
+          <XPProgressCard user={MOCK_USER} quest={MOCK_QUEST} />
+        </AnimatedSection>
+
+        <AnimatedSection delay={300}>
+          <BadgeHighlight badges={MOCK_BADGES} />
+        </AnimatedSection>
+
+        <AnimatedSection delay={400}>
+          <WalletSummaryCard user={MOCK_USER} />
+        </AnimatedSection>
+      </div>
+    </div>
+  );
+};
+
+export default HomeScreen;
+</file>
+
+<file path="pages/BadgesPage.tsx">
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { MOCK_BADGES, PASTEL_COLORS } from '../constants';
+import { BadgeItem } from '../types';
+import { TrophyIcon, ChevronLeftIcon } from '../components/icons/NavIcons';
+
+const BadgeGridItem: React.FC<{ badge: BadgeItem }> = ({ badge }) => {
+  return (
+    <div 
+      className={`flex flex-col items-center p-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl active:scale-95 cursor-pointer
+                  ${badge.isLocked ? 'bg-slate-100 filter grayscale opacity-70' : 'bg-white'}`}
+      role="button"
+      tabIndex={0}
+      aria-label={`${badge.name}${badge.isLocked ? ' (Locked)' : ''}`}
+    >
+      <img 
+        src={badge.iconUrl} 
+        alt={badge.name} 
+        className={`w-20 h-20 rounded-full mb-2 shadow-md border-2 ${badge.isLocked ? 'border-slate-300' : PASTEL_COLORS.sky.border}`}
+      />
+      <h3 className={`text-md font-semibold ${badge.isLocked ? PASTEL_COLORS.textLight : PASTEL_COLORS.textDark}`}>{badge.name}</h3>
+      {!badge.isLocked && badge.unlockDate && (
+        <p className={`text-xs ${PASTEL_COLORS.textLight}`}>{badge.unlockDate}</p>
+      )}
+      {badge.isLocked && (
+         <p className={`text-xs ${PASTEL_COLORS.textLight}`}>Locked</p>
+      )}
+    </div>
+  );
+};
+
+
+const BadgesPage: React.FC = () => {
+  const unlockedBadges = MOCK_BADGES.filter(b => !b.isLocked);
+  const lockedBadges = MOCK_BADGES.filter(b => b.isLocked);
+
+  return (
+    <div className="p-4 pb-24 bg-slate-50 min-h-screen">
+      <header className="mb-6 sticky top-0 bg-slate-50/90 backdrop-blur-md z-10 py-3 border-b border-slate-200 -mx-4 px-4">
+        <div className="flex items-center justify-between">
+            <Link to="/profile" className={`p-2 rounded-full hover:${PASTEL_COLORS.sky.light} active:bg-sky-200 transition-colors`}>
+                <ChevronLeftIcon className={`w-6 h-6 ${PASTEL_COLORS.sky.text}`} />
+            </Link>
+            <h1 className="text-2xl font-bold text-slate-800">Badge Vault</h1>
+            <div className="w-10"> {/* Spacer */} </div>
+        </div>
+      </header>
+      
+      {MOCK_BADGES.length > 0 ? (
+        <div className="space-y-8">
+          {unlockedBadges.length > 0 && (
+            <section>
+              <h2 className="text-xl font-semibold text-slate-700 mb-4 flex items-center">
+                <TrophyIcon className={`w-6 h-6 mr-2 ${PASTEL_COLORS.yellow.filled_icon}`} /> Unlocked Badges ({unlockedBadges.length})
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {unlockedBadges.map(badge => (
+                  <BadgeGridItem key={badge.id} badge={badge} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {lockedBadges.length > 0 && (
+            <section>
+              <h2 className="text-xl font-semibold text-slate-700 mb-4 flex items-center">
+                <TrophyIcon className={`w-6 h-6 mr-2 ${PASTEL_COLORS.textLight}`} /> Locked Badges ({lockedBadges.length})
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {lockedBadges.map(badge => (
+                  <BadgeGridItem key={badge.id} badge={badge} />
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+      ) : (
+        <div className="text-center py-10">
+          <TrophyIcon className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+          <p className={`${PASTEL_COLORS.textDark}`}>No badges collected yet.</p>
+          <p className={`${PASTEL_COLORS.textLight} text-sm`}>Start exploring events and activations to earn them!</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default BadgesPage;
+</file>
+
+<file path="pages/BrandActivationDetailPage.tsx">
+import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { MOCK_EVENTS, MOCK_USER, MOCK_BADGES, PASTEL_COLORS } from '../constants';
+import { Event as EventType, BrandActivation, BadgeItem, Quest } from '../types';
+import BrandActivationHeader from '../components/brandActivationDetail/BrandActivationHeader';
+import XPStatusCard from '../components/brandActivationDetail/XPStatusCard';
+import BrandInfoCard from '../components/brandActivationDetail/BrandInfoCard';
+import QuestCompleteModal from '../components/brandActivationDetail/QuestCompleteModal';
+import Confetti from '../components/brandActivationDetail/Confetti';
+import OfflineBanner from '../components/brandActivationDetail/OfflineBanner';
+import Toast, { ToastMessage } from '../components/brandActivationDetail/Toast';
+import { TicketIcon } from '../components/icons/NavIcons';
+
+// Mock quest specific to "Neon Booth"
+const NEON_BOOTH_QUEST: Quest = {
+  id: "neonQuest1",
+  title: "Visit 3 booths", // As per prompt
+  currentProgress: 2, // Initial state as per prompt
+  targetProgress: 3,
+  isCompleted: false,
+};
+
+const XP_FROM_NEON_BOOTH_CHECKIN = 40; // As per prompt
+
+const BrandActivationDetailPage: React.FC = () => {
+  const { eventId, activationId } = useParams<{ eventId: string; activationId: string }>();
+  const navigate = useNavigate();
+
+  const [eventData, setEventData] = useState<EventType | null>(null);
+  const [activationData, setActivationData] = useState<BrandActivation | null>(null);
+  
+  // Gamification State
+  const [userXPInActivation, setUserXPInActivation] = useState(80); // Initial XP for "Neon Booth" as per prompt
+  const [quest, setQuest] = useState<Quest>(NEON_BOOTH_QUEST);
+  const [dailyStreak, setDailyStreak] = useState(MOCK_USER.streak);
+  const [soulboundNftLevel, setSoulboundNftLevel] = useState<1 | 2 | 3>(2); // Initial based on 80XP
+  
+  const [isCheckedIn, setIsCheckedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showQuestModal, setShowQuestModal] = useState(false);
+  const [unlockedBadge, setUnlockedBadge] = useState<BadgeItem | null>(null);
+
+  // UI State
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
+  const [checkInButtonAnimation, setCheckInButtonAnimation] = useState('animate-bounce-once');
+
+
+  useEffect(() => {
+    const foundEvent = MOCK_EVENTS.find(e => e.id === eventId);
+    if (foundEvent) {
+      setEventData(foundEvent);
+      const foundActivation = foundEvent.brandActivations?.find(act => act.id === activationId);
+      if (foundActivation) {
+        setActivationData(foundActivation);
+      } else {
+        // Activation not found, redirect or show error
+        navigate('/events'); // Or a specific error page
+      }
+    } else {
+      // Event not found
+      navigate('/events');
+    }
+    
+    // Bounce animation for check-in button on mount
+    const timer = setTimeout(() => setCheckInButtonAnimation(''), 1000); // remove after 1s
+
+    // Offline detection
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [eventId, activationId, navigate]);
+
+  useEffect(() => {
+    // Update Soulbound NFT level based on XP
+    if (userXPInActivation <= 50) setSoulboundNftLevel(1);
+    else if (userXPInActivation <= 100) setSoulboundNftLevel(2);
+    else setSoulboundNftLevel(3);
+  }, [userXPInActivation]);
+
+
+  const handleCheckIn = () => {
+    if (isCheckedIn || isLoading) return;
+    if (!isOnline) {
+      setToast({ id: 'offline', type: 'error', message: "Offline – Check-in will sync when connected." });
+      // Simulate local XP gain for UI, actual sync would be more complex
+      // setUserXPInActivation(prev => prev + (activationData?.xpAvailable || XP_FROM_NEON_BOOTH_CHECKIN));
+      return;
+    }
+
+    setIsLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      // Mock success
+      const xpGained = activationData ? (activationData.xpAvailable - userXPInActivation > 0 ? XP_FROM_NEON_BOOTH_CHECKIN : 0) : XP_FROM_NEON_BOOTH_CHECKIN;
+      
+      setUserXPInActivation(prev => Math.min(prev + xpGained, activationData?.xpAvailable || 150));
+      setIsCheckedIn(true);
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 4000); // Confetti duration
+
+      // Update quest progress
+      const newQuestProgress = quest.currentProgress + 1;
+      const questCompleted = newQuestProgress >= quest.targetProgress;
+      setQuest(prev => ({ ...prev, currentProgress: newQuestProgress, isCompleted: questCompleted }));
+
+      if (questCompleted) {
+        const arcadeBadge = MOCK_BADGES.find(b => b.id === 'bdg2'); // "Arcade Pro"
+        if (arcadeBadge) {
+          setUnlockedBadge(arcadeBadge);
+          setShowQuestModal(true);
+        }
+      }
+      
+      // Potentially update streak (if logic dictates, e.g., first check-in of the day)
+      // For demo, streak remains, but icon could pulse
+      // setDailyStreak(prev => prev + 1); // Example, not strictly per prompt here
+
+      setToast({ id: 'checkin-success', type: 'success', message: `Checked In! +${xpGained} XP earned.` });
+      setIsLoading(false);
+
+    }, 1500); // Simulate network delay
+  };
+  
+  const handleCloseQuestModal = () => {
+    setShowQuestModal(false);
+    setUnlockedBadge(null);
+  };
+
+  const dismissToast = (id: string) => {
+    if (toast && toast.id === id) {
+      setToast(null);
+    }
+  };
+
+  if (!eventData || !activationData) {
+    return (
+      <div className="p-4 text-center min-h-screen flex flex-col justify-center items-center bg-slate-50">
+        <TicketIcon className="w-16 h-16 text-slate-400 mb-4" />
+        <h1 className="text-xl font-semibold text-slate-700">Loading Activation...</h1>
+        <p className={`${PASTEL_COLORS.textLight} mb-6`}>Please wait or try refreshing.</p>
+         <Link to="/events" className={`${PASTEL_COLORS.mint.button} text-white py-2 px-4 rounded-lg`}>
+          Back to Events
+        </Link>
+      </div>
+    );
+  }
+  
+  const currentTotalXPForActivation = activationData.xpAvailable;
+
+  return (
+    <div className="flex flex-col min-h-screen bg-slate-50">
+      <OfflineBanner isOnline={isOnline} />
+      <BrandActivationHeader activation={activationData} />
+      
+      <main className="flex-grow flex flex-col p-4 space-y-6 overflow-y-auto pb-24"> {/* pb-24 for nav bar */}
+        <XPStatusCard
+          xpAvailableForCheckIn={XP_FROM_NEON_BOOTH_CHECKIN} // XP available from THIS specific check-in action
+          currentXPInActivation={userXPInActivation}
+          totalXPInActivation={currentTotalXPForActivation}
+          questTitle={quest.title}
+          questCurrentProgress={quest.currentProgress}
+          questTargetProgress={quest.targetProgress}
+          isQuestCompleted={quest.isCompleted}
+          dailyStreak={dailyStreak}
+          soulboundNftLevel={soulboundNftLevel}
+        />
+
+        <div className={`text-center py-4 ${checkInButtonAnimation}`}>
+          <button
+            onClick={handleCheckIn}
+            disabled={isCheckedIn || isLoading || !isOnline}
+            className={`w-full max-w-xs mx-auto text-white py-4 px-8 rounded-2xl text-xl font-semibold shadow-lg transition-all duration-300
+                        ${isCheckedIn ? `${PASTEL_COLORS.sky.button} opacity-70 cursor-default` : `${PASTEL_COLORS.blush.button} hover:opacity-90 active:scale-95`}
+                        disabled:opacity-50 disabled:cursor-not-allowed transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400`}
+          >
+            {isLoading ? 'Checking In...' : (isCheckedIn ? 'Checked In!' : 'Check In')}
+          </button>
+          {!isCheckedIn && !isLoading && (
+             <p className={`text-xs ${PASTEL_COLORS.textLight} mt-2`}>Earn +{XP_FROM_NEON_BOOTH_CHECKIN} XP for this activation!</p>
+          )}
+        </div>
+
+        <BrandInfoCard description={activationData.description || "Engage with this brand activation to earn XP and complete quests!"} />
+
+        <div className="mt-auto pt-6 text-center">
+          <Link 
+            to={`/events/${eventId}`} 
+            className={`text-sm ${PASTEL_COLORS.lavender.text} font-medium hover:underline hover:text-purple-700`}
+          >
+            Back to {eventData.name} Details
+          </Link>
+        </div>
+      </main>
+
+      <Toast toast={toast} onDismiss={dismissToast} />
+      {showQuestModal && unlockedBadge && <QuestCompleteModal badge={unlockedBadge} onClose={handleCloseQuestModal} />}
+      {showConfetti && <Confetti />}
+      
+      {/* BottomNavigationBar is rendered by App.tsx */}
+      <style>{`
+        @keyframes bounceOnce {
+          0%, 100% { transform: translateY(0) scale(1); }
+          20%, 50% { transform: translateY(-8px) scale(1.05); }
+          40% { transform: translateY(0) scale(1); }
+          60% { transform: translateY(-4px) scale(1.02); }
+        }
+        .animate-bounce-once { animation: bounceOnce 1s ease-out; }
+      `}</style>
+    </div>
+  );
+};
+
+export default BrandActivationDetailPage;
+</file>
+
+<file path="pages/EventDetailPage.tsx">
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { MOCK_EVENTS, PASTEL_COLORS } from '../constants';
+import { Event as EventType } from '../types';
+import EventHeader from '../components/eventDetail/EventHeader';
+import EventUnlockSection from '../components/eventDetail/EventUnlockSection';
+import BrandActivationCard from '../components/eventDetail/BrandActivationCard';
+import ShopCard from '../components/eventDetail/ShopCard';
+import { TicketIcon } from '../components/icons/NavIcons'; // Placeholder
+
+const EventDetailPage: React.FC = () => {
+  const { eventId } = useParams<{ eventId: string }>();
+  const [event, setEvent] = useState<EventType | null>(null);
+  const [userUnlockedEvent, setUserUnlockedEvent] = useState(false); // Local state for dynamic unlock
+
+  useEffect(() => {
+    const foundEvent = MOCK_EVENTS.find(e => e.id === eventId);
+    if (foundEvent) {
+      setEvent(foundEvent);
+      setUserUnlockedEvent(foundEvent.isUnlockedByUser || false);
+    }
+    // Add a small delay for section animations
+    const timer = setTimeout(() => {
+      document.querySelectorAll('.animated-section-event').forEach(el => {
+        el.classList.remove('opacity-0', 'translate-y-5');
+        el.classList.add('opacity-100', 'translate-y-0');
+      });
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [eventId]);
+
+  const handleUnlockSuccess = () => {
+    setUserUnlockedEvent(true);
+    // Potentially update MOCK_EVENTS or a global state if persistence across navigation is needed
+    // For this demo, local state update is sufficient for the current view.
+    if (event) {
+      // This only updates the local copy of event for immediate UI reflection if needed
+      // MOCK_EVENTS itself is not modified here to keep it as a static source.
+      setEvent(prevEvent => prevEvent ? {...prevEvent, isUnlockedByUser: true} : null);
+    }
+  };
+  
+  if (!event) {
+    return (
+      <div className="p-4 text-center min-h-screen flex flex-col justify-center items-center bg-slate-50">
+        <TicketIcon className="w-16 h-16 text-slate-400 mb-4" />
+        <h1 className="text-xl font-semibold text-slate-700">Event not found</h1>
+        <p className={`${PASTEL_COLORS.textLight} mb-6`}>The event you are looking for does not exist or has been moved.</p>
+        <Link to="/events" className={`${PASTEL_COLORS.mint.button} text-white py-2 px-4 rounded-lg`}>
+          Back to Events
+        </Link>
+      </div>
+    );
+  }
+  
+  // Use the dynamic userUnlockedEvent for the EventUnlockSection and other UI elements
+  const currentEventState = { ...event, isUnlockedByUser: userUnlockedEvent };
+
+  return (
+    <div className="bg-slate-50 min-h-screen pb-24">
+      <EventHeader event={currentEventState} />
+      
+      <div className="p-4 space-y-6">
+        {/* Event Access/Unlock Section */}
+        <section className="animated-section-event opacity-0 translate-y-5 transition-all duration-500 ease-out">
+          <EventUnlockSection event={currentEventState} onUnlockSuccess={handleUnlockSuccess} />
+        </section>
+
+        {/* Event Map (Abstract Placeholder) */}
+        {currentEventState.mapImageUrl && (
+          <section className="animated-section-event opacity-0 translate-y-5 transition-all duration-500 ease-out delay-100">
+            <div className="bg-white p-5 rounded-2xl shadow-lg">
+              <h2 className="text-xl font-semibold text-slate-700 mb-3">Venue Map</h2>
+              <img 
+                src={currentEventState.mapImageUrl} 
+                alt={`${currentEventState.name} map`} 
+                className="w-full h-48 object-cover rounded-xl ${PASTEL_COLORS.sky.light}" 
+              />
+               <p className={`text-xs ${PASTEL_COLORS.textLight} mt-2 text-center`}>Abstract representation of venue zones and key points.</p>
+            </div>
+          </section>
+        )}
+
+        {/* Brand Activations Section */}
+        {currentEventState.brandActivations && currentEventState.brandActivations.length > 0 && (
+          <section className="animated-section-event opacity-0 translate-y-5 transition-all duration-500 ease-out delay-200">
+            <h2 className="text-xl font-semibold text-slate-700 mb-3 px-1">Brand Activations</h2>
+            <div className="flex overflow-x-auto space-x-0 pb-2 scrollbar-hide px-1"> {/* Adjusted space-x for card margins */}
+              {currentEventState.brandActivations.map(activation => (
+                <BrandActivationCard key={activation.id} activation={activation} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Shops & Vendors Section */}
+        {currentEventState.shops && currentEventState.shops.length > 0 && (
+          <section className="animated-section-event opacity-0 translate-y-5 transition-all duration-500 ease-out delay-300">
+            <h2 className="text-xl font-semibold text-slate-700 mb-3 px-1">Shops & Vendors</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {currentEventState.shops.map(shop => (
+                <ShopCard key={shop.id} shop={shop} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Event FAQ Link */}
+        {currentEventState.faqLink && (
+          <section className="text-center py-6 animated-section-event opacity-0 translate-y-5 transition-all duration-500 ease-out delay-400">
+            <a 
+              href={currentEventState.faqLink} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={`text-sm ${PASTEL_COLORS.lavender.text} font-medium hover:underline hover:text-purple-700`}
+            >
+              Event FAQ
+            </a>
+          </section>
+        )}
+      </div>
+      <style>{`
+        .delay-100 { transition-delay: 0.1s; }
+        .delay-200 { transition-delay: 0.2s; }
+        .delay-300 { transition-delay: 0.3s; }
+        .delay-400 { transition-delay: 0.4s; }
+      `}</style>
+    </div>
+  );
+};
+
+export default EventDetailPage;
+</file>
+
+<file path="pages/EventsListPage.tsx">
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { MOCK_EVENTS, PASTEL_COLORS } from '../constants';
+import { Event } from '../types';
+import { TicketIcon } from '../components/icons/NavIcons'; // Example icon, can be adapted
+
+const EventListItemCard: React.FC<{ event: Event }> = ({ event }) => {
+  return (
+    <Link 
+      to={`/events/${event.id}`} 
+      className="block bg-white p-5 rounded-2xl shadow-lg mb-4 transition-all duration-300 hover:shadow-xl active:scale-[0.98]"
+      aria-label={`View details for ${event.name}`}
+    >
+      <div className="flex items-start space-x-4">
+        {event.imageUrl ? (
+          <img src={event.imageUrl} alt={event.name} className="w-24 h-24 rounded-xl object-cover" />
+        ) : (
+          <div className={`w-24 h-24 ${event.abstractColor} rounded-xl flex items-center justify-center`}>
+            <TicketIcon className="w-10 h-10 text-slate-500" />
+          </div>
+        )}
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold text-slate-800 mb-1">{event.name}</h3>
+          <p className="text-sm text-slate-500 mb-1">{event.dates} &bull; {event.location}</p>
+          <span 
+            className={`px-3 py-1 text-xs font-medium rounded-full text-white
+              ${event.isUnlockedByUser ? PASTEL_COLORS.mint.button : PASTEL_COLORS.lavender.button}`}
+          >
+            {event.isUnlockedByUser ? 'Unlocked' : 'Locked'}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+};
+
+const EventsListPage: React.FC = () => {
+  return (
+    <div className="p-4 pb-24 bg-slate-50 min-h-screen">
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-800">Events</h1>
+        <p className={`${PASTEL_COLORS.textLight}`}>Discover upcoming festivals and experiences.</p>
+      </header>
+      
+      {MOCK_EVENTS.length > 0 ? (
+        MOCK_EVENTS.map(event => (
+          <EventListItemCard key={event.id} event={event} />
+        ))
+      ) : (
+        <p className={`${PASTEL_COLORS.textDark} text-center py-10`}>No events available at the moment.</p>
+      )}
+    </div>
+  );
+};
+
+export default EventsListPage;
+</file>
+
+<file path="pages/ProfilePage.tsx">
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { MOCK_USER, MOCK_BADGES, MOCK_PROFILE_SETTINGS, MOCK_NOTIFICATIONS, PASTEL_COLORS, UNREAD_NOTIFICATIONS_COUNT } from '../constants';
+import { User, BadgeItem, ProfileSettings, NotificationItem as NotificationType } from '../types';
+import OfflineBanner from '../components/brandActivationDetail/OfflineBanner';
+import Toast, { ToastMessage } from '../components/brandActivationDetail/Toast';
+import SwitchToggle from '../components/profile/SwitchToggle';
+import BadgeDetailModal from '../components/modals/BadgeDetailModal';
+import ConfirmationModal from '../components/modals/ConfirmationModal';
+import { getTransactionIcon } from '../components/wallet/TransactionItemCard'; // For notification icons
+
+import { 
+    PencilIcon, 
+    ClipboardDocumentIcon, 
+    BellIcon, 
+    ChevronRightIcon, 
+    ExclamationCircleIcon,
+    CheckCircleIcon,
+    SparklesIcon // For quest notifications if needed
+} from '../components/icons/NavIcons';
+
+// --- Helper: Truncate Wallet Address ---
+const truncateWalletAddress = (address: string, startChars = 6, endChars = 4) => {
+  if (!address) return '';
+  return `${address.substring(0, startChars)}...${address.substring(address.length - endChars)}`;
+};
+
+// --- Component: ProfileInfoCard ---
+interface ProfileInfoCardProps {
+  user: User;
+  onEdit: () => void;
+  onCopyAddress: () => void;
+  isOnline: boolean;
+}
+const ProfileInfoCard: React.FC<ProfileInfoCardProps> = ({ user, onEdit, onCopyAddress, isOnline }) => {
+  const [avatarClicked, setAvatarClicked] = useState(false);
+
+  const handleAvatarClick = () => {
+    setAvatarClicked(true);
+    setTimeout(() => setAvatarClicked(false), 300); // Animation duration
+  };
+
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-lg relative text-center sm:text-left">
+      <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-5">
+        <img
+          src={user.avatarUrl}
+          alt={user.name}
+          className={`w-24 h-24 rounded-full shadow-md border-4 border-white cursor-pointer transition-transform duration-300 ${avatarClicked ? 'animate-avatar-bounce' : ''}`}
+          onClick={handleAvatarClick}
+          aria-label="Profile avatar, tap to bounce"
+        />
+        <div className="flex-1">
+          <h2 className="text-2xl font-bold text-slate-800">{user.name}</h2>
+          <p className={`${PASTEL_COLORS.textLight} text-sm`}>{user.email}</p>
+          {user.walletAddress && (
+            <button 
+              onClick={onCopyAddress}
+              disabled={!isOnline}
+              className={`mt-1 inline-flex items-center space-x-1.5 ${PASTEL_COLORS.sky.text} hover:text-sky-600 active:text-sky-700 transition-colors text-xs group disabled:opacity-50 disabled:cursor-not-allowed`}
+              aria-label="Copy wallet address"
+            >
+              <ClipboardDocumentIcon className="w-4 h-4 group-hover:animate-pulse-once" />
+              <span>{truncateWalletAddress(user.walletAddress)}</span>
+            </button>
+          )}
+        </div>
+        <button 
+          onClick={onEdit} 
+          disabled={!isOnline}
+          className={`p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors absolute top-4 right-4 disabled:opacity-50 disabled:cursor-not-allowed`}
+          aria-label="Edit profile"
+        >
+          <PencilIcon className="w-5 h-5 text-slate-500" />
+        </button>
+      </div>
+      <style>{`
+        @keyframes avatarBounce {
+          0%, 100% { transform: scale(1) translateY(0); }
+          50% { transform: scale(1.1) translateY(-5px); }
+        }
+        .animate-avatar-bounce { animation: avatarBounce 0.3s ease-out; }
+        @keyframes pulseOnce {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        .animate-pulse-once { animation: pulseOnce 0.5s ease-in-out; }
+      `}</style>
+    </div>
+  );
+};
+
+// --- Component: NotificationPreferencesSection ---
+interface NotificationPreferencesProps {
+  settings: ProfileSettings;
+  onToggle: (key: keyof ProfileSettings) => void;
+  isOnline: boolean;
+}
+const NotificationPreferencesSection: React.FC<NotificationPreferencesProps> = ({ settings, onToggle, isOnline }) => {
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-lg">
+      <h3 className="text-xl font-semibold text-slate-700 mb-2">Notifications & Preferences</h3>
+      <div className="divide-y divide-slate-100">
+        <SwitchToggle
+          id="appNotifications"
+          label="App Notifications"
+          checked={settings.appNotifications}
+          onChange={() => onToggle('appNotifications')}
+          disabled={!isOnline}
+          accentColorClass={PASTEL_COLORS.lavender.button}
+        />
+        <SwitchToggle
+          id="emailUpdates"
+          label="Email Updates"
+          checked={settings.emailUpdates}
+          onChange={() => onToggle('emailUpdates')}
+          disabled={!isOnline}
+          accentColorClass={PASTEL_COLORS.lavender.button}
+        />
+        <SwitchToggle
+          id="eventReminders"
+          label="Event Reminders"
+          checked={settings.eventReminders}
+          onChange={() => onToggle('eventReminders')}
+          disabled={!isOnline}
+          accentColorClass={PASTEL_COLORS.lavender.button}
+        />
+      </div>
+    </div>
+  );
+};
+
+// --- Component: RecentBadgesSection ---
+interface RecentBadgesProps {
+  badges: BadgeItem[];
+  onViewBadge: (badge: BadgeItem) => void;
+  onViewAll: () => void;
+}
+const RecentBadgesSection: React.FC<RecentBadgesProps> = ({ badges, onViewBadge, onViewAll }) => {
+  const displayedBadges = badges.slice(0, 4); // Show up to 4 recent
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-lg">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-semibold text-slate-700">Recent Badges</h3>
+        <Link to="/badges" onClick={onViewAll} className={`text-sm ${PASTEL_COLORS.lavender.text} font-medium hover:underline flex items-center`}>
+          View All <ChevronRightIcon className="w-4 h-4 ml-0.5" />
+        </Link>
+      </div>
+      {displayedBadges.length > 0 ? (
+        <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
+          {displayedBadges.map((badge) => (
+            <button
+              key={badge.id}
+              onClick={() => onViewBadge(badge)}
+              className={`flex-shrink-0 flex flex-col items-center space-y-1 group p-2 rounded-lg hover:bg-slate-50 active:scale-90 transition-transform w-20 ${badge.isLocked ? 'filter grayscale opacity-70' : ''}`}
+              aria-label={`View badge: ${badge.name}`}
+            >
+              <img src={badge.iconUrl} alt={badge.name} className="w-14 h-14 rounded-full shadow-sm border-2 border-white group-hover:scale-105 transition-transform" />
+              <p className={`text-xs ${PASTEL_COLORS.textLight} group-hover:text-slate-700 truncate w-full text-center`}>{badge.name}</p>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p className={`${PASTEL_COLORS.textLight} text-sm`}>No badges earned yet. Start exploring!</p>
+      )}
+    </div>
+  );
+};
+
+// --- Component: AccountActionsSection ---
+interface AccountActionsProps {
+  onExportData: () => void;
+  onDeleteAccount: () => void;
+  isOnline: boolean;
+}
+const AccountActionsSection: React.FC<AccountActionsProps> = ({ onExportData, onDeleteAccount, isOnline }) => {
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-lg">
+      <h3 className="text-xl font-semibold text-slate-700 mb-4">Account & Data</h3>
+      <div className="space-y-3">
+        <button
+          onClick={onExportData}
+          disabled={!isOnline}
+          className={`w-full py-3 px-4 rounded-xl text-sm font-medium transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+                      ${PASTEL_COLORS.sky.light} ${PASTEL_COLORS.sky.text} hover:opacity-90 border ${PASTEL_COLORS.sky.border}`}
+        >
+          Export Data
+        </button>
+        <button
+          onClick={onDeleteAccount}
+          disabled={!isOnline}
+          className={`w-full py-3 px-4 rounded-xl text-sm font-medium transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+                      ${PASTEL_COLORS.red.light} ${PASTEL_COLORS.red.text} hover:opacity-90 border ${PASTEL_COLORS.red.border}`}
+        >
+          Delete Account
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// --- Component: NotificationsFeedSection ---
+interface NotificationsFeedProps {
+  notifications: NotificationType[];
+  unreadCount: number;
+  onViewNotification: (notification: NotificationType) => void;
+  onToggleFeed?: () => void; // If feed can be collapsed/expanded
+  isOnline: boolean;
+}
+const NotificationsFeedSection: React.FC<NotificationsFeedProps> = ({ notifications, unreadCount, onViewNotification, isOnline }) => {
+  const getNotifIcon = (item: NotificationType) => {
+    let icon;
+    if (item.iconName === 'SparklesIcon') icon = <SparklesIcon className="w-5 h-5" />;
+    else if (item.iconName === 'BellIcon') icon = <BellIcon className="w-5 h-5" />;
+    else icon = getTransactionIcon(item.iconName as any, "w-5 h-5");
+
+    let color = PASTEL_COLORS.sky.text;
+    if (item.type === 'transaction') color = PASTEL_COLORS.mint.text;
+    if (item.type === 'quest') color = PASTEL_COLORS.yellow.text;
+
+
+    return <div className={`p-2 rounded-full ${!item.isRead ? color.replace('text-', 'bg-').replace('-700', '-100').replace('-600', '-100') : 'bg-slate-100'} mr-3`}>{React.cloneElement(icon as any, {className: `w-5 h-5 ${color}`})}</div>;
+  };
+  
+  const recentNotifications = notifications.slice(0, 5); // Show 5 most recent
+
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-lg">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-semibold text-slate-700">Recent Activity</h3>
+        <button className="relative p-1 rounded-full hover:bg-slate-100 active:bg-slate-200">
+          <BellIcon className={`w-6 h-6 ${unreadCount > 0 ? `${PASTEL_COLORS.blush.text} animate-bell-pulse` : PASTEL_COLORS.textLight}`} />
+          {unreadCount > 0 && (
+            <span className={`absolute top-0.5 right-0.5 block h-2.5 w-2.5 rounded-full ${PASTEL_COLORS.blush.button} ring-2 ring-white`} />
+          )}
+        </button>
+      </div>
+      {recentNotifications.length > 0 ? (
+        <ul className="divide-y divide-slate-100">
+          {recentNotifications.map(notif => (
+            <li key={notif.id} className={`py-3 first:pt-0 last:pb-0 ${!notif.isRead ? 'font-semibold' : ''}`}>
+              <button 
+                onClick={() => onViewNotification(notif)} 
+                disabled={!isOnline && (notif.type === 'transaction' || notif.type === 'quest')} // Example: some notifications might require online for details
+                className="flex items-center w-full text-left hover:bg-slate-50 p-2 -m-2 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {getNotifIcon(notif)}
+                <div className="flex-1">
+                  <p className={`text-sm ${!notif.isRead ? PASTEL_COLORS.textDark : PASTEL_COLORS.textLight} leading-snug`}>{notif.text}</p>
+                  <p className={`text-xs ${PASTEL_COLORS.textLight} mt-0.5`}>{notif.date}</p>
+                </div>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className={`${PASTEL_COLORS.textLight} text-sm`}>No new notifications.</p>
+      )}
+       <style>{`
+        @keyframes bellPulse {
+          0%, 100% { transform: scale(1) rotate(0deg); }
+          25% { transform: scale(1.1) rotate(5deg); }
+          50% { transform: scale(1.1) rotate(-5deg); }
+          75% { transform: scale(1.1) rotate(3deg); }
+        }
+        .animate-bell-pulse { animation: bellPulse 1s ease-in-out infinite; }
+      `}</style>
+    </div>
+  );
+};
+
+// --- Interface for Confirmation Modal Content State ---
+interface ConfirmModalContentType {
+  title: string;
+  message: React.ReactNode;
+  confirmText: string;
+  color: string;
+  icon: React.ReactNode;
+}
+
+// --- Main ProfilePage Component ---
+const ProfilePage: React.FC = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User>(MOCK_USER);
+  const [settings, setSettings] = useState<ProfileSettings>(MOCK_PROFILE_SETTINGS);
+  const [notifications, setNotifications] = useState<NotificationType[]>(MOCK_NOTIFICATIONS);
+  
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
+  
+  const [selectedBadge, setSelectedBadge] = useState<BadgeItem | null>(null);
+  const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false);
+  
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<'export' | 'delete' | null>(null);
+  const [confirmModalContent, setConfirmModalContent] = useState<ConfirmModalContentType>({ 
+    title: '', 
+    message: '', 
+    confirmText: 'Confirm', 
+    color: PASTEL_COLORS.mint.button, 
+    icon: <></> 
+  });
+
+  const unreadNotificationsCount = notifications.filter(n => !n.isRead).length;
+
+
+  useEffect(() => {
+    const handleOnline = () => { setIsOnline(true); showToast('info', 'You are back online.'); };
+    const handleOffline = () => { setIsOnline(false); showToast('info', "You're offline. Changes will sync when reconnected."); };
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  const showToast = useCallback((type: ToastMessage['type'], message: string) => {
+    setToast({ id: Date.now().toString(), type, message });
+  }, []);
+
+  const dismissToast = (id: string) => {
+    if (toast && toast.id === id) setToast(null);
+  };
+
+  const handleSettingToggle = (key: keyof ProfileSettings) => {
+    setSettings(prev => ({ ...prev, [key]: !prev[key] }));
+    showToast('success', `${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} preference updated.`);
+    // In a real app, this would also trigger an API call
+  };
+
+  const handleCopyAddress = () => {
+    if (user.walletAddress) {
+      navigator.clipboard.writeText(user.walletAddress)
+        .then(() => showToast('success', 'Wallet address copied to clipboard!'))
+        .catch(() => showToast('error', 'Failed to copy address.'));
+    }
+  };
+  
+  const handleEditProfile = () => showToast('info', 'Edit profile clicked (feature coming soon).');
+
+  const handleViewBadge = (badge: BadgeItem) => {
+    setSelectedBadge(badge);
+    setIsBadgeModalOpen(true);
+  };
+  
+  const handleExportData = () => {
+    setConfirmAction('export');
+    setConfirmModalContent({
+      title: 'Export Your Data',
+      message: 'We will prepare your data for download. This might take a few moments. You will be notified when it is ready.',
+      confirmText: 'Proceed',
+      color: PASTEL_COLORS.sky.button,
+      icon: <CheckCircleIcon className={`w-10 h-10 ${PASTEL_COLORS.sky.text}`}/>
+    });
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleDeleteAccount = () => {
+    setConfirmAction('delete');
+    setConfirmModalContent({
+      title: 'Delete Account',
+      message: <>Are you sure you want to delete your account? <strong className={PASTEL_COLORS.red.text}>This action is permanent and cannot be undone.</strong></>,
+      confirmText: 'Delete My Account',
+      color: PASTEL_COLORS.red.button,
+      icon: <ExclamationCircleIcon className={`w-10 h-10 ${PASTEL_COLORS.red.text}`}/>
+    });
+    setIsConfirmModalOpen(true);
+  };
+  
+  const handleConfirmAction = () => {
+    if (confirmAction === 'export') {
+      showToast('success', 'Data export process started!');
+      // Simulate export process
+    } else if (confirmAction === 'delete') {
+      showToast('success', 'Account deletion process initiated.');
+      // Simulate deletion and navigate away or log out
+      setTimeout(() => navigate('/'), 2000); // Example: navigate to home
+    }
+    setIsConfirmModalOpen(false);
+    setConfirmAction(null);
+  };
+  
+  const handleViewNotification = (notification: NotificationType) => {
+      setNotifications(prev => prev.map(n => n.id === notification.id ? {...n, isRead: true} : n));
+      showToast('info', `Notification: "${notification.text}" (details view WIP).`);
+      // Potentially open a modal with more details or navigate
+  };
+
+
+  return (
+    <div className="min-h-screen bg-slate-100 flex flex-col">
+      <OfflineBanner 
+        isOnline={isOnline} 
+        message="Offline – profile changes and badge sync will update when reconnected." 
+      />
+      
+      <header className="p-4 sticky top-0 bg-slate-100/90 backdrop-blur-md z-20 border-b border-slate-200 sm:hidden">
+        <h1 className="text-2xl font-bold text-slate-800 text-center">Profile & Settings</h1>
+      </header>
+
+      <main className="flex-grow p-4 pb-24 space-y-6 overflow-y-auto">
+        <ProfileInfoCard user={user} onEdit={handleEditProfile} onCopyAddress={handleCopyAddress} isOnline={isOnline} />
+        <NotificationPreferencesSection settings={settings} onToggle={handleSettingToggle} isOnline={isOnline} />
+        <RecentBadgesSection badges={MOCK_BADGES} onViewBadge={handleViewBadge} onViewAll={() => navigate('/badges')} />
+        <NotificationsFeedSection notifications={notifications} unreadCount={unreadNotificationsCount} onViewNotification={handleViewNotification} isOnline={isOnline}/>
+        <AccountActionsSection onExportData={handleExportData} onDeleteAccount={handleDeleteAccount} isOnline={isOnline} />
+      </main>
+
+      <BadgeDetailModal 
+        isOpen={isBadgeModalOpen} 
+        onClose={() => setIsBadgeModalOpen(false)} 
+        badge={selectedBadge} 
+      />
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirmAction}
+        title={confirmModalContent.title}
+        message={confirmModalContent.message}
+        confirmText={confirmModalContent.confirmText}
+        confirmButtonColor={confirmModalContent.color}
+        icon={confirmModalContent.icon}
+      />
+      <Toast toast={toast} onDismiss={dismissToast} />
+    </div>
+  );
+};
+
+export default ProfilePage;
+</file>
+
+<file path="pages/ProgressProfilePage.tsx">
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { MOCK_USER, MOCK_BADGES, PASTEL_COLORS } from '../constants';
+import { User, AttendedEvent, BadgeItem, Quest as QuestType } from '../types';
+import OfflineBanner from '../components/brandActivationDetail/OfflineBanner';
+import Toast, { ToastMessage } from '../components/brandActivationDetail/Toast';
+import BadgeDetailModal from '../components/modals/BadgeDetailModal';
+import { 
+    CoinIcon, 
+    FlameIcon, 
+    ChevronRightIcon,
+    SparklesIcon, // For XP
+    TicketIcon // For event history empty state
+} from '../components/icons/NavIcons';
+
+// --- Helper: Animated Number ---
+const AnimatedNumber: React.FC<{ value: number; duration?: number; className?: string }> = ({ value, duration = 500, className }) => {
+  const [currentValue, setCurrentValue] = useState(0);
+
+  useEffect(() => {
+    let startValue = currentValue;
+    const endValue = value;
+    let startTime: number | null = null;
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const percentage = Math.min(progress / duration, 1);
+      
+      setCurrentValue(Math.floor(startValue + (endValue - startValue) * percentage));
+
+      if (percentage < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setCurrentValue(endValue); // Ensure it ends on the exact value
+      }
+    };
+
+    // Only animate if the value actually changes significantly
+    if (Math.abs(endValue - startValue) > 0) {
+       requestAnimationFrame(animate);
+    } else {
+       setCurrentValue(endValue); // Set directly if no change or minor
+    }
+    
+    return () => { // Cleanup
+      startTime = null; 
+    };
+  }, [value, duration, currentValue]);
+
+  return <span className={className}>{currentValue.toLocaleString()}</span>;
+};
+
+
+// --- Component: UserProgressHeader ---
+interface UserProgressHeaderProps {
+  user: User;
+}
+const UserProgressHeader: React.FC<UserProgressHeaderProps> = ({ user }) => {
+  const xpProgressPercent = user.xpForNextLevel > 0 ? (user.xp / user.xpForNextLevel) * 100 : 0;
+  const [avatarClicked, setAvatarClicked] = useState(false);
+
+  const handleAvatarClick = () => {
+    setAvatarClicked(true);
+    setTimeout(() => setAvatarClicked(false), 300);
+  };
+  
+  return (
+    <div className="bg-white p-5 rounded-b-3xl shadow-lg sticky top-0 z-10"> {/* Keep header sticky with rounded bottom */}
+      <div className="flex items-center space-x-4 mb-4">
+        <img
+          src={user.avatarUrl}
+          alt={user.name}
+          className={`w-20 h-20 rounded-full shadow-md border-4 border-white cursor-pointer transition-transform duration-300 ${avatarClicked ? 'animate-avatar-bounce' : ''}`}
+          onClick={handleAvatarClick}
+        />
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">{user.name}</h1>
+          {user.motivationalSubtitle && <p className={`${PASTEL_COLORS.textLight} text-sm`}>{user.motivationalSubtitle}</p>}
+        </div>
+      </div>
+      
+      <div className="space-y-3">
+        <div>
+          <div className="flex justify-between items-center text-sm mb-1">
+            <span className={`${PASTEL_COLORS.textDark} font-medium`}>Level {user.level}</span>
+            <span className={`${PASTEL_COLORS.textLight}`}>
+                XP: <AnimatedNumber value={user.xp} className="font-semibold"/> / {user.xpForNextLevel.toLocaleString()}
+            </span>
+          </div>
+          <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden shadow-inner">
+            <div
+              className={`${PASTEL_COLORS.mint.button} h-3 rounded-full transition-all duration-1000 ease-out`}
+              style={{ width: `${xpProgressPercent}%` }}
+              role="progressbar"
+              aria-valuenow={xpProgressPercent}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`XP progress: ${user.xp} of ${user.xpForNextLevel}`}
+            />
+          </div>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <CoinIcon className={`w-6 h-6 ${PASTEL_COLORS.yellow.filled_icon}`} />
+          <span className={`${PASTEL_COLORS.textDark} text-lg font-semibold`}><AnimatedNumber value={user.coinBalance} /> Coins</span>
+        </div>
+      </div>
+       <style>{`
+        @keyframes avatarBounce {
+          0%, 100% { transform: scale(1) translateY(0); }
+          50% { transform: scale(1.1) translateY(-5px); }
+        }
+        .animate-avatar-bounce { animation: avatarBounce 0.3s ease-out; }
+      `}</style>
+    </div>
+  );
+};
+
+// --- Component: EventHistoryCard ---
+interface EventHistoryCardProps {
+  attendedEvent: AttendedEvent;
+  onClick: () => void;
+}
+const EventHistoryCard: React.FC<EventHistoryCardProps> = ({ attendedEvent, onClick }) => {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex-shrink-0 w-72 bg-white rounded-2xl shadow-lg overflow-hidden p-4 mr-4 transition-all duration-300 hover:shadow-xl active:scale-[0.97] text-left
+                  ${attendedEvent.isLive ? `border-2 ${PASTEL_COLORS.mint.border} ring-2 ring-offset-1 ${PASTEL_COLORS.mint.ring}` : ''}`}
+    >
+      <div className="flex items-start space-x-3 mb-3">
+        {attendedEvent.eventLogoUrl ? (
+          <img src={attendedEvent.eventLogoUrl} alt={attendedEvent.eventName} className="w-12 h-12 rounded-lg object-cover" />
+        ) : (
+          <div className={`w-12 h-12 ${attendedEvent.eventAbstractColor} rounded-lg flex items-center justify-center`}>
+            <TicketIcon className="w-6 h-6 text-slate-500" />
+          </div>
+        )}
+        <div className="flex-1">
+          <h4 className="text-md font-semibold text-slate-800 truncate">{attendedEvent.eventName}</h4>
+          <p className={`text-xs ${PASTEL_COLORS.textLight}`}>{attendedEvent.eventDate}</p>
+        </div>
+        {attendedEvent.isLive && (
+          <span className={`px-2.5 py-1 text-xs font-semibold rounded-full text-white ${PASTEL_COLORS.mint.button}`}>Live</span>
+        )}
+      </div>
+      <div className="space-y-1.5 text-xs">
+        <p className={`${PASTEL_COLORS.textDark}`}><SparklesIcon className={`w-3.5 h-3.5 inline mr-1 ${PASTEL_COLORS.mint.text}`} />XP Earned: <span className="font-medium">{attendedEvent.xpEarned.toLocaleString()}</span></p>
+        <p className={`${PASTEL_COLORS.textDark}`}><CoinIcon className={`w-3.5 h-3.5 inline mr-1 ${PASTEL_COLORS.yellow.text}`} />Coins Gained: <span className="font-medium">{attendedEvent.coinsGained}</span></p>
+        {attendedEvent.mainBadges.length > 0 && (
+          <div className="flex items-center space-x-1.5 pt-1">
+            <span className={`${PASTEL_COLORS.textLight}`}>Badges:</span>
+            {attendedEvent.mainBadges.slice(0,3).map(badge => (
+              <img key={badge.id} src={badge.iconUrl} alt={badge.name} title={badge.name} className="w-5 h-5 rounded-full border border-slate-200" />
+            ))}
+          </div>
+        )}
+      </div>
+    </button>
+  );
+};
+
+// --- Component: EventHistorySection ---
+interface EventHistorySectionProps {
+  attendedEvents: AttendedEvent[];
+  onEventClick: (eventId: string) => void;
+}
+const EventHistorySection: React.FC<EventHistorySectionProps> = ({ attendedEvents, onEventClick }) => {
+  const liveEvent = attendedEvents.find(e => e.isLive);
+  const pastEvents = attendedEvents.filter(e => !e.isLive);
+  const sortedEvents = liveEvent ? [liveEvent, ...pastEvents] : pastEvents;
+
+  if (sortedEvents.length === 0) {
+    return (
+      <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
+        <TicketIcon className={`w-12 h-12 mx-auto mb-3 ${PASTEL_COLORS.sky.text} opacity-50`} />
+        <h3 className="text-lg font-semibold text-slate-700 mb-1">No Event History Yet</h3>
+        <p className={`${PASTEL_COLORS.textLight} text-sm mb-3`}>Attend your first event to start earning XP and badges!</p>
+        <Link to="/events" className={`${PASTEL_COLORS.sky.button} text-white py-2 px-4 rounded-xl text-sm font-medium`}>
+          Discover Events
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h3 className="text-xl font-semibold text-slate-700 mb-3 px-1">Festival History</h3>
+      <div className="flex overflow-x-auto space-x-0 pb-3 scrollbar-hide -mx-4 px-4"> {/* Negative margin pull for edge-to-edge feel */}
+        {sortedEvents.map((event) => (
+          <EventHistoryCard key={event.eventId} attendedEvent={event} onClick={() => onEventClick(event.eventId)} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// --- Component: UserBadgesSection ---
+interface UserBadgesSectionProps {
+  badges: BadgeItem[];
+  onViewBadge: (badge: BadgeItem) => void;
+  onViewAll: () => void;
+}
+const UserBadgesSection: React.FC<UserBadgesSectionProps> = ({ badges, onViewBadge, onViewAll }) => {
+  const recentUnlockedBadges = badges.filter(b => !b.isLocked).slice(0, 4); // Show up to 4 recent unlocked
+
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-lg">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-semibold text-slate-700">Your Badges</h3>
+        <button onClick={onViewAll} className={`text-sm ${PASTEL_COLORS.lavender.text} font-medium hover:underline flex items-center active:scale-95`}>
+          View All <ChevronRightIcon className="w-4 h-4 ml-0.5" />
+        </button>
+      </div>
+      {recentUnlockedBadges.length > 0 ? (
+        <div className="grid grid-cols-4 gap-3 sm:gap-4">
+          {recentUnlockedBadges.map((badge) => (
+            <button
+              key={badge.id}
+              onClick={() => onViewBadge(badge)}
+              className="flex flex-col items-center space-y-1 group p-1 rounded-lg hover:bg-slate-50 active:scale-90 transition-transform"
+              aria-label={`View badge: ${badge.name}`}
+            >
+              <img 
+                src={badge.iconUrl} 
+                alt={badge.name} 
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full shadow-md border-2 border-white group-hover:scale-105 transition-transform" 
+              />
+              <p className={`text-xs ${PASTEL_COLORS.textLight} group-hover:text-slate-700 truncate w-full text-center`}>{badge.name}</p>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p className={`${PASTEL_COLORS.textLight} text-sm`}>No badges earned yet. Keep exploring!</p>
+      )}
+    </div>
+  );
+};
+
+// --- Component: XPQuestStatsCard ---
+interface XPQuestStatsCardProps {
+  activeQuests: QuestType[];
+  streak: number;
+  userXP: number;
+}
+const XPQuestStatsCard: React.FC<XPQuestStatsCardProps> = ({ activeQuests, streak, userXP }) => {
+  const nextBadgeXPThreshold = Math.ceil((userXP + 50) / 50) * 50; // Example: next badge every 50 XP
+  const xpToNextBadge = Math.max(0, nextBadgeXPThreshold - userXP);
+
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-lg space-y-4">
+      <h3 className="text-xl font-semibold text-slate-700">XP & Quest Stats</h3>
+      
+      {activeQuests.length > 0 ? activeQuests.slice(0,2).map(quest => (
+        <div key={quest.id}>
+          <div className="flex justify-between items-baseline text-sm mb-1">
+            <span className={`${PASTEL_COLORS.textDark} font-medium truncate pr-2`}>{quest.title}</span>
+            <span className={`${PASTEL_COLORS.textLight}`}>{quest.currentProgress}/{quest.targetProgress}</span>
+          </div>
+          <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden shadow-inner">
+            <div
+              className={`${PASTEL_COLORS.blush.button} h-2.5 rounded-full transition-all duration-1000 ease-out`}
+              style={{ width: `${(quest.currentProgress / quest.targetProgress) * 100}%` }}
+            />
+          </div>
+          {quest.rewardText && <p className={`text-xs ${PASTEL_COLORS.blush.text} mt-1`}>{quest.rewardText}</p>}
+        </div>
+      )) : (
+         <p className={`${PASTEL_COLORS.textLight} text-sm`}>No active quests right now. Check back soon!</p>
+      )}
+
+      <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+        <div className="flex items-center space-x-2">
+          <FlameIcon className={`w-6 h-6 ${streak > 0 ? 'text-orange-500 animate-pulse-streak' : PASTEL_COLORS.textLight}`} />
+          <span className={`${PASTEL_COLORS.textDark} font-medium`}>{streak} day streak</span>
+        </div>
+        {xpToNextBadge > 0 && <p className={`${PASTEL_COLORS.mint.text} text-sm font-medium`}>Just {xpToNextBadge} XP to next reward!</p>}
+      </div>
+      <style>{`
+        @keyframes pulseStreak {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.15); opacity: 0.8; }
+        }
+        .animate-pulse-streak { animation: pulseStreak 1.5s infinite ease-in-out; }
+      `}</style>
+    </div>
+  );
+};
+
+// --- Component: TotalRewardsCard ---
+interface TotalRewardsCardProps {
+  totalXP: number;
+  totalCoins: number;
+  totalBadges: number;
+}
+const TotalRewardsCard: React.FC<TotalRewardsCardProps> = ({ totalXP, totalCoins, totalBadges }) => {
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-lg">
+      <h3 className="text-xl font-semibold text-slate-700 mb-3">Total Earned</h3>
+      <div className="grid grid-cols-3 gap-3 text-center">
+        <div>
+          <p className={`text-2xl font-bold ${PASTEL_COLORS.mint.text}`}><AnimatedNumber value={totalXP}/></p>
+          <p className={`text-xs ${PASTEL_COLORS.textLight}`}>Total XP</p>
+        </div>
+        <div>
+          <p className={`text-2xl font-bold ${PASTEL_COLORS.yellow.text}`}><AnimatedNumber value={totalCoins}/></p>
+          <p className={`text-xs ${PASTEL_COLORS.textLight}`}>Coins</p>
+        </div>
+        <div>
+          <p className={`text-2xl font-bold ${PASTEL_COLORS.lavender.text}`}><AnimatedNumber value={totalBadges}/></p>
+          <p className={`text-xs ${PASTEL_COLORS.textLight}`}>Badges</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+// --- Main ProgressProfilePage Component ---
+const ProgressProfilePage: React.FC = () => {
+  const navigate = useNavigate();
+  const [user] = useState<User>(MOCK_USER); // Assuming MOCK_USER has the new fields
+  
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
+  
+  const [selectedBadge, setSelectedBadge] = useState<BadgeItem | null>(null);
+  const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOnline = () => { setIsOnline(true); showToast('info', 'You are back online.'); };
+    const handleOffline = () => { setIsOnline(false); showToast('info', "Offline – progress and badge sync will update when reconnected."); };
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  const showToast = useCallback((type: ToastMessage['type'], message: string) => {
+    setToast({ id: Date.now().toString(), type, message });
+  }, []);
+
+  const dismissToast = (id: string) => {
+    if (toast && toast.id === id) setToast(null);
+  };
+
+  const handleViewBadge = (badge: BadgeItem) => {
+    setSelectedBadge(badge);
+    setIsBadgeModalOpen(true);
+  };
+  
+  const handleEventHistoryClick = (eventId: string) => {
+    navigate(`/events/${eventId}`); // Navigate to the event detail page
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 flex flex-col">
+      <OfflineBanner 
+        isOnline={isOnline} 
+        message="Offline – progress and badge sync will update when reconnected." 
+      />
+      <UserProgressHeader user={user} />
+      
+      <main className="flex-grow p-4 pb-24 space-y-6 overflow-y-auto">
+        <EventHistorySection attendedEvents={user.attendedEvents} onEventClick={handleEventHistoryClick} />
+        <UserBadgesSection badges={MOCK_BADGES} onViewBadge={handleViewBadge} onViewAll={() => navigate('/badges')} />
+        <XPQuestStatsCard activeQuests={user.activeQuests} streak={user.streak} userXP={user.xp} />
+        <TotalRewardsCard totalXP={user.totalXP} totalCoins={user.totalCoinsEarned} totalBadges={user.totalBadgesEarned} />
+      </main>
+
+      <BadgeDetailModal 
+        isOpen={isBadgeModalOpen} 
+        onClose={() => setIsBadgeModalOpen(false)} 
+        badge={selectedBadge} 
+      />
+      <Toast toast={toast} onDismiss={dismissToast} />
+      {/* BottomNavigationBar is rendered by App.tsx */}
+    </div>
+  );
+};
+
+export default ProgressProfilePage;
+</file>
+
+<file path="pages/ScanPage.tsx">
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { PASTEL_COLORS } from '../constants';
+import OfflineBanner from '../components/brandActivationDetail/OfflineBanner';
+import Confetti from '../components/brandActivationDetail/Confetti';
+import { XMarkIcon, CameraIcon, SignalIcon, CheckCircleIcon, ExclamationCircleIcon, SparklesIcon } from '../components/icons/NavIcons';
+
+type ScanStep = 'initializing' | 'scanning' | 'success' | 'error_scan' | 'no_camera_nfc';
+
+const ScanPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [scanStep, setScanStep] = useState<ScanStep>('initializing');
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [hasCameraSupport, setHasCameraSupport] = useState(true);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [successMessageIndex, setSuccessMessageIndex] = useState(0);
+
+  const successMessages = ["Congrats!", "Check-In Complete!"];
+
+  useEffect(() => {
+    // Initial animation for the overlay
+    const overlay = document.getElementById('scan-page-overlay');
+    if (overlay) {
+        overlay.classList.remove('opacity-0');
+        overlay.classList.add('opacity-100');
+    }
+    
+    if (scanStep === 'initializing') {
+      // Check for camera support
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setHasCameraSupport(false);
+        setScanStep('no_camera_nfc');
+      } else {
+        setHasCameraSupport(true);
+        setScanStep('scanning');
+      }
+    }
+    
+    if (scanStep === 'scanning') {
+      const scanTimer = setTimeout(() => {
+        setSuccessMessageIndex(Math.floor(Math.random() * successMessages.length));
+        setScanStep('success');
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 4000); // Confetti duration
+      }, 2000); // Simulate 1.5-2 seconds scan time
+      return () => clearTimeout(scanTimer);
+    }
+
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [scanStep, successMessages.length]);
+
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      navigate(-1); // Go back to the previous page
+    }, 300); // Duration of fadeOut animation
+  }, [navigate]);
+
+  const handleTryAgainFromError = () => {
+    setScanStep('scanning');
+  };
+  
+  const renderScanningContent = () => (
+    <div className="flex flex-col items-center justify-center text-center h-full animate-fadeInSlow">
+      <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-6">Scan QR or Tap Your NFC Wristband</h1>
+      
+      {/* Animated Camera Frame */}
+      <div id="qr-scanner-area" className="relative w-60 h-60 sm:w-72 sm:h-72 mx-auto mb-5 bg-slate-100 rounded-2xl shadow-xl overflow-hidden p-1 ring-4 ring-white/50 ring-offset-2 ring-offset-slate-100">
+        <div className={`absolute inset-0 ${PASTEL_COLORS.mint.light} opacity-20 animate-softGlow`}></div>
+        <CameraIcon className="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 text-slate-500 opacity-50" />
+        {/* Animated Corners */}
+        {[0,1,2,3].map(i => (
+          <div key={i} className={`absolute w-8 h-8 border-4 ${PASTEL_COLORS.mint.DEFAULT.replace('bg-', 'border-')} animate-corner-pulse 
+            ${i===0 ? 'top-2 left-2 border-r-0 border-b-0 rounded-tl-lg' : ''}
+            ${i===1 ? 'top-2 right-2 border-l-0 border-b-0 rounded-tr-lg' : ''}
+            ${i===2 ? 'bottom-2 left-2 border-r-0 border-t-0 rounded-bl-lg' : ''}
+            ${i===3 ? 'bottom-2 right-2 border-l-0 border-t-0 rounded-br-lg' : ''}
+          `}/>
+        ))}
+        {/* Scanning Line */}
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-green-300 to-transparent animate-scan-line shadow-lg"></div>
+      </div>
+
+      <div className="flex items-center justify-center space-x-1.5 mb-2">
+        <p className="text-xl font-semibold text-slate-700">Scanning</p>
+        <div className="flex space-x-1">
+          {[0,1,2].map(i => (
+            <div key={i} className={`w-2 h-2 ${PASTEL_COLORS.mint.DEFAULT} rounded-full animate-dot-pulse`} style={{animationDelay: `${i * 0.2}s`}}></div>
+          ))}
+        </div>
+      </div>
+      <p className={`${PASTEL_COLORS.textLight} text-sm max-w-xs mx-auto`}>
+        Check in to earn XP and unlock rewards!
+      </p>
+    </div>
+  );
+
+  const renderSuccessContent = () => (
+    <div className="flex flex-col items-center justify-center text-center animate-fadeInScale">
+      <div className="relative mb-6">
+        {/* Choose one icon, e.g., SparklesIcon for XP gem */}
+        <SparklesIcon className={`w-24 h-24 ${PASTEL_COLORS.yellow.filled_icon} animate-success-icon-pop`} />
+        {/* Or CheckCircleIcon */}
+        {/* <CheckCircleIcon className={`w-24 h-24 ${PASTEL_COLORS.mint.text} animate-success-icon-pop`} /> */}
+      </div>
+      <h1 className="text-3xl font-bold text-slate-800 mb-3">{successMessages[successMessageIndex]}</h1>
+      <p className={`${PASTEL_COLORS.textDark} text-lg mb-1`}>You’ve earned <span className="font-bold text-green-600">+50 XP</span>.</p>
+      <p className={`${PASTEL_COLORS.textLight} text-sm mb-1`}>Welcome to <span className="font-semibold">Synthwave Fest</span>!</p>
+      <p className={`${PASTEL_COLORS.textLight} text-sm mb-8 max-w-xs`}>Keep exploring to win more badges!</p>
+      <button
+        onClick={handleClose}
+        className={`${PASTEL_COLORS.mint.button} text-white text-lg font-semibold py-3.5 px-10 rounded-xl shadow-lg hover:opacity-90 active:scale-95 transition-all transform animate-button-bounce-in`}
+      >
+        Continue
+      </button>
+    </div>
+  );
+  
+  const renderErrorScanContent = () => (
+     <div className="flex flex-col items-center justify-center text-center h-full animate-fadeInSlow">
+        <div id="error-scanner-area" className="relative w-60 h-60 sm:w-72 sm:h-72 mx-auto mb-5 bg-slate-100 rounded-2xl shadow-xl overflow-hidden p-1 animate-shake">
+             <ExclamationCircleIcon className={`absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 ${PASTEL_COLORS.red.text} opacity-70`} />
+        </div>
+        <p className={`${PASTEL_COLORS.red.text} font-semibold mb-4 text-center`}>
+            Scan failed. Try again, or tap your NFC wristband.
+        </p>
+        <button
+            onClick={handleTryAgainFromError}
+            className={`${PASTEL_COLORS.sky.button} text-white text-md font-semibold py-3 px-8 rounded-xl shadow-lg hover:opacity-90 active:scale-95 transition-all`}
+        >
+            Try Again
+        </button>
+    </div>
+  );
+
+  const renderNoCameraNfcContent = () => (
+    <div className="flex flex-col items-center justify-center text-center p-6 bg-white rounded-2xl shadow-xl animate-fadeInScale">
+        <ExclamationCircleIcon className={`w-16 h-16 ${PASTEL_COLORS.yellow.text} mb-4`} />
+        <h2 className="text-xl font-semibold text-slate-800 mb-2">Device Support Issue</h2>
+        <p className={`${PASTEL_COLORS.textLight} text-sm mb-6`}>
+            Show your QR to staff or enter code manually. This device may not support camera or NFC scanning.
+        </p>
+        <button
+            onClick={handleClose}
+            className={`${PASTEL_COLORS.sky.button} text-white text-md font-semibold py-3 px-8 rounded-xl shadow-lg hover:opacity-90 active:scale-95 transition-all`}
+        >
+            Close
+        </button>
+    </div>
+  );
+
+  const getCurrentStepContent = () => {
+    switch(scanStep) {
+      case 'scanning': return renderScanningContent();
+      case 'success': return renderSuccessContent();
+      case 'error_scan': return renderErrorScanContent();
+      case 'no_camera_nfc': return renderNoCameraNfcContent();
+      case 'initializing':
+      default:
+        return ( // Placeholder for initializing or if something unexpected happens
+          <div className="flex items-center justify-center h-full">
+            <div className={`w-8 h-8 border-4 ${PASTEL_COLORS.mint.border} border-t-transparent rounded-full animate-spin`}></div>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div 
+        id="scan-page-overlay"
+        className={`fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-4 overflow-y-auto transition-opacity duration-300 opacity-0 ${isClosing ? 'animate-fadeOutPage' : ''}`}
+    >
+      <OfflineBanner isOnline={isOnline} message="Offline – your check-in will be saved and synced when online."/>
+      
+      <button
+        onClick={handleClose}
+        className="absolute top-5 right-5 p-2 bg-slate-100 hover:bg-slate-200 rounded-full shadow-md transition-colors active:scale-90 z-20"
+        aria-label="Close scan overlay"
+      >
+        <XMarkIcon className="w-6 h-6 text-slate-600" />
+      </button>
+
+      <div className="w-full max-w-lg flex flex-col items-center justify-center flex-grow">
+        {getCurrentStepContent()}
+      </div>
+
+      {showConfetti && <Confetti />}
+      
+      <style>{`
+        @keyframes fadeInPage {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .animate-fadeInPage { animation: fadeInPage 0.3s ease-out forwards; }
+        @keyframes fadeOutPage {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        .animate-fadeOutPage { animation: fadeOutPage 0.3s ease-out forwards; }
+        
+        @keyframes fadeInSlow {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0px); }
+        }
+        .animate-fadeInSlow { animation: fadeInSlow 0.5s ease-out forwards; }
+
+
+        @keyframes cornerPulse {
+          0%, 100% { opacity: 0.6; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.15); }
+        }
+        .animate-corner-pulse { animation: cornerPulse 1.5s infinite ease-in-out; }
+
+        @keyframes scanLine {
+          0% { transform: translateY(-10%); opacity: 0.3; }
+          50% { transform: translateY(110%); opacity: 0.8; }
+          100% { transform: translateY(-10%); opacity: 0.3; }
+        }
+        .animate-scan-line { animation: scanLine 2.5s infinite ease-in-out; }
+        
+        @keyframes softGlow {
+          0%, 100% { opacity: 0.2; box-shadow: 0 0 15px 5px ${PASTEL_COLORS.mint.light.replace('bg-','').replace('-100','(default)')}; } /* Assuming a default if not specified */
+          50% { opacity: 0.3; box-shadow: 0 0 25px 10px ${PASTEL_COLORS.mint.light.replace('bg-','').replace('-100','(default)')}; }
+        }
+        .animate-softGlow { animation: softGlow 2.5s infinite ease-in-out alternate; }
+
+
+        @keyframes dotPulse {
+          0%, 100% { transform: scale(1); opacity: 0.7; }
+          50% { transform: scale(1.3); opacity: 1; }
+        }
+        .animate-dot-pulse { animation: dotPulse 1.2s infinite ease-in-out; }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+          20%, 40%, 60%, 80% { transform: translateX(6px); }
+        }
+        .animate-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+
+        @keyframes fadeInScale {
+          from { opacity: 0; transform: scale(0.9); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fadeInScale { animation: fadeInScale 0.4s ease-out forwards; }
+        
+        @keyframes successIconPop {
+          0% { transform: scale(0.5) rotate(-15deg); opacity: 0; }
+          60% { transform: scale(1.15) rotate(10deg); opacity: 1; }
+          80% { transform: scale(0.9) rotate(-5deg); }
+          100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .animate-success-icon-pop { animation: successIconPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+        @keyframes buttonBounceIn {
+          0% { transform: scale(0.7) translateY(10px); opacity: 0; }
+          60% { transform: scale(1.05) translateY(-5px); opacity: 1; }
+          80% { transform: scale(0.98) translateY(0px); }
+          100% { transform: scale(1) translateY(0px); opacity: 1; }
+        }
+        .animate-button-bounce-in { animation: buttonBounceIn 0.5s ease-out 0.2s forwards; /* Delay after icon */ }
+      `}</style>
+    </div>
+  );
+};
+
+export default ScanPage;
+</file>
+
+<file path="pages/WalletPage.tsx">
+import React, { useState, useEffect, useCallback } from 'react';
+import { MOCK_USER, MOCK_TRANSACTIONS, PASTEL_COLORS, UNREAD_NOTIFICATIONS_COUNT } from '../constants';
+import { User, Transaction, TransactionType } from '../types';
+import OfflineBanner from '../components/brandActivationDetail/OfflineBanner'; // Reusable with new message
+import Toast, { ToastMessage } from '../components/brandActivationDetail/Toast';
+import WalletBalanceCard from '../components/wallet/WalletBalanceCard';
+import TransactionList from '../components/wallet/TransactionList';
+import TopUpModal from '../components/wallet/TopUpModal';
+import SendModal from '../components/wallet/SendModal';
+import TransactionDetailModal from '../components/wallet/TransactionDetailModal';
+import { BellIcon } from '../components/icons/NavIcons'; // For optional header notification
+
+const WalletPage: React.FC = () => {
+  const [currentUser, setCurrentUser] = useState<User>(MOCK_USER);
+  const [transactions, setTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
+  
+  const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
+  const [pageKey, setPageKey] = useState(Date.now()); // Used to force re-render for animations
+
+  useEffect(() => {
+    const handleOnline = () => { setIsOnline(true); setToast({id: 'online-toast', type: 'info', message: 'You are back online.'})};
+    const handleOffline = () => { setIsOnline(false); setToast({id: 'offline-toast', type: 'info', message: 'You are offline. Some features may be limited.'})};
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+  
+  const showToast = (type: ToastMessage['type'], message: string) => {
+    setToast({ id: Date.now().toString(), type, message });
+  };
+
+  const dismissToast = (id: string) => {
+    if (toast && toast.id === id) {
+      setToast(null);
+    }
+  };
+
+  const handleTopUpSuccess = (amount: number) => {
+    setCurrentUser(prev => ({ ...prev, balance: prev.balance + amount }));
+    const newTransaction: Transaction = {
+      id: `txn-${Date.now()}`,
+      type: 'top-up',
+      description: 'Top Up',
+      amount: amount,
+      currency: currentUser.currency,
+      date: `Today, ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}`,
+      iconName: 'ArrowUpCircleIcon',
+      accentColor: PASTEL_COLORS.mint.light,
+      status: 'completed',
+      merchantOrRecipient: 'Self'
+    };
+    setTransactions(prev => [newTransaction, ...prev]);
+    showToast('success', `Topped up ${currentUser.currency} ${amount.toFixed(2)}`);
+    setPageKey(Date.now()); // Trigger animation for transaction list
+  };
+
+  const handleSendSuccess = (amount: number, recipient: string) => {
+    setCurrentUser(prev => ({ ...prev, balance: prev.balance - amount }));
+    const newTransaction: Transaction = {
+      id: `txn-${Date.now()}`,
+      type: 'send',
+      description: `Sent to ${recipient}`,
+      amount: -amount,
+      currency: currentUser.currency,
+      date: `Today, ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}`,
+      iconName: 'PaperAirplaneIcon',
+      accentColor: PASTEL_COLORS.lavender.light,
+      status: 'completed',
+      merchantOrRecipient: recipient
+    };
+    setTransactions(prev => [newTransaction, ...prev]);
+    showToast('success', `Sent ${currentUser.currency} ${amount.toFixed(2)} to ${recipient}`);
+     setPageKey(Date.now()); // Trigger animation for transaction list
+  };
+
+  const handleTransactionClick = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+  };
+  
+  // Update MOCK_USER's transactions to reflect the most recent one on the card
+  useEffect(() => {
+    if (transactions.length > 0) {
+      setCurrentUser(prev => ({
+        ...prev,
+        transactions: [transactions[0]]
+      }));
+    }
+  }, [transactions]);
+
+
+  return (
+    <div className="flex flex-col min-h-screen bg-slate-50" key={pageKey}>
+      <OfflineBanner isOnline={isOnline} /> {/* Shows custom message if offline via props or internal logic */}
+      
+      {/* Header */}
+      <header className="p-4 flex items-center justify-between sticky top-0 bg-slate-50/80 backdrop-blur-md z-30 border-b border-slate-100">
+        <h1 className="text-2xl font-bold text-slate-800">Your Wallet</h1>
+        <button className="relative p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors">
+          <BellIcon className="w-6 h-6 text-slate-600" />
+          {UNREAD_NOTIFICATIONS_COUNT > 0 && (
+            <span className="absolute top-1 right-1 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white" />
+          )}
+        </button>
+      </header>
+
+      <main className="flex-grow flex flex-col p-4 space-y-6 overflow-y-auto pb-24">
+        {/* Wallet Balance Card - should stretch */}
+        <div className="flex-grow flex flex-col min-h-[250px]"> {/* Ensure parent allows stretching */}
+          <WalletBalanceCard 
+            user={currentUser} 
+            onTopUpClick={() => setIsTopUpModalOpen(true)}
+            onSendClick={() => setIsSendModalOpen(true)}
+            isOnline={isOnline}
+          />
+        </div>
+
+        {/* Last Transactions Section */}
+        <section>
+          <h2 className="text-xl font-semibold text-slate-700 mb-4 px-1">Last Transactions</h2>
+          <TransactionList 
+            transactions={transactions} 
+            onTransactionClick={handleTransactionClick} 
+          />
+        </section>
+      </main>
+
+      <TopUpModal
+        isOpen={isTopUpModalOpen}
+        onClose={() => setIsTopUpModalOpen(false)}
+        onTopUpSuccess={handleTopUpSuccess}
+        currentCurrency={currentUser.currency}
+        isOnline={isOnline}
+      />
+      <SendModal
+        isOpen={isSendModalOpen}
+        onClose={() => setIsSendModalOpen(false)}
+        onSendSuccess={handleSendSuccess}
+        currentUser={currentUser}
+        isOnline={isOnline}
+      />
+      <TransactionDetailModal
+        isOpen={!!selectedTransaction}
+        onClose={() => setSelectedTransaction(null)}
+        transaction={selectedTransaction}
+      />
+      <Toast toast={toast} onDismiss={dismissToast} />
+      {/* BottomNavigationBar is rendered by App.tsx */}
+    </div>
+  );
+};
+
+export default WalletPage;
+</file>
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+</file>
+
+<file path="App.tsx">
+import React from 'react';
+import { HashRouter, Routes, Route } from 'react-router-dom';
+import HomeScreen from './components/HomeScreen';
+import BottomNavigationBar from './components/BottomNavigationBar';
+import { HomeIcon, TrophyIcon, ScanIcon, WalletIcon, GearIcon, HomeIconFilled, TrophyIconFilled, WalletIconFilled, GearIconFilled } from './components/icons/NavIcons'; // Removed TicketIcon, using TrophyIcon for Progress
+import EventsListPage from './pages/EventsListPage';
+import EventDetailPage from './pages/EventDetailPage';
+import BrandActivationDetailPage from './pages/BrandActivationDetailPage';
+import WalletPage from './pages/WalletPage';
+import ProfilePage from './pages/ProfilePage'; 
+import BadgesPage from './pages/BadgesPage';
+import ProgressProfilePage from './pages/ProgressProfilePage'; // Added ProgressProfilePage
+import ScanPage from './pages/ScanPage'; // Updated path if it was moved, but it's already correct
+
+
+const App: React.FC = () => {
+  const navItems = [
+    { id: 'home', label: 'Home', icon: HomeIcon, activeIcon: HomeIconFilled, path: '/' },
+    { id: 'progress', label: 'Progress', icon: TrophyIcon, activeIcon: TrophyIconFilled, path: '/progress' }, // New Progress Tab
+    { id: 'scan', label: 'Scan', icon: ScanIcon, path: '/scan', isSpecial: true },
+    { id: 'wallet', label: 'Wallet', icon: WalletIcon, activeIcon: WalletIconFilled, path: '/wallet'},
+    // { id: 'badges', label: 'Badges', icon: TrophyIcon, activeIcon: TrophyIconFilled, path: '/badges' }, // Badges are part of Profile/Progress now
+    { id: 'profile', label: 'Settings', icon: GearIcon, activeIcon: GearIconFilled, path: '/profile' }, // Profile is now more for settings
+  ];
+
+  return (
+    <HashRouter>
+      <div className="min-h-screen bg-white text-slate-800 font-sans flex flex-col">
+        <main className="flex-grow overflow-y-auto">
+          <Routes>
+            <Route path="/" element={<HomeScreen />} />
+            <Route path="/events" element={<EventsListPage />} /> {/* Kept for direct access if needed */}
+            <Route path="/events/:eventId" element={<EventDetailPage />} />
+            <Route path="/events/:eventId/activation/:activationId" element={<BrandActivationDetailPage />} />
+            
+            <Route path="/progress" element={<ProgressProfilePage />} /> {/* New Progress Screen Route */}
+            <Route path="/scan" element={<ScanPage />} />
+            <Route path="/wallet" element={<WalletPage />} />
+            <Route path="/badges" element={<BadgesPage />} /> {/* Badge Vault, linked from Progress/Profile */}
+            <Route path="/profile" element={<ProfilePage />} /> {/* Settings Page Route */}
+          </Routes>
+        </main>
+        <BottomNavigationBar items={navItems} />
+      </div>
+    </HashRouter>
+  );
+};
+
+export default App;
+</file>
+
+<file path="constants.ts">
+import { User, Event, Quest, BadgeItem, BrandActivation, Shop, ShopItem, Transaction, ProfileSettings, NotificationItem, AttendedEvent } from './types';
+
+export const PASTEL_COLORS = {
+  lavender: { DEFAULT: 'bg-purple-300', light: 'bg-purple-100', text: 'text-purple-700', button: 'bg-purple-500 hover:bg-purple-600', filled_icon: 'text-purple-600', border: 'border-purple-300', ring: 'ring-purple-300' },
+  mint: { DEFAULT: 'bg-green-300', light: 'bg-green-100', text: 'text-green-700', button: 'bg-green-500 hover:bg-green-600', filled_icon: 'text-green-600', border: 'border-green-300', ring: 'ring-green-300' },
+  blush: { DEFAULT: 'bg-pink-300', light: 'bg-pink-100', text: 'text-pink-700', button: 'bg-pink-500 hover:bg-pink-600', filled_icon: 'text-pink-600', border: 'border-pink-300', ring: 'ring-pink-300' },
+  sky: { DEFAULT: 'bg-sky-300', light: 'bg-sky-100', text: 'text-sky-700', button: 'bg-sky-500 hover:bg-sky-600', filled_icon: 'text-sky-600', border: 'border-sky-300', ring: 'ring-sky-300' },
+  yellow: { DEFAULT: 'bg-yellow-300', light: 'bg-yellow-100', text: 'text-yellow-700', button: 'bg-yellow-500 hover:bg-yellow-600', filled_icon: 'text-yellow-600', border: 'border-yellow-300', ring: 'ring-yellow-300' },
+  red: { DEFAULT: 'bg-red-400', light: 'bg-red-100', text: 'text-red-700', button: 'bg-red-500 hover:bg-red-600', filled_icon: 'text-red-600', border: 'border-red-300', ring: 'ring-red-300' },
+  textLight: 'text-slate-500',
+  textDark: 'text-slate-800',
+  cardBg: 'bg-white',
+  inputBorder: 'border-slate-300 focus:border-purple-500 focus:ring-1 focus:ring-purple-500',
+  error: 'text-red-500',
+  success: 'text-green-500',
+};
+
+export const MOCK_TRANSACTIONS: Transaction[] = [
+  { id: "txn1", type: "top-up", description: "Top Up", amount: 100.00, currency: "USDC", date: "Today, 13:22", iconName: 'ArrowUpCircleIcon', accentColor: PASTEL_COLORS.mint.light, merchantOrRecipient: "Self", status: "completed" },
+  { id: "txn2", type: "purchase", description: "Bought Coffee", amount: -6.00, currency: "USDC", date: "Today, 09:10", iconName: 'CoffeeIcon', accentColor: PASTEL_COLORS.blush.light, merchantOrRecipient: "Synth Bites Cafe", status: "completed" },
+  { id: "txn3", type: "purchase", description: "Bought T-shirt", amount: -24.00, currency: "USDC", date: "Yesterday, 16:48", iconName: 'ShoppingBagIcon', accentColor: PASTEL_COLORS.sky.light, merchantOrRecipient: "Festival Merch", status: "completed" },
+  { id: "txn4", type: "send", description: "Sent to David", amount: -10.00, currency: "USDC", date: "2 days ago, 11:05", iconName: 'PaperAirplaneIcon', accentColor: PASTEL_COLORS.lavender.light, merchantOrRecipient: "David Lee", status: "completed" },
+  { id: "txn5", type: "receive", description: "Received from Eve", amount: 20.00, currency: "USDC", date: "3 days ago, 19:30", iconName: 'ArrowDownCircleIcon', accentColor: PASTEL_COLORS.yellow.light, merchantOrRecipient: "Eve Martin", status: "completed" },
+];
+
+export const MOCK_BADGES: BadgeItem[] = [
+  { id: "bdg1", name: "Night Owl", iconUrl: "https://picsum.photos/seed/nightowlbadge/80/80", description: "Attended a late night event after 10 PM.", unlockDate: "Unlocked: Jun 9, 2024", isLocked: false, howToEarn: "Check-in to any event activity after 10 PM." },
+  { id: "bdg2", name: "Arcade Pro", iconUrl: "https://picsum.photos/seed/arcadeprobadge/80/80", description: "Mastered the arcade games at Neon Booth.", unlockDate: "Unlocked: Jun 8, 2024", isLocked: false, howToEarn: "Achieve a high score or complete specific challenges at an event arcade." },
+  { id: "bdg3", name: "Early Bird", iconUrl: "https://picsum.photos/seed/earlybirdbadge/80/80", description: "Joined an event before 10 AM.", unlockDate: "Unlocked: Jun 10, 2024", isLocked: false, howToEarn: "Be one of the first to check-in to an event on any given day." },
+  { id: "bdg4", name: "Explorer", iconUrl: "https://picsum.photos/seed/explorerbadge/80/80?grayscale", description: "Visited all zones in an event.", isLocked: true, howToEarn: "Check-in to at least one activation in every designated zone of a festival." },
+  { id: "bdg5", name: "Synthwave Starter", iconUrl: "https://picsum.photos/seed/synthstarter/80/80", description: "Attended your first Synthwave Fest.", unlockDate: "Unlocked: Jun 8, 2024", isLocked: false, howToEarn: "Attend any Synthwave Fest event." },
+];
+
+export const MOCK_ATTENDED_EVENTS: AttendedEvent[] = [
+  {
+    eventId: "synthwave-fest",
+    eventName: "Synthwave Fest '24",
+    eventDate: "Jun 8–10, 2024",
+    eventLogoUrl: "https://picsum.photos/seed/synthwavefest/100/100", // Using event image as logo here
+    eventAbstractColor: "bg-purple-200",
+    xpEarned: 750,
+    coinsGained: 80,
+    mainBadges: [
+      { id: "bdg5", name: "Synthwave Starter", iconUrl: MOCK_BADGES.find(b => b.id === 'bdg5')?.iconUrl || '' },
+      { id: "bdg2", name: "Arcade Pro", iconUrl: MOCK_BADGES.find(b => b.id === 'bdg2')?.iconUrl || '' }
+    ],
+    isLive: true,
+  },
+  {
+    eventId: "art-expo",
+    eventName: "Art Expo '23",
+    eventDate: "Aug 1-3, 2023",
+    eventLogoUrl: "https://picsum.photos/seed/artexpo/100/100",
+    eventAbstractColor: "bg-pink-200",
+    xpEarned: 400,
+    coinsGained: 30,
+    mainBadges: [
+       { id: "bdg3", name: "Early Bird", iconUrl: MOCK_BADGES.find(b => b.id === 'bdg3')?.iconUrl || '' }
+    ],
+  }
+];
+
+export const MOCK_ACTIVE_QUESTS: Quest[] = [
+  {
+    id: "qstActive1",
+    title: "Visit 3 Synthwave Booths",
+    currentProgress: 2,
+    targetProgress: 3,
+    isCompleted: false,
+    rewardText: "+100 XP, +10 Coins"
+  },
+  {
+    id: "qstActive2",
+    title: "Daily Check-in Streak",
+    currentProgress: 4, // Current streak days
+    targetProgress: 7, // Target for a weekly bonus
+    isCompleted: false,
+    rewardText: "Bonus Badge!"
+  }
+];
+
+export const MOCK_USER: User = {
+  name: "Anna",
+  avatarUrl: "https://picsum.photos/seed/anna/200/200", // Larger avatar for profile
+  xp: 1340,
+  balance: 160.00, // Wallet
+  currency: "USDC",
+  streak: 4,
+  transactions: MOCK_TRANSACTIONS.slice(0,1),
+  email: "anna@example.com",
+  walletAddress: "0x5AcD43B6B1A7A03D9A6b82E2A2dF7c13a0A781C2",
+
+  // Progress/Profile specific
+  level: 6,
+  xpForNextLevel: 2000, // XP needed to reach level 7
+  coinBalance: 150, // Gamification coins
+  attendedEvents: MOCK_ATTENDED_EVENTS,
+  activeQuests: MOCK_ACTIVE_QUESTS,
+  totalXP: 1150, // Total from MOCK_ATTENDED_EVENTS (750+400)
+  totalCoinsEarned: 110, // Total from MOCK_ATTENDED_EVENTS (80+30)
+  totalBadgesEarned: MOCK_BADGES.filter(b => !b.isLocked).length,
+  motivationalSubtitle: "Festival Legend in the Making!",
+};
+
+
+const SYNTHWAVE_BRAND_ACTIVATIONS: BrandActivation[] = [
+  { id: "ba1", name: "Neon Booth", xpAvailable: 150, logoUrl: "✨", themeColor: "bg-pink-100", description: "Step into the dazzling Neon Booth! Test your reflexes on classic arcade games and rack up XP. High scores might unlock secret bonuses." },
+  { id: "ba2", name: "Zero Sugar Lounge", xpAvailable: 100, logoUrl: "🥤", themeColor: "bg-cyan-100", description: "Chill out at the Zero Sugar Lounge. Sample new flavors, participate in a quick survey, and earn XP." },
+  { id: "ba3", name: "Retro Arcade", xpAvailable: 200, logoUrl: "👾", themeColor: "bg-purple-100", description: "A haven for retro gaming enthusiasts. Beat challenges, set high scores, and collect substantial XP rewards." },
+];
+
+const SYNTHWAVE_SHOPS: Shop[] = [
+  {
+    id: "shop1",
+    name: "Synth Bites",
+    topItem: { id: "item1", name: "Festival T-shirt", price: 24, currency: "USDC" },
+    iconUrl: "👕",
+    themeColor: "bg-orange-100",
+  },
+  {
+    id: "shop2",
+    name: "Caffeine Kings",
+    topItem: { id: "item2", name: "Neon Coffee", price: 6, currency: "USDC" },
+    iconUrl: "☕",
+    themeColor: "bg-yellow-100",
+  },
+];
+
+export const MOCK_EVENTS: Event[] = [
+  {
+    id: "synthwave-fest",
+    name: "Synthwave Fest",
+    dates: "Jun 8–10",
+    location: "Berlin",
+    status: "unlocked",
+    isUnlockedByUser: true,
+    imageUrl: "https://picsum.photos/seed/synthwavefest/400/200",
+    themeColor: "bg-purple-500",
+    abstractColor: "bg-purple-200",
+    description: "Immerse yourself in the retro-futuristic sounds of Synthwave. Three days of neon lights, iconic artists, and unforgettable vibes.",
+    mapImageUrl: "https://picsum.photos/seed/synthmap/600/300?blur=2",
+    brandActivations: SYNTHWAVE_BRAND_ACTIVATIONS,
+    shops: SYNTHWAVE_SHOPS,
+    faqLink: "#",
+  },
+  {
+    id: "coffee-carnival",
+    name: "Coffee Carnival",
+    dates: "Jul 15",
+    location: "Online",
+    status: "locked",
+    isUnlockedByUser: false,
+    imageUrl: "https://picsum.photos/seed/coffeecarnival/400/200",
+    themeColor: "bg-green-500",
+    abstractColor: "bg-green-200",
+    description: "Join the biggest online coffee celebration! Discover new beans, learn brewing techniques, and connect with coffee lovers.",
+    mapImageUrl: "https://picsum.photos/seed/coffeemap/600/300?blur=2",
+    brandActivations: [
+      { id: "ba4", name: "Bean Quiz", xpAvailable: 50, logoUrl: "❓", themeColor: "bg-yellow-100", description: "Test your coffee knowledge and earn XP!" },
+    ],
+    shops: [
+       { id: "shop3", name: "Global Blends", topItem: {id: "item3", name: "Rare Geisha Beans", price: 35, currency: "USDC"}, iconUrl: "🌍", themeColor: "bg-lime-100"}
+    ],
+    faqLink: "#",
+  },
+  {
+    id: "art-expo",
+    name: "Art Expo",
+    dates: "Aug 1-3",
+    location: "Paris",
+    status: "unlocked",
+    isUnlockedByUser: true, // Corrected, was previously locked
+    imageUrl: "https://picsum.photos/seed/artexpo/400/200",
+    themeColor: "bg-pink-500",
+    abstractColor: "bg-pink-200",
+    description: "A stunning showcase of modern and contemporary art from around the globe. Meet artists, attend workshops, and find your next masterpiece.",
+    mapImageUrl: "https://picsum.photos/seed/artmap/600/300?blur=2",
+    brandActivations: [
+       { id: "ba5", name: "Live Painting", xpAvailable: 120, logoUrl: "🎨", themeColor: "bg-red-100", description: "Watch artists create masterpieces live and earn XP for participating in Q&A sessions." },
+    ],
+    shops: [
+      { id: "shop4", name: "Artisan Prints", topItem: {id: "item4", name: "Limited Edition Print", price: 75, currency: "USDC"}, iconUrl: "🖼️", themeColor: "bg-blue-100"}
+    ],
+    faqLink: "#",
+  },
+];
+
+
+export const MOCK_QUEST: Quest = { // This is a general quest, MOCK_ACTIVE_QUESTS is now specific to user
+  id: "qstGlobal1",
+  title: "General Event Engagement",
+  currentProgress: 1,
+  targetProgress: 5,
+  isCompleted: false,
+};
+
+
+export const UNREAD_NOTIFICATIONS_COUNT = 3;
+
+export const MOCK_PROFILE_SETTINGS: ProfileSettings = {
+  appNotifications: true,
+  emailUpdates: true,
+  eventReminders: false,
+};
+
+export const MOCK_NOTIFICATIONS: NotificationItem[] = [
+  { id: "notif1", type: "transaction", text: "Bought Coffee – $6", date: "10m ago", iconName: "CoffeeIcon", isRead: false },
+  { id: "notif2", type: "quest", text: "Quest Complete: Visit 3 booths", date: "1h ago", iconName: "SparklesIcon", isRead: false },
+  { id: "notif3", type: "transaction", text: "Top Up – $100", date: "Yesterday", iconName: "ArrowUpCircleIcon", isRead: false },
+  { id: "notif4", type: "reminder", text: "Synthwave Fest starts tomorrow!", date: "2 days ago", iconName: "BellIcon", isRead: true },
+  { id: "notif5", type: "generic", text: "Welcome to mivio! Explore and earn.", date: "3 days ago", isRead: true },
+];
+</file>
+
+<file path="index.html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mivio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom scrollbar hiding for webkit browsers */
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    /* Custom scrollbar hiding for IE, Edge and Firefox */
+    .scrollbar-hide {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.6.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-white">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
+</file>
+
+<file path="index.tsx">
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error("Could not find root element to mount to");
+}
+
+const root = ReactDOM.createRoot(rootElement);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+</file>
+
+<file path="metadata.json">
+{
+  "name": "mivio",
+  "description": "A modern, mobile-first web application for event discovery, gamification, and a simple wallet layer. This is a frontend prototype focusing on the Home screen.",
+  "requestFramePermissions": ["camera"]
+}
+</file>
+
+<file path="package.json">
+{
+  "name": "mivio",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react-dom": "^19.1.0",
+    "react": "^19.1.0",
+    "react-router-dom": "^7.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0"
+  }
+}
+</file>
+
+<file path="README.md">
+# Run and deploy your AI Studio app
+
+This contains everything you need to run your app locally.
+
+## Run Locally
+
+**Prerequisites:**  Node.js
+
+
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "allowJs": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+
+    "paths": {
+      "@/*" :  ["./*"]
+    }
+  }
+}
+</file>
+
+<file path="types.ts">
+import React from 'react';
+
+export interface User {
+  name: string;
+  avatarUrl: string;
+  xp: number;
+  balance: number; // Wallet balance
+  currency: string;
+  streak: number;
+  transactions?: Transaction[];
+  email?: string;
+  walletAddress?: string;
+
+  // New fields for Progress/Profile screen
+  level: number;
+  xpForNextLevel: number; // Total XP needed to reach the next level
+  coinBalance: number; // Gamification coins, distinct from wallet balance
+  attendedEvents: AttendedEvent[];
+  activeQuests: Quest[]; // Re-using Quest type for active quests
+  totalXP: number;
+  totalCoinsEarned: number; // Total gamification coins earned
+  totalBadgesEarned: number;
+  motivationalSubtitle?: string; // e.g., "Level Up!"
+}
+
+export interface AttendedEvent {
+  eventId: string; // Corresponds to an Event's id
+  eventName: string;
+  eventDate: string; // Simple date string for display
+  eventLogoUrl?: string; // or icon
+  eventAbstractColor: string; // from Event.abstractColor
+  xpEarned: number;
+  coinsGained: number;
+  mainBadges: Pick<BadgeItem, 'id' | 'iconUrl' | 'name'>[]; // A few key badges from this event
+  isLive?: boolean;
+}
+
+export interface BrandActivation {
+  id: string;
+  name:string;
+  logoUrl?: string;
+  xpAvailable: number;
+  themeColor: string;
+  description?: string;
+}
+
+export interface ShopItem {
+  id: string;
+  name: string;
+  price: number;
+  currency: string;
+}
+
+export interface Shop {
+  id: string;
+  name: string;
+  iconUrl?: string;
+  topItem: ShopItem;
+  themeColor: string;
+}
+
+export interface Event {
+  id: string;
+  name: string;
+  dates: string;
+  location: string;
+  status: 'locked' | 'unlocked' | 'entered';
+  isUnlockedByUser?: boolean;
+  imageUrl?: string;
+  abstractColor: string;
+  themeColor: string;
+  description?: string;
+  mapImageUrl?: string;
+  brandActivations?: BrandActivation[];
+  shops?: Shop[];
+  faqLink?: string;
+}
+
+export interface Quest {
+  id: string;
+  title: string;
+  currentProgress: number;
+  targetProgress: number;
+  isCompleted: boolean;
+  rewardText?: string; // e.g., "+50 XP" or "New Badge!"
+}
+
+export interface BadgeItem {
+  id: string;
+  name: string;
+  iconUrl: string;
+  description: string;
+  isLocked?: boolean;
+  unlockDate?: string;
+  howToEarn?: string; // Added for badge modal
+}
+
+export interface NavItem {
+  id: string;
+  label: string;
+  icon: React.FC<React.SVGProps<SVGSVGElement>>;
+  activeIcon?: React.FC<React.SVGProps<SVGSVGElement>>;
+  path: string;
+  isSpecial?: boolean;
+}
+
+export type TransactionType = 'top-up' | 'purchase' | 'send' | 'receive';
+
+export interface Transaction {
+  id: string;
+  type: TransactionType;
+  description: string;
+  amount: number;
+  currency: string;
+  date: string;
+  iconName: 'ArrowUpCircleIcon' | 'CoffeeIcon' | 'ShoppingBagIcon' | 'PaperAirplaneIcon' | 'ArrowDownCircleIcon' | 'QuestionMarkCircleIcon';
+  accentColor: string;
+  merchantOrRecipient?: string;
+  status?: 'completed' | 'pending' | 'failed';
+}
+
+export interface ProfileSettings {
+  appNotifications: boolean;
+  emailUpdates: boolean;
+  eventReminders: boolean;
+}
+
+export type NotificationType = 'transaction' | 'quest' | 'reminder' | 'generic';
+
+export interface NotificationItem {
+  id: string;
+  type: NotificationType;
+  text: string;
+  date: string;
+  iconName?: Transaction['iconName'] | 'SparklesIcon' | 'BellIcon';
+  isRead: boolean;
+}
+</file>
+
+<file path="vite.config.ts">
+import path from 'path';
+import { defineConfig, loadEnv } from 'vite';
+
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, '.', '');
+    return {
+      define: {
+        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+      },
+      resolve: {
+        alias: {
+          '@': path.resolve(__dirname, '.'),
+        }
+      }
+    };
+});
+</file>
+
+</files>
