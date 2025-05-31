@@ -2,8 +2,6 @@ import {
 	createAuthRequestMessage,
 	createAuthVerifyMessage,
 	createAuthVerifyMessageWithJWT,
-	type ResponsePayload,
-	type RequestData,
 } from "@erc7824/nitrolite";
 import type { WalletClient } from "viem";
 
@@ -58,7 +56,7 @@ export class ClearNodeClient {
 	private reconnectAttempts = 0;
 	private reconnectTimeout: NodeJS.Timeout | null = null;
 	private statusHandlers: ((status: WSStatus) => void)[] = [];
-	private messageHandlers: ((message: ResponsePayload) => void)[] = [];
+	private messageHandlers: ((message: unknown) => void)[] = [];
 	private pendingRequests = new Map<
 		number,
 		{ resolve: (value: unknown) => void; reject: (reason: Error) => void }
@@ -313,7 +311,7 @@ export class ClearNodeClient {
 	 */
 	private handleMessage(event: MessageEvent): void {
 		const message = JSON.parse(event.data) as {
-			res?: ResponsePayload;
+			res?: [number, string, unknown, number];
 			err?: [number, string, unknown];
 		};
 
@@ -321,7 +319,6 @@ export class ClearNodeClient {
 
 		// Notify message handlers
 		for (const handler of this.messageHandlers) {
-			console.log("Handling message:", message);
 			handler(message);
 		}
 
@@ -468,7 +465,7 @@ export class ClearNodeClient {
 	/**
 	 * Register message handler
 	 */
-	onMessage(handler: (message: RequestData | ResponsePayload) => void): () => void {
+	onMessage(handler: (message: unknown) => void): () => void {
 		this.messageHandlers.push(handler);
 		return () => {
 			this.messageHandlers = this.messageHandlers.filter((h) => h !== handler);
