@@ -36,7 +36,7 @@ export default function ProfilePage() {
 
 	const userStats = {
 		eventsAttended: 12,
-		totalRewards: 2,450,
+		totalRewards: 2450,
 		achievements: 24,
 		joinedDate: "January 2024",
 	};
