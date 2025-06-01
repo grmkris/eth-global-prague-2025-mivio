@@ -26,7 +26,7 @@ export function WalletGuard({ children }: WalletGuardProps) {
 						<div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
 							<Wallet className="h-10 w-10 text-primary" />
 						</div>
-						<CardTitle className="text-2xl">Welcome to Mivio</CardTitle>
+						<CardTitle className="text-2xl">Welcome to mivio</CardTitle>
 						<CardDescription className="text-base">
 							Connect your wallet to access events, earn rewards, and join the
 							community

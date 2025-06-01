@@ -33,7 +33,7 @@ export default function LoginPage() {
 							<Wallet className="h-8 w-8 text-primary-foreground" />
 						</div>
 					</div>
-					<CardTitle className="font-bold text-2xl">Welcome to Mivio</CardTitle>
+					<CardTitle className="font-bold text-2xl">Welcome to mivio</CardTitle>
 					<CardDescription>
 						Connect your wallet to access events and start earning rewards
 					</CardDescription>
