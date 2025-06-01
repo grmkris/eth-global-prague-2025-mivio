@@ -1,6 +1,7 @@
 "use client";
 
 import {
+	BarChart3,
 	CheckSquare,
 	CreditCard,
 	QrCode,
@@ -20,6 +21,14 @@ import {
 
 export default function AdminPage() {
 	const adminSections = [
+		{
+			title: "Analytics",
+			description: "Comprehensive insights and performance metrics",
+			icon: BarChart3,
+			href: "/admin/analytics",
+			color: "text-red-500",
+			stats: "Real-time data",
+		},
 		{
 			title: "Task Management",
 			description: "Create and manage event tasks with QR codes",
@@ -77,6 +86,15 @@ export default function AdminPage() {
 				<div className="mb-8 grid gap-4 md:grid-cols-4">
 					<Card>
 						<CardContent className="p-4 text-center">
+							<BarChart3 className="mx-auto mb-2 h-8 w-8 text-red-500" />
+							<p className="font-bold text-2xl">94.2%</p>
+							<p className="text-muted-foreground text-sm">
+								Event Performance
+							</p>
+						</CardContent>
+					</Card>
+					<Card>
+						<CardContent className="p-4 text-center">
 							<QrCode className="mx-auto mb-2 h-8 w-8 text-primary" />
 							<p className="font-bold text-2xl">1,247</p>
 							<p className="text-muted-foreground text-sm">
@@ -98,17 +116,10 @@ export default function AdminPage() {
 							<p className="text-muted-foreground text-sm">Items Sold</p>
 						</CardContent>
 					</Card>
-					<Card>
-						<CardContent className="p-4 text-center">
-							<Users className="mx-auto mb-2 h-8 w-8 text-orange-500" />
-							<p className="font-bold text-2xl">156</p>
-							<p className="text-muted-foreground text-sm">Check-ins</p>
-						</CardContent>
-					</Card>
 				</div>
 
 				{/* Admin Sections */}
-				<div className="grid gap-6 md:grid-cols-2">
+				<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 					{adminSections.map((section) => (
 						<Card
 							key={section.title}
