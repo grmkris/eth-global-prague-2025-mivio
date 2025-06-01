@@ -652,47 +652,20 @@ const Slide5 = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          Business Model
+          SPONSORSHIPS, AUTOMATED
         </motion.h2>
         
         <div className="space-y-8">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <h3 className="font-semibold text-2xl mb-2" style={{ color: colors.black }}>
-              Automated Sponsorships:
-            </h3>
-            <p className="text-xl opacity-80" style={{ color: colors.black }}>
-              Brands and festivals connect, launch, and measure campaigns with a single flow.
-            </p>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <h3 className="font-semibold text-2xl mb-2" style={{ color: colors.black }}>
-              Subscription Analytics:
-            </h3>
-            <p className="text-xl opacity-80" style={{ color: colors.black }}>
-              Brands and organizers pay recurring fees for live insights and premium tools.
-            </p>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.7 }}
           >
             <h3 className="font-semibold text-2xl mb-2" style={{ color: colors.black }}>
-              Custom Integrations:
+              <b>Festivals turn audiences into data.
+              Brands browse, reward, retarget, repeat.
+              Mivio takes 10% per activation.</b>
             </h3>
-            <p className="text-xl opacity-80" style={{ color: colors.black }}>
-              Enterprise partners use whitelabel, API, and custom brand activations.
-            </p>
           </motion.div>
           
           <motion.div
